@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from setuptools import setup, find_packages
 
 setup(name='tap-xero',
@@ -21,10 +20,7 @@ setup(name='tap-xero',
       ''',
       packages=['tap_xero'],
       package_data = {
-          'tap_xero/schemas': [
-              'leads.json',
-              'activities.json'
-          ]
+          'schemas': ['tap_xero/schemas/*.json']
       },
       include_package_data=True,
 )
