@@ -1,0 +1,80 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "FromBankAccount": {
+      "$ref": "#/definitions/accounts"
+    },
+    "ToBankAccount": {
+      "$ref": "#/definitions/accounts"
+    },
+    "Amount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "DateString": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "BankTransferID": {
+      "type": [
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "FromBankTransactionID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ToBankTransactionID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "CreatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "CreatedDateUTCString": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "accounts": "FILLED IN BY tap-xero"
+  }
+}

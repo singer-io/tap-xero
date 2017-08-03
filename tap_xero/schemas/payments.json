@@ -1,0 +1,152 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Amount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "IsReconciled": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PaymentType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Account": {
+      "$ref": "#/definitions/accounts"
+    },
+    "Invoice": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "InvoiceID": {
+          "type": [
+            "string"
+          ]
+        }
+      }
+    },
+    "CreditNote": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "CreditNoteNumber": {
+          "type": [
+            "string"
+          ]
+        }
+      }
+    },
+    "Prepayments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "PrepaymentID": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      }
+    },
+    "Overpayment": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "OverpaymentID": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+
+      }
+    },
+    "BankAmount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "HasValidationErrors": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "PaymentID": {
+      "type": [
+        "string"
+      ]
+    },
+    "HasAccount": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    }
+  },
+  "definitions": {
+    "accounts": "FILLED IN BY tap-xero"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "Lineitems": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/line_items"
+      }
+    },
+    "User": {
+      "$ref": "#/definitions/users"
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "ReceiptID": {
+      "type": [
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReceiptNumber": {
+      "type": [
+        "null",
+        "integer"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "Url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "definitions": {
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero",
+    "users": "FILLED IN BY tap-xero"
+  }
+}

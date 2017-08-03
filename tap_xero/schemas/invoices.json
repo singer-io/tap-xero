@@ -1,0 +1,245 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "Date": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DueDate": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineItems": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/line_items"
+      }
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalDiscount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "InvoiceID": {
+      "type": [
+        "string"
+      ]
+    },
+    "InvoiceNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "BrandingThemeID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SentToContact": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ExpectedPaymentDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "PlannedPaymentDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "Payments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/payments"
+      }
+    },
+    "CreditNotes": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/credit_notes"
+      }
+    },
+    "Prepayments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/prepayments"
+      }
+    },
+    "Overpayments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/overpayments"
+      }
+    },
+    "AmountDue": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "AmountPaid": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "FullyPaidOnDate": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "AmountCredited": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "DueDateString": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "IsDiscounted": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "HasErrors": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "DateString": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "definitions": {
+    "contacts": "FILLED IN BY tap-xero",
+    "payments": "FILLED IN BY tap-xero",
+    "prepayments": "FILLED IN BY tap-xero",
+    "overpayments": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero",
+    "credit_notes": "FILLED IN BY tap-xero"
+  }
+}

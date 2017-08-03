@@ -1,0 +1,52 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "Amount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Invoice": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "IsDiscounted": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "HasErrors": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "InvoiceID": {
+          "type": [
+            "string"
+          ]
+        },
+        "InvoiceNumber": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    }
+  }
+}

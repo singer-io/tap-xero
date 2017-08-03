@@ -1,0 +1,138 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "LineItems": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/line_items"
+      }
+    },
+    "BankAccount": {
+      "$ref": "#/definitions/accounts"
+    },
+    "IsReconciled": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "DateString": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "BankTransactionID": {
+      "type": [
+        "string"
+      ]
+    },
+    "PrepaymentID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "OverpaymentID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    }
+  },
+  "definitions": {
+    "accounts": "FILLED IN BY tap-xero",
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "User": {
+      "$ref": "#/definitions/users"
+    },
+    "Receipts": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/receipts"
+      }
+    },
+    "ExpenseClaimID": {
+      "type": [
+        "string"
+      ]
+    },
+    "Payments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/payments"
+      }
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "AmountDue": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "AmountPaid": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "PaymentDueDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "ReportingDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    }
+  },
+  "definitions": {
+    "users": "FILLED IN BY tap-xero",
+    "receipts": "FILLED IN BY tap-xero",
+    "payments": "FILLED IN BY tap-xero"
+  }
+}

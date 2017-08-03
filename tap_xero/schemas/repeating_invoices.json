@@ -1,0 +1,147 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "Schedule": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "Unit": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "DueDateType": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "StartDate": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "date"
+        },
+        "DueDate": {
+          "type": [
+            "null",
+            "integer"
+          ]
+        },
+        "EndDate": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "NextScheduledDate": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "date"
+        },
+        "Period": {
+          "type": [
+            "null",
+            "integer"
+          ]
+        }
+      }
+    },
+    "LineItems": {
+      "items": {
+        "$ref": "#/definitions/line_items"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "BrandingThemeID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "RepeatingInvoiceID": {
+      "type": [
+        "string"
+      ]
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "definitions": {
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero"
+  }
+}

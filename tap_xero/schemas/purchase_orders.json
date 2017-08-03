@@ -1,0 +1,198 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "Date": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DeliveryDate": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PurchaseOrderNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineItems": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/line_items"
+      }
+    },
+    "BrandingThemeID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SentToContact": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "DeliveryAddress": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "AttentionTo": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Telephone": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DeliveryInstructions": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ExpectedArrivalDate": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PurchaseOrderID": {
+      "type": [
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TotalDiscount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DeliveryDateString": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DateString": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "HasErrors": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "IsDiscounted": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ExpectedArrivalDateString": {
+      "format": "date",
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "definitions": {
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero"
+  }
+}
