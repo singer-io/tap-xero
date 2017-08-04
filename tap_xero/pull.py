@@ -1,21 +1,13 @@
 import singer
 from singer import metrics
-from xero import Xero
-from xero.auth import PartnerCredentials
-from xero.exceptions import XeroException, XeroRateLimitExceeded
-from xero.manager import Manager
 import pendulum
 import time
 import datetime
+from .xero import XeroClient
+from requests.exceptions import HTTPError
+from singer.utils import strftime
 
 LOGGER = singer.get_logger()
-
-CREDENTIALS_KEYS = ["consumer_key",
-                    "consumer_secret",
-                    "rsa_key",
-                    "oauth_token",
-                    "oauth_token_secret",
-                    "oauth_session_handle"]
 
 # With MAX_CONSECUTIVE_RATE_LIMITS = 10 then the total
 # sleeping time will be about a half hour.
@@ -23,30 +15,13 @@ MAX_CONSECUTIVE_RATE_LIMITS = 10
 XERO_ORDERER = "UpdatedDateUTC ASC"
 
 
-def get_xero_client(config):
-    kwargs = dict((attr, config[attr]) for attr in CREDENTIALS_KEYS)
-    kwargs["verified"] = True
-    credentials = PartnerCredentials(**kwargs)
-    xero = Xero(credentials, user_agent=config.get("user_agent"))
-    if not hasattr(xero, "linkedtransactions"):
-        # Xero API version 0.9 does not have this resources, so add it
-        # ourselves. See http://tinyurl.com/y7w9bwhj and
-        # http://tinyurl.com/y96mnm49
-        setattr(xero,
-                "linkedtransactions",
-                Manager("LinkedTransactions",
-                        credentials=credentials))
-    return xero
-
-
 def _request_with_timer(tap_stream_id, xero, options):
-    xero_resource = getattr(xero, tap_stream_id.replace("_", ""))
     with metrics.http_request_timer(tap_stream_id) as timer:
         try:
-            resp = xero_resource.filter(**options)
+            resp = xero.filter(tap_stream_id, **options)
             timer.tags[metrics.Tag.http_status_code] = 200
             return resp
-        except XeroException as e:
+        except HTTPError as e:
             timer.tags[metrics.Tag.http_status_code] = e.response.status_code
             raise
 
@@ -55,7 +30,9 @@ def make_request(tap_stream_id, xero, options={}, num_rate_limits=0):
     # https://developer.xero.com/documentation/auth-and-limits/xero-api-limits
     try:
         return _request_with_timer(tap_stream_id, xero, options)
-    except XeroRateLimitExceeded as e:
+    except HTTPError as e:
+        if e.response.status_code != 503:
+            raise
         # rate_limit_type = e.response.headers["X-Rate-Limit-Problem"]
         # ^ Daily or Minute
         # But for now treat them the same
@@ -74,7 +51,7 @@ class Puller(object):
         self.config = config
         self.state = state
         self.tap_stream_id = tap_stream_id
-        self.xero = get_xero_client(config)
+        self.xero = XeroClient(config)
 
     @property
     def _bookmark(self):
@@ -102,7 +79,7 @@ class IncrementingPull(Puller):
     def yield_pages(self):
         start = self._update_start_state()
         now = datetime.datetime.utcnow()
-        page = make_request(self.tap_stream_id, self.xero, dict(since=start))
+        page, _ = make_request(self.tap_stream_id, self.xero, dict(since=start))
         yield page
         self._set_last_updated(now)
 
@@ -119,7 +96,7 @@ class PaginatedPull(Puller):
             if num_pages_yielded > 1e6:
                 raise Exception("1 million pages doesn't seem realistic")
             options[pagination_key] = curr_page_num
-            page = make_request(self.tap_stream_id, self.xero, options)
+            page, _ = make_request(self.tap_stream_id, self.xero, options)
             if not page:
                 break
             next_page_num = get_next_page_num(curr_page_num, page)
@@ -167,11 +144,11 @@ class LinkedTransactionsPull(PaginatedPull):
         first_num = self._bookmark.get("page") or 1
         for page, next_page_num in self._paginate(first_page_num=first_num):
             self._bookmark["page"] = next_page_num
-            yield [x for x in page if x["UpdatedDateUTC"] >= start]
+            yield [x for x in page if x["UpdatedDateUTC"] >= strftime(start)]
         self._bookmark["page"] = None
         self._set_last_updated(now)
 
 
 class EverythingPull(Puller):
     def yield_pages(self):
-        yield make_request(self.tap_stream_id, self.xero)
+        yield make_request(self.tap_stream_id, self.xero)[0]

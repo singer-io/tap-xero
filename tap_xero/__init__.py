@@ -2,21 +2,22 @@
 import os
 import singer
 from singer import metrics, utils
-from collections import namedtuple
 from .pull import (
-    CREDENTIALS_KEYS,
     IncrementingPull,
     PaginatedPull,
     JournalPull,
     LinkedTransactionsPull,
     EverythingPull,
 )
-from .format import (
-    format_datetimes,
-    format_dates,
-)
 import json
 import attr
+
+CREDENTIALS_KEYS = ["consumer_key",
+                    "consumer_secret",
+                    "rsa_key",
+                    "oauth_token",
+                    "oauth_token_secret",
+                    "oauth_session_handle"]
 
 REQUIRED_CONFIG_KEYS = ["start_date"] + CREDENTIALS_KEYS
 
@@ -28,107 +29,51 @@ class Stream(object):
     tap_stream_id = attr.attr()
     pk_fields = attr.attr()
     puller = attr.attr()
-    datetime_fields = attr.attr(default=[])
-    date_fields = attr.attr(default=[])
 
 STREAMS = [
     # PAGINATED STREAMS
     # These endpoints have all the best properties: they return the
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
-    Stream("bank_transactions", ["BankTransactionID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date", "DateString"]),
-    Stream("contacts", ["ContactID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"]),
-    Stream("credit_notes", ["CreditNoteID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date",
-                        "DateString",
-                        "FullyPaidOnDate",
-                        ["Allocations", "*", "Date"]]),
-    Stream("invoices", ["InvoiceID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date",
-                        "DateString",
-                        "DueDate",
-                        "DueDateString",
-                        "ExpectedPaymentDate",
-                        "PlannedPaymentDate",
-                        "FullyPaidOnDate",
-                        ["CreditNotes", "*", "Date"],
-                        ["CreditNotes", "*", "DateString"],
-                        ["Payments", "*", "Date"]]),
-    Stream("manual_journals", ["ManualJournalID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date"]),
-    Stream("overpayments", ["OverpaymentID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date", "DateString"]),
-    Stream("prepayments", ["PrepaymentID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date", "DateString"]),
-    Stream("purchase_orders", ["PurchaseOrderID"], PaginatedPull,
-           datetime_fields=["UpdatedDateUTC",
-                            ["Contact", "UpdatedDateUTC"]],
-           date_fields=["Date",
-                        "DateString",
-                        "DeliveryDate",
-                        "DeliveryDateString",
-                        "ExpectedArrivalDate",
-                        "ExpectedArrivalDateString"]),
+    Stream("bank_transactions", ["BankTransactionID"], PaginatedPull),
+    Stream("contacts", ["ContactID"], PaginatedPull),
+    Stream("credit_notes", ["CreditNoteID"], PaginatedPull),
+    Stream("invoices", ["InvoiceID"], PaginatedPull),
+    Stream("manual_journals", ["ManualJournalID"], PaginatedPull),
+    Stream("overpayments", ["OverpaymentID"], PaginatedPull),
+    Stream("prepayments", ["PrepaymentID"], PaginatedPull),
+    Stream("purchase_orders", ["PurchaseOrderID"], PaginatedPull),
 
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
-    Stream("journals", ["JournalID"], JournalPull,
-           datetime_fields=["CreatedDateUTC"],
-           date_fields=["JournalDate"]),
+    Stream("journals", ["JournalID"], JournalPull),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
     # header.
-    Stream("accounts", ["AccountID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC"]),
-    Stream("bank_transfers", ["BankTransferID"], IncrementingPull,
-           datetime_fields=["CreatedDateUTC", "CreatedDateUTCString"],
-           date_fields=["Date", "DateString"]),
-    Stream("employees", ["EmployeeID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC"]),
-    Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC", ["User", "UpdatedDateUTC"]],
-           date_fields=["PaymentDueDate", "ReportingDate"]),
-    Stream("items", ["ItemID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC"]),
-    Stream("payments", ["PaymentID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date"]),
-    Stream("receipts", ["ReceiptID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC"],
-           date_fields=["Date"]),
-    Stream("users", ["UserID"], IncrementingPull,
-           datetime_fields=["UpdatedDateUTC"]),
+    Stream("accounts", ["AccountID"], IncrementingPull),
+    Stream("bank_transfers", ["BankTransferID"], IncrementingPull),
+    Stream("employees", ["EmployeeID"], IncrementingPull),
+    Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull),
+    Stream("items", ["ItemID"], IncrementingPull),
+    Stream("payments", ["PaymentID"], IncrementingPull),
+    Stream("receipts", ["ReceiptID"], IncrementingPull),
+    Stream("users", ["UserID"], IncrementingPull),
 
     # PULL EVERYTHING STREAMS
     # These endpoints do not support the Modified After header (or paging), so
     # we must pull all the data each time.
-    Stream("branding_themes", ["BrandingThemeID"], EverythingPull,
-           datetime_fields=["CreatedDateUTC"]),
+    Stream("branding_themes", ["BrandingThemeID"], EverythingPull),
     Stream("contact_groups", ["ContactGroupID"], EverythingPull),
     Stream("currencies", ["Code"], EverythingPull),
-    Stream("organisations", ["OrganisationID"], EverythingPull,
-           datetime_fields=["CreatedDateUTC"],
-           date_fields=["PeriodLockDate", "EndOfYearLockDate"]),
-    Stream("repeating_invoices", ["RepeatingInvoiceID"], EverythingPull,
-           date_fields=[["Schedule", "StartDate"],
-                        ["Schedule", "EndDate"],
-                        ["Schedule", "NextScheduledDate"]]),
+    Stream("organisations", ["OrganisationID"], EverythingPull),
+    Stream("repeating_invoices", ["RepeatingInvoiceID"], EverythingPull),
     Stream("tax_rates", ["TaxType"], EverythingPull),
     Stream("tracking_categories", ["TrackingCategoryID"], EverythingPull),
 
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
-    Stream("linked_transactions", ["LinkedTransactionID"], LinkedTransactionsPull,
-           datetime_fields=["UpdatedDateUTC"]),
+    Stream("linked_transactions", ["LinkedTransactionID"], LinkedTransactionsPull),
 ]
 
 
@@ -173,9 +118,6 @@ def run_stream(config, state, stream):
     with metrics.record_counter(stream.tap_stream_id) as counter:
         for page in puller.yield_pages():
             counter.increment(len(page))
-            for item in page:
-                format_datetimes(stream.datetime_fields, item)
-                format_dates(stream.date_fields, item)
             singer.write_records(stream.tap_stream_id, page)
             singer.write_state(state)
     singer.write_state(state)

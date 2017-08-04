@@ -36,14 +36,14 @@
         "null",
         "string"
       ],
-      "format": "date"
+      "format": "date-time"
     },
     "DateString": {
       "type": [
         "null",
         "string"
       ],
-      "format": "date"
+      "format": "date-time"
     },
     "Reference": {
       "type": [

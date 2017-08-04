@@ -10,7 +10,7 @@
       ]
     },
     "JournalDate": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"

@@ -14,7 +14,7 @@
       "$ref": "#/definitions/contacts"
     },
     "Date": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"
@@ -117,7 +117,7 @@
       ]
     },
     "DateString": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"

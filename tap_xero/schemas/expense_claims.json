@@ -66,14 +66,14 @@
         "null",
         "string"
       ],
-      "format": "date"
+      "format": "date-time"
     },
     "ReportingDate": {
       "type": [
         "null",
         "string"
       ],
-      "format": "date"
+      "format": "date-time"
     }
   },
   "definitions": {

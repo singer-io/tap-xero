@@ -8,14 +8,14 @@
       "$ref": "#/definitions/contacts"
     },
     "Date": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"
       ]
     },
     "DeliveryDate": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"
@@ -97,7 +97,7 @@
       ]
     },
     "ExpectedArrivalDate": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"
@@ -152,7 +152,7 @@
       ]
     },
     "DeliveryDateString": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"
@@ -165,7 +165,7 @@
       ]
     },
     "DateString": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"
@@ -184,7 +184,7 @@
       ]
     },
     "ExpectedArrivalDateString": {
-      "format": "date",
+      "format": "date-time",
       "type": [
         "null",
         "string"

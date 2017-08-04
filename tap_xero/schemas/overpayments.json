@@ -18,7 +18,7 @@
         "null",
         "string"
       ],
-      "format": "date"
+      "format": "date-time"
     },
     "Status": {
       "type": [
@@ -124,7 +124,7 @@
         "null",
         "string"
       ],
-      "format": "date"
+      "format": "date-time"
     }
   },
   "definitions": {
