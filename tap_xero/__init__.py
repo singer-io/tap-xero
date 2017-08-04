@@ -139,13 +139,11 @@ def sync(config, state, catalog):
 
 def main():
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
-    config = args.config
-    state = args.state
     if args.discover:
         do_discover()
     else:
         catalog = args.properties if args.properties else discover()
-        sync(config, state, catalog)
+        sync(args.config, args.state, catalog)
 
 if __name__ == "__main__":
     main()
