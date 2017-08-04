@@ -78,10 +78,9 @@ class Puller(object):
 class IncrementingPull(Puller):
     def yield_pages(self):
         start = self._update_start_state()
-        now = datetime.datetime.utcnow()
-        page, _ = make_request(self.tap_stream_id, self.xero, dict(since=start))
-        yield page
-        self._set_last_updated(now)
+        response = make_request(self.tap_stream_id, self.xero, dict(since=start))
+        yield response.items
+        self._set_last_updated(response.datetime)
 
 
 class PaginatedPull(Puller):
@@ -96,24 +95,26 @@ class PaginatedPull(Puller):
             if num_pages_yielded > 1e6:
                 raise Exception("1 million pages doesn't seem realistic")
             options[pagination_key] = curr_page_num
-            page, _ = make_request(self.tap_stream_id, self.xero, options)
-            if not page:
+            response = make_request(self.tap_stream_id, self.xero, options)
+            if not response.items:
                 break
-            next_page_num = get_next_page_num(curr_page_num, page)
-            yield page, next_page_num
+            next_page_num = get_next_page_num(curr_page_num, response)
+            yield response, next_page_num
             curr_page_num = next_page_num
             num_pages_yielded += 1
 
     def yield_pages(self):
         start = self._update_start_state()
-        now = datetime.datetime.utcnow()
         first_num = self._bookmark.get("page") or 1
         options = dict(since=start, order=XERO_ORDERER)
-        for page, next_num in self._paginate(options, first_page_num=first_num):
+        last_response_datetime = None
+        for response, next_num in self._paginate(options, first_page_num=first_num):
             self._bookmark["page"] = next_num
-            yield page
+            yield response.items
+            last_response_datetime = response.datetime
         self._bookmark["page"] = None
-        self._set_last_updated(now)
+        if last_response_datetime:
+            self._set_last_updated(last_response_datetime)
 
 
 class JournalPull(PaginatedPull):
@@ -124,12 +125,12 @@ class JournalPull(PaginatedPull):
 
     def yield_pages(self):
         first_num = self._bookmark.get("journal_number") or 0
-        next_page_fn = lambda _, page: page[-1]["JournalNumber"]
-        for page, next_num in self._paginate(first_page_num=first_num,
-                                             pagination_key="offset",
-                                             get_next_page_num=next_page_fn):
+        next_page_fn = lambda _, response: response.items[-1]["JournalNumber"]
+        for response, next_num in self._paginate(first_page_num=first_num,
+                                                 pagination_key="offset",
+                                                 get_next_page_num=next_page_fn):
             self._bookmark["journal_number"] = next_num
-            yield page
+            yield response.items
 
 
 class LinkedTransactionsPull(PaginatedPull):
@@ -140,15 +141,18 @@ class LinkedTransactionsPull(PaginatedPull):
     UpdatedDateUTC property."""
     def yield_pages(self):
         start = self._update_start_state()
-        now = datetime.datetime.utcnow()
         first_num = self._bookmark.get("page") or 1
-        for page, next_page_num in self._paginate(first_page_num=first_num):
+        last_response_datetime = None
+        for response, next_page_num in self._paginate(first_page_num=first_num):
             self._bookmark["page"] = next_page_num
-            yield [x for x in page if x["UpdatedDateUTC"] >= strftime(start)]
+            yield [x for x in response.items
+                   if x["UpdatedDateUTC"] >= strftime(start)]
+            last_response_datetime = response.datetime
         self._bookmark["page"] = None
-        self._set_last_updated(now)
+        if last_response_datetime:
+            self._set_last_updated(last_response_datetime)
 
 
 class EverythingPull(Puller):
     def yield_pages(self):
-        yield make_request(self.tap_stream_id, self.xero)[0]
+        yield make_request(self.tap_stream_id, self.xero).items
