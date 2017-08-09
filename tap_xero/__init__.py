@@ -4,6 +4,7 @@ import singer
 from singer import metrics, utils
 from .pull import (
     IncrementingPull,
+    BankTransfersPull,
     PaginatedPull,
     JournalPull,
     LinkedTransactionsPull,
@@ -52,7 +53,7 @@ STREAMS = [
     # These endpoints do not support pagination, but do support the Modified At
     # header.
     Stream("accounts", ["AccountID"], IncrementingPull),
-    Stream("bank_transfers", ["BankTransferID"], IncrementingPull),
+    Stream("bank_transfers", ["BankTransferID"], BankTransfersPull),
     Stream("employees", ["EmployeeID"], IncrementingPull),
     Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull),
     Stream("items", ["ItemID"], IncrementingPull),

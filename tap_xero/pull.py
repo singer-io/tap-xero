@@ -12,7 +12,6 @@ LOGGER = singer.get_logger()
 # With MAX_CONSECUTIVE_RATE_LIMITS = 10 then the total
 # sleeping time will be about a half hour.
 MAX_CONSECUTIVE_RATE_LIMITS = 10
-XERO_ORDERER = "UpdatedDateUTC ASC"
 
 
 def _request_with_timer(tap_stream_id, xero, options):
@@ -47,11 +46,17 @@ def make_request(tap_stream_id, xero, options={}, num_rate_limits=0):
 
 
 class Puller(object):
+    bookmark_property = "UpdatedDateUTC"
+
     def __init__(self, config, state, tap_stream_id):
         self.config = config
         self.state = state
         self.tap_stream_id = tap_stream_id
         self.xero = XeroClient(config)
+
+    @property
+    def _order_by(self):
+        return self.bookmark_property + " ASC"
 
     @property
     def _bookmark(self):
@@ -78,9 +83,14 @@ class Puller(object):
 class IncrementingPull(Puller):
     def yield_pages(self):
         start = self._update_start_state()
-        response = make_request(self.tap_stream_id, self.xero, dict(since=start))
-        yield response.items
-        self._set_last_updated(response.datetime)
+        page = make_request(self.tap_stream_id, self.xero, dict(since=start))
+        if page:
+            self._set_last_updated(page[-1][self.bookmark_property])
+            yield page
+
+
+class BankTransfersPull(IncrementingPull):
+    bookmark_property = "CreatedDateUTC"
 
 
 class PaginatedPull(Puller):
@@ -95,26 +105,23 @@ class PaginatedPull(Puller):
             if num_pages_yielded > 1e6:
                 raise Exception("1 million pages doesn't seem realistic")
             options[pagination_key] = curr_page_num
-            response = make_request(self.tap_stream_id, self.xero, options)
-            if not response.items:
+            page = make_request(self.tap_stream_id, self.xero, options)
+            if not page:
                 break
-            next_page_num = get_next_page_num(curr_page_num, response)
-            yield response, next_page_num
+            next_page_num = get_next_page_num(curr_page_num, page)
+            yield page, next_page_num
             curr_page_num = next_page_num
             num_pages_yielded += 1
 
     def yield_pages(self):
         start = self._update_start_state()
         first_num = self._bookmark.get("page") or 1
-        options = dict(since=start, order=XERO_ORDERER)
-        last_response_datetime = None
-        for response, next_num in self._paginate(options, first_page_num=first_num):
+        options = dict(since=start, order=self._order_by)
+        for page, next_num in self._paginate(options, first_page_num=first_num):
             self._bookmark["page"] = next_num
-            yield response.items
-            last_response_datetime = response.datetime
+            self._set_last_updated(page[-1][self.bookmark_property])
+            yield page
         self._bookmark["page"] = None
-        if last_response_datetime:
-            self._set_last_updated(last_response_datetime)
 
 
 class JournalPull(PaginatedPull):
@@ -125,12 +132,12 @@ class JournalPull(PaginatedPull):
 
     def yield_pages(self):
         first_num = self._bookmark.get("journal_number") or 0
-        next_page_fn = lambda _, response: response.items[-1]["JournalNumber"]
-        for response, next_num in self._paginate(first_page_num=first_num,
-                                                 pagination_key="offset",
-                                                 get_next_page_num=next_page_fn):
+        next_page_fn = lambda _, page: page[-1]["JournalNumber"]
+        for page, next_num in self._paginate(first_page_num=first_num,
+                                             pagination_key="offset",
+                                             get_next_page_num=next_page_fn):
             self._bookmark["journal_number"] = next_num
-            yield response.items
+            yield page
 
 
 class LinkedTransactionsPull(PaginatedPull):
@@ -142,17 +149,13 @@ class LinkedTransactionsPull(PaginatedPull):
     def yield_pages(self):
         start = self._update_start_state()
         first_num = self._bookmark.get("page") or 1
-        last_response_datetime = None
-        for response, next_page_num in self._paginate(first_page_num=first_num):
+        for page, next_page_num in self._paginate(first_page_num=first_num):
             self._bookmark["page"] = next_page_num
-            yield [x for x in response.items
-                   if x["UpdatedDateUTC"] >= strftime(start)]
-            last_response_datetime = response.datetime
+            self._set_last_updated(page[-1][self.bookmark_property])
+            yield [x for x in page if x["UpdatedDateUTC"] >= strftime(start)]
         self._bookmark["page"] = None
-        if last_response_datetime:
-            self._set_last_updated(last_response_datetime)
 
 
 class EverythingPull(Puller):
     def yield_pages(self):
-        yield make_request(self.tap_stream_id, self.xero).items
+        yield make_request(self.tap_stream_id, self.xero)

@@ -8,7 +8,6 @@ import xero.utils
 from singer.utils import strftime
 import json
 import six
-from collections import namedtuple
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
@@ -34,8 +33,6 @@ def _json_load_object_hook(_dict):
             if value:
                 _dict[key] = strftime(value)
     return _dict
-
-Response = namedtuple("Response", ("items", "datetime"))
 
 
 class XeroClient(object):
@@ -64,4 +61,4 @@ class XeroClient(object):
         response.raise_for_status()
         response_meta = json.loads(response.text, object_hook=_json_load_object_hook)
         response_body = response_meta.pop(xero_resource_name)
-        return Response(response_body, response_meta["DateTimeUTC"])
+        return response_body
