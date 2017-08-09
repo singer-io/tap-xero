@@ -1,26 +1,14 @@
 import requests
 from os.path import join
-from requests_oauthlib import OAuth1
-from oauthlib.oauth1 import SIGNATURE_RSA
 import re
 from datetime import datetime
 import xero.utils
 from singer.utils import strftime
 import json
 import six
+from .credentials import build_oauth
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
-
-
-def _oauth(config):
-    return OAuth1(
-        config["consumer_key"],
-        client_secret=config["consumer_secret"],
-        resource_owner_key=config["oauth_token"],
-        resource_owner_secret=config["oauth_token_secret"],
-        rsa_key=config["rsa_key"],
-        signature_method=SIGNATURE_RSA,
-    )
 
 
 def _json_load_object_hook(_dict):
@@ -38,7 +26,7 @@ def _json_load_object_hook(_dict):
 class XeroClient(object):
     def __init__(self, config):
         self.session = requests.Session()
-        self.oauth = _oauth(config)
+        self.oauth = build_oauth(config)
         self.user_agent = config.get("user_agent")
         self._datetime_pattern = re.compile(r"\/Date\((\d+)\)\/")
 

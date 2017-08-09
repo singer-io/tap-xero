@@ -10,16 +10,13 @@ from .pull import (
     LinkedTransactionsPull,
     EverythingPull,
 )
+from . import credentials
 import json
 import attr
 
 CREDENTIALS_KEYS = ["consumer_key",
                     "consumer_secret",
-                    "rsa_key",
-                    "oauth_token",
-                    "oauth_token_secret",
-                    "oauth_session_handle"]
-
+                    "rsa_key"]
 REQUIRED_CONFIG_KEYS = ["start_date"] + CREDENTIALS_KEYS
 
 LOGGER = singer.get_logger()
@@ -124,7 +121,15 @@ def run_stream(config, state, stream):
     singer.write_state(state)
 
 
+def init_credentials(config):
+    if credentials.can_use_s3(config):
+        creds = credentials.download_from_s3(config)
+        config.update(creds)
+    return config
+
+
 def sync(config, state, catalog):
+    init_credentials(config)
     currently_syncing = state.get("currently_syncing")
     start_idx = [e.tap_stream_id for e in STREAMS].index(currently_syncing) \
         if currently_syncing \

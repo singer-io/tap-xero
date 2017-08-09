@@ -4,14 +4,12 @@ import pendulum
 import time
 import datetime
 from .xero import XeroClient
+from . import credentials
 from requests.exceptions import HTTPError
 from singer.utils import strftime
+import backoff
 
 LOGGER = singer.get_logger()
-
-# With MAX_CONSECUTIVE_RATE_LIMITS = 10 then the total
-# sleeping time will be about a half hour.
-MAX_CONSECUTIVE_RATE_LIMITS = 10
 
 
 def _request_with_timer(tap_stream_id, xero, options):
@@ -25,24 +23,8 @@ def _request_with_timer(tap_stream_id, xero, options):
             raise
 
 
-def make_request(tap_stream_id, xero, options={}, num_rate_limits=0):
-    # https://developer.xero.com/documentation/auth-and-limits/xero-api-limits
-    try:
-        return _request_with_timer(tap_stream_id, xero, options)
-    except HTTPError as e:
-        if e.response.status_code != 503:
-            raise
-        # rate_limit_type = e.response.headers["X-Rate-Limit-Problem"]
-        # ^ Daily or Minute
-        # But for now treat them the same
-        num_rate_limits += 1
-        if num_rate_limits > MAX_CONSECUTIVE_RATE_LIMITS:
-            raise
-        sleep_secs = 2**num_rate_limits
-        LOGGER.debug("Rate limited, # {}, sleeping {} secs"
-                     .format(num_rate_limits, sleep_secs))
-        time.sleep(sleep_secs)
-        return make_request(tap_stream_id, xero, options, num_rate_limits + 1)
+class RateLimitException(Exception):
+    pass
 
 
 class Puller(object):
@@ -53,6 +35,21 @@ class Puller(object):
         self.state = state
         self.tap_stream_id = tap_stream_id
         self.xero = XeroClient(config)
+
+    @backoff.on_exception(backoff.expo,
+                          RateLimitException,
+                          max_tries=10,
+                          factor=2)
+    def _make_request(self, options={}):
+        try:
+            return _request_with_timer(self.tap_stream_id, self.xero, options)
+        except HTTPError as e:
+            if e.response.status_code == 401:
+                credentials.refresh(self.config)
+            elif e.response.status_code == 503:
+                raise RateLimitException()
+            else:
+                raise
 
     @property
     def _order_by(self):
@@ -83,7 +80,7 @@ class Puller(object):
 class IncrementingPull(Puller):
     def yield_pages(self):
         start = self._update_start_state()
-        page = make_request(self.tap_stream_id, self.xero, dict(since=start))
+        page = self._make_request(dict(since=start))
         if page:
             self._set_last_updated(page[-1][self.bookmark_property])
             yield page
@@ -105,7 +102,7 @@ class PaginatedPull(Puller):
             if num_pages_yielded > 1e6:
                 raise Exception("1 million pages doesn't seem realistic")
             options[pagination_key] = curr_page_num
-            page = make_request(self.tap_stream_id, self.xero, options)
+            page = self._make_request(options)
             if not page:
                 break
             next_page_num = get_next_page_num(curr_page_num, page)
@@ -158,4 +155,4 @@ class LinkedTransactionsPull(PaginatedPull):
 
 class EverythingPull(Puller):
     def yield_pages(self):
-        yield make_request(self.tap_stream_id, self.xero)
+        yield self._make_request()

@@ -10,6 +10,7 @@ from tap_xero.pull import (
     LinkedTransactionsPull,
 )
 from tap_xero.tests import utils
+import itertools
 
 LOGGER = singer.get_logger()
 metrics.log = utils.metric_log
@@ -42,11 +43,9 @@ class TestPaginatedBookmarks(unittest.TestCase):
         self.assertIsNotNone(last_updated_at)
         self.assertGreater(num_records, 0)
 
-        # Now, if we sync again we should not have any more records
-        num_records = 0
-        for page in self.puller.yield_pages():
-            num_records += len(page)
-        self.assertEqual(num_records, 0)
+        new_records = itertools.chain.from_iterable(self.puller.yield_pages())
+        min_timestamp = min(x["UpdatedDateUTC"] for x in new_records)
+        self.assertGreaterEqual(last_updated_at, min_timestamp)
 
     def test_page_in_initial_state(self):
         self.state["bookmarks"]["bank_transactions"]["page"] = 2
@@ -78,11 +77,9 @@ class TestIncrementalBookmarks(unittest.TestCase):
         self.assertEqual(num_pages, 1)
         self.assertGreater(num_records, 0)
 
-        # Now, if we sync again we should not have any more records
-        num_records = 0
-        for page in self.puller.yield_pages():
-            num_records += len(page)
-        self.assertEqual(num_records, 0)
+        new_records = itertools.chain.from_iterable(self.puller.yield_pages())
+        min_timestamp = min(x["UpdatedDateUTC"] for x in new_records)
+        self.assertGreaterEqual(self._get_updated_at(), min_timestamp)
 
 
 class TestJournalBookmarks(unittest.TestCase):
@@ -139,11 +136,9 @@ class TestLinkedTransactionsBookmarks(unittest.TestCase):
         self.assertEqual(num_pages, 1)
         self.assertGreater(num_records, 0)
 
-        # Now, if we sync again we should not have any more records
-        num_records = 0
-        for page in self.puller.yield_pages():
-            num_records += len(page)
-        self.assertEqual(num_records, 0)
+        new_records = itertools.chain.from_iterable(self.puller.yield_pages())
+        min_timestamp = min(x["UpdatedDateUTC"] for x in new_records)
+        self.assertGreaterEqual(self._get_updated_at(), min_timestamp)
 
     def test_page_in_initial_state(self):
         self.state["bookmarks"]["linked_transactions"]["page"] = 2
