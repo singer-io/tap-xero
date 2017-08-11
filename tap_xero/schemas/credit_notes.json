@@ -45,19 +45,34 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "TotalTax": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Total": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "UpdatedDateUTC": {
       "format": "date-time",
@@ -106,13 +121,23 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "RemainingCredit": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Allocations": {
       "items": {

@@ -7,6 +7,7 @@ from singer.utils import strftime
 import json
 import six
 from .credentials import build_oauth
+import decimal
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
@@ -47,6 +48,8 @@ class XeroClient(object):
                                    headers=headers, params=params)
         response = self.session.send(request.prepare())
         response.raise_for_status()
-        response_meta = json.loads(response.text, object_hook=_json_load_object_hook)
+        response_meta = json.loads(response.text,
+                                   object_hook=_json_load_object_hook,
+                                   parse_float=decimal.Decimal)
         response_body = response_meta.pop(xero_resource_name)
         return response_body

@@ -45,19 +45,23 @@
       "type": [
         "null",
         "number"
-      ]
-    },
-    "Total Tax": {
-      "type": [
-        "null",
-        "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Total": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "UpdatedDateUTC": {
       "format": "date-time",
@@ -81,7 +85,12 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Reference": {
       "type": [
@@ -93,7 +102,12 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Allocations": {
       "type": [
@@ -114,7 +128,12 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "DateString": {
       "format": "date-time",

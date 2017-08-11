@@ -52,25 +52,45 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "TotalTax": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Total": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "TotalDiscount": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "UpdatedDateUTC": {
       "format": "date-time",
@@ -89,7 +109,12 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "InvoiceID": {
       "type": [
@@ -186,13 +211,23 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "AmountPaid": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "FullyPaidOnDate": {
       "format": "date-time",
@@ -205,7 +240,12 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "DueDateString": {
       "format": "date-time",

@@ -14,13 +14,23 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "UnitAmount": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "AccountCode": {
       "type": [
@@ -49,19 +59,34 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "TaxAmount": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "DiscountRate": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Tracking": {
       "items": {

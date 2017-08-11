@@ -15,13 +15,23 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Amount": {
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "Reference": {
       "type": [
@@ -126,7 +136,12 @@
       "type": [
         "null",
         "number"
-      ]
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
     "HasValidationErrors": {
       "type": [
