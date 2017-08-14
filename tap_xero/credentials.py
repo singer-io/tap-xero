@@ -52,7 +52,8 @@ def build_oauth(config):
 
 def _on_giveup(details):
     _, body = details["args"]
-    LOGGER.error("Credentials last resort: " + body)
+    LOGGER.error("Credentials could not be saved to S3. " +
+                 "You will need to re-authorize the application.")
 
 
 @backoff.on_exception(backoff.expo,
