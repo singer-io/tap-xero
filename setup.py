@@ -9,7 +9,7 @@ setup(name="tap-xero",
       classifiers=["Programming Language :: Python :: 3 :: Only"],
       py_modules=["tap_xero"],
       install_requires=[
-          "singer-python>=2.1.4",
+          "singer-python==2.1.4",
           "pyxero<1",
           "requests",
           "attrs",
