@@ -11,7 +11,7 @@
       ]
     },
     "Contact": {
-      "$ref": "#/definitions/contacts"
+      "$ref": "contacts"
     },
     "LineItems": {
       "type": [
@@ -19,11 +19,11 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/line_items"
+        "$ref": "line_items"
       }
     },
     "BankAccount": {
-      "$ref": "#/definitions/accounts"
+      "$ref": "accounts"
     },
     "IsReconciled": {
       "type": [
@@ -150,9 +150,9 @@
       ]
     }
   },
-  "definitions": {
-    "accounts": "FILLED IN BY tap-xero",
-    "contacts": "FILLED IN BY tap-xero",
-    "line_items": "FILLED IN BY tap-xero"
-  }
+  "tap_xero_schema_dependencies": [
+    "accounts",
+    "contacts",
+    "line_items"
+  ]
 }

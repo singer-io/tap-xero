@@ -12,7 +12,7 @@
       "format": "date-time"
     },
     "Contact": {
-      "$ref": "#/definitions/contacts"
+      "$ref": "contacts"
     },
     "Lineitems": {
       "type": [
@@ -20,11 +20,11 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/line_items"
+        "$ref": "line_items"
       }
     },
     "User": {
-      "$ref": "#/definitions/users"
+      "$ref": "users"
     },
     "Reference": {
       "type": [
@@ -114,9 +114,9 @@
       ]
     }
   },
-  "definitions": {
-    "contacts": "FILLED IN BY tap-xero",
-    "line_items": "FILLED IN BY tap-xero",
-    "users": "FILLED IN BY tap-xero"
-  }
+  "tap_xero_schema_dependencies": [
+    "contacts",
+    "line_items",
+    "users"
+  ]
 }

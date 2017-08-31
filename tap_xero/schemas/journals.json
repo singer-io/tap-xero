@@ -118,7 +118,7 @@
           },
           "TrackingCategories": {
             "items": {
-              "$ref": "#/definitions/tracking_categories"
+              "$ref": "tracking_categories"
             },
             "type": [
               "null",
@@ -137,7 +137,7 @@
       ]
     }
   },
-  "definitions": {
-    "tracking_categories": "FILLED IN BY tap-xero"
-  }
+  "tap_xero_schema_dependencies": [
+    "tracking_categories"
+  ]
 }

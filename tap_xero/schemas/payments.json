@@ -65,7 +65,7 @@
       "format": "date-time"
     },
     "Account": {
-      "$ref": "#/definitions/accounts"
+      "$ref": "accounts"
     },
     "Invoice": {
       "type": [
@@ -161,7 +161,7 @@
       ]
     }
   },
-  "definitions": {
-    "accounts": "FILLED IN BY tap-xero"
-  }
+  "tap_xero_schema_dependencies": [
+    "accounts"
+  ]
 }

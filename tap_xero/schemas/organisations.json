@@ -168,7 +168,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/addresses"
+        "$ref": "addresses"
       }
     },
     "Phones": {
@@ -177,7 +177,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/phones"
+        "$ref": "phones"
       }
     },
     "ExternalLinks": {
@@ -255,8 +255,8 @@
       }
     }
   },
-  "definitions": {
-    "addresses": "FILLED IN BY tap-xero",
-    "phones": "FILLED IN BY tap-xero"
-  }
+  "tap_xero_schema_dependencies": [
+    "addresses",
+    "phones"
+  ]
 }

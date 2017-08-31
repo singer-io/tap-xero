@@ -5,10 +5,10 @@
   ],
   "properties": {
     "FromBankAccount": {
-      "$ref": "#/definitions/accounts"
+      "$ref": "accounts"
     },
     "ToBankAccount": {
-      "$ref": "#/definitions/accounts"
+      "$ref": "accounts"
     },
     "Amount": {
       "type": [
@@ -84,7 +84,7 @@
       "format": "date-time"
     }
   },
-  "definitions": {
-    "accounts": "FILLED IN BY tap-xero"
-  }
+  "tap_xero_schema_dependencies": [
+    "accounts"
+  ]
 }
