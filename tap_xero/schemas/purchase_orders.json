@@ -1,0 +1,223 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "Date": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DeliveryDate": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PurchaseOrderNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineItems": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/line_items"
+      }
+    },
+    "BrandingThemeID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SentToContact": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "DeliveryAddress": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "AttentionTo": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Telephone": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DeliveryInstructions": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ExpectedArrivalDate": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PurchaseOrderID": {
+      "type": [
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "TotalDiscount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DeliveryDateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "HasErrors": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "IsDiscounted": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ExpectedArrivalDateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "definitions": {
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero"
+  }
+}

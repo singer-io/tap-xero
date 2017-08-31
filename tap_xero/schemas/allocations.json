@@ -1,0 +1,57 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Amount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Invoice": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "IsDiscounted": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "HasErrors": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "InvoiceID": {
+          "type": [
+            "string"
+          ]
+        },
+        "InvoiceNumber": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    }
+  }
+}

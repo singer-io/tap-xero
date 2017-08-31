@@ -1,0 +1,120 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TaxType": {
+      "type": [
+        "string"
+      ]
+    },
+    "TaxComponents": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "Name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "IsCompound": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "Rate": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "minimum": -10e32,
+            "maximum": 10e32,
+            "multipleOf": 10e-6,
+            "exclusiveMinimum": true,
+            "exclusiveMaximum": true
+          }
+        }
+      }
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportTaxType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CanApplyToAssets": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "CanApplyToEquity": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "CanApplyToExpenses": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "CanApplyToLiabilities": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "CanApplyToRevenue": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "DisplayTaxRate": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "EffectiveRate": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    }
+  }
+}

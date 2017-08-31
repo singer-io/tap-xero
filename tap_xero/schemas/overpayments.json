@@ -1,0 +1,161 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineItems": {
+      "items": {
+        "$ref": "#/definitions/line_items"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "OverpaymentID": {
+      "type": [
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "RemainingCredit": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Allocations": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/allocations"
+      }
+    },
+    "Payments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/payments"
+      }
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DateString": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero",
+    "payments": "FILLED IN BY tap-xero",
+    "allocations": "FILLED IN BY tap-xero"
+  }
+}

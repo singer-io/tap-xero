@@ -1,0 +1,349 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "ContactID": {
+      "type": [
+        "string"
+      ]
+    },
+    "ContactNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "AccountNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ContactStatus": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "FirstName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LastName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "EmailAddress": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SkypeUserName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "BankAccountDetails": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TaxNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "AccountsReceivableTaxType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "AccountsPayableTaxType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Addresses": {
+      "items": {
+        "$ref": "#/definitions/addresses"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "Phones": {
+      "items": {
+        "$ref": "#/definitions/phones"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "IsSupplier": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "IsCustomer": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "DefaultCurrency": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ContactPersons": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "FirstName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "LastName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "EmailAddress": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "IncludeInEmails": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      }
+    },
+    "XeroNetworkKey": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SalesDefaultAccountCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PurchasesDefaultAccountCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SalesTrackingCategories": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/tracking_categories"
+      }
+    },
+    "PurchasesTrackingCategories": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/tracking_categories"
+      }
+    },
+    "TrackingCategoryName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TrackingCategoryOption": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PaymentTerms": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ContactGroups": {
+      "items": {
+        "$ref": "#/definitions/contact_groups"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "Website": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "BrandingTheme": {
+      "$ref": "#/definitions/branding_themes"
+    },
+    "BatchPayments": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "Details": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "Reference": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "Code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "BankAccountNumber": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "BankAccountName": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "Discount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "Balances": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "AccountsReceivable": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "properties": {
+            "Outstanding": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "Overdue": {
+              "type": [
+                "null",
+                "number"
+              ]
+            }
+          }
+        },
+        "AccountsPayable": {
+          "type": [
+            "null",
+            "object"
+          ],
+          "properties": {
+            "Outstanding": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "Overdue": {
+              "type": [
+                "null",
+                "number"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "HasValidationErrors": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    }
+  },
+  "definitions": {
+    "addresses": "FILLED IN BY tap-xero",
+    "phones": "FILLED IN BY tap-xero",
+    "contact_groups": "FILLED IN BY tap-xero",
+    "branding_themes": "FILLED IN BY tap-xero",
+    "tracking_categories": "FILLED IN BY tap-xero"
+  }
+}

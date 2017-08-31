@@ -1,0 +1,104 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Description": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Quantity": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "UnitAmount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "AccountCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ItemCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineItemID": {
+      "type": [
+        "string"
+      ]
+    },
+    "TaxType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "TaxAmount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "DiscountRate": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Tracking": {
+      "items": {
+        "$ref": "#/definitions/tracking_categories"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    }
+  },
+  "definitions": {
+    "tracking_categories": "FILLED IN BY tap-xero"
+  }
+}

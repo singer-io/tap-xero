@@ -1,0 +1,158 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Contact": {
+      "$ref": "#/definitions/contacts"
+    },
+    "LineItems": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/line_items"
+      }
+    },
+    "BankAccount": {
+      "$ref": "#/definitions/accounts"
+    },
+    "IsReconciled": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "Date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "DateString": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyCode": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CurrencyRate": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LineAmountTypes": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SubTotal": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "TotalTax": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "Total": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -10e32,
+      "maximum": 10e32,
+      "multipleOf": 10e-6,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "BankTransactionID": {
+      "type": [
+        "string"
+      ]
+    },
+    "PrepaymentID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "OverpaymentID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    }
+  },
+  "definitions": {
+    "accounts": "FILLED IN BY tap-xero",
+    "contacts": "FILLED IN BY tap-xero",
+    "line_items": "FILLED IN BY tap-xero"
+  }
+}
