@@ -84,7 +84,7 @@
       "format": "date-time"
     }
   },
-  "tap_xero_schema_dependencies": [
+  "tap_schema_dependencies": [
     "accounts"
   ]
 }

@@ -82,7 +82,7 @@ def get_abs_path(path):
 def load_schema(tap_stream_id):
     path = "schemas/{}.json".format(tap_stream_id)
     schema = utils.load_json(get_abs_path(path))
-    dependencies = schema.pop("tap_xero_schema_dependencies", [])
+    dependencies = schema.pop("tap_schema_dependencies", [])
     refs = {}
     for sub_stream_id in dependencies:
         refs[sub_stream_id] = load_schema(sub_stream_id)

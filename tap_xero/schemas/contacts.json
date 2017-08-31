@@ -339,7 +339,7 @@
       ]
     }
   },
-  "tap_xero_schema_dependencies": [
+  "tap_schema_dependencies": [
     "addresses",
     "phones",
     "contact_groups",
