@@ -1,4 +1,3 @@
 nose
 mock
 singer-tools
-target-stitch>=0.10.1
