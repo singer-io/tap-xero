@@ -89,18 +89,19 @@ def load_schema(tap_stream_id):
         refs[sub_stream_id] = load_schema(sub_stream_id)
     if refs:
         singer.resolve_schema_references(schema, refs)
-    schema["selected"] = True
     return schema
 
 
 def discover():
     result = {"streams": []}
     for stream in STREAMS:
+        schema = load_schema(stream.tap_stream_id)
+        schema["selected"] = False
         result["streams"].append(
             dict(stream=stream.tap_stream_id,
                  tap_stream_id=stream.tap_stream_id,
                  key_properties=stream.pk_fields,
-                 schema=load_schema(stream.tap_stream_id))
+                 schema=schema)
         )
     return Catalog.from_dict(result)
 

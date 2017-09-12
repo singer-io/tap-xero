@@ -66,12 +66,12 @@ class Puller(object):
     def _set_last_updated(self, updated_at):
         if isinstance(updated_at, datetime.datetime):
             updated_at = updated_at.isoformat()
-        self._bookmark["updated_at"] = updated_at
+        self._bookmark[self.bookmark_property] = updated_at
 
     def _update_start_state(self):
-        if not self._bookmark.get("updated_at"):
+        if not self._bookmark.get(self.bookmark_property):
             self._set_last_updated(self.config["start_date"])
-        return pendulum.parse(self._bookmark["updated_at"])
+        return pendulum.parse(self._bookmark[self.bookmark_property])
 
     def yield_pages(self):
         raise NotImplemented()
@@ -132,12 +132,12 @@ class JournalPull(PaginatedPull):
     pagination_key = "offset"
 
     def yield_pages(self):
-        first_num = self._bookmark.get("journal_number") or 0
+        first_num = self._bookmark.get("JournalNumber") or 0
         next_page_fn = lambda _, page: page[-1]["JournalNumber"]
         for page, next_num in self._paginate(first_page_num=first_num,
                                              pagination_key="offset",
                                              get_next_page_num=next_page_fn):
-            self._bookmark["journal_number"] = next_num
+            self._bookmark["JournalNumber"] = next_num
             yield page
 
 
