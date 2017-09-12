@@ -63,6 +63,12 @@ class Puller(object):
             self.state["bookmarks"][self.tap_stream_id] = {}
         return self.state["bookmarks"][self.tap_stream_id]
 
+    @property
+    def _offset(self):
+        if "offset" not in self._bookmark:
+            self._bookmark["offset"] = {}
+        return self._bookmark["offset"]
+
     def _set_last_updated(self, updated_at):
         if isinstance(updated_at, datetime.datetime):
             updated_at = updated_at.isoformat()
@@ -73,24 +79,6 @@ class Puller(object):
             self._set_last_updated(self.config["start_date"])
         return pendulum.parse(self._bookmark[self.bookmark_property])
 
-    def yield_pages(self):
-        raise NotImplemented()
-
-
-class IncrementingPull(Puller):
-    def yield_pages(self):
-        start = self._update_start_state()
-        page = self._make_request(dict(since=start))
-        if page:
-            self._set_last_updated(page[-1][self.bookmark_property])
-            yield page
-
-
-class BankTransfersPull(IncrementingPull):
-    bookmark_property = "CreatedDateUTC"
-
-
-class PaginatedPull(Puller):
     FULL_PAGE_SIZE = 100
 
     def _paginate(self,
@@ -115,22 +103,38 @@ class PaginatedPull(Puller):
                 break
 
     def yield_pages(self):
+        raise NotImplemented()
+
+
+class IncrementingPull(Puller):
+    def yield_pages(self):
         start = self._update_start_state()
-        first_num = self._bookmark.get("page") or 1
-        options = dict(since=start, order=self._order_by)
-        for page, next_num in self._paginate(options, first_page_num=first_num):
-            self._bookmark["page"] = next_num
+        page = self._make_request(dict(since=start))
+        if page:
             self._set_last_updated(page[-1][self.bookmark_property])
             yield page
-        self._bookmark["page"] = None
 
 
-class JournalPull(PaginatedPull):
+class BankTransfersPull(IncrementingPull):
+    bookmark_property = "CreatedDateUTC"
+
+
+class PaginatedPull(Puller):
+    def yield_pages(self):
+        start = self._update_start_state()
+        first_num = self._offset.get("page") or 1
+        options = dict(since=start, order=self._order_by)
+        for page, next_num in self._paginate(options, first_page_num=first_num):
+            self._offset["page"] = next_num
+            self._set_last_updated(page[-1][self.bookmark_property])
+            yield page
+        self._offset.pop("page", None)
+
+
+class JournalPull(Puller):
     """The Journals endpoint is a special case. It has its own way of ordering
     and paging the data. See
     https://developer.xero.com/documentation/api/journals"""
-    pagination_key = "offset"
-
     def yield_pages(self):
         first_num = self._bookmark.get("JournalNumber") or 0
         next_page_fn = lambda _, page: page[-1]["JournalNumber"]
@@ -141,7 +145,7 @@ class JournalPull(PaginatedPull):
             yield page
 
 
-class LinkedTransactionsPull(PaginatedPull):
+class LinkedTransactionsPull(Puller):
     """The Linked Transactions endpoint is a special case. It supports
     pagination, but not the Modified At header, but the objects returned have
     the UpdatedDateUTC timestamp in them. Therefore we must always iterate over
@@ -149,12 +153,12 @@ class LinkedTransactionsPull(PaginatedPull):
     UpdatedDateUTC property."""
     def yield_pages(self):
         start = self._update_start_state()
-        first_num = self._bookmark.get("page") or 1
+        first_num = self._offset.get("page") or 1
         for page, next_page_num in self._paginate(first_page_num=first_num):
-            self._bookmark["page"] = next_page_num
+            self._offset["page"] = next_page_num
             self._set_last_updated(page[-1][self.bookmark_property])
             yield [x for x in page if x["UpdatedDateUTC"] >= strftime(start)]
-        self._bookmark["page"] = None
+        self._offset.pop("page", None)
 
 
 class EverythingPull(Puller):
