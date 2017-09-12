@@ -45,7 +45,7 @@ class XeroClient(object):
         url = join(BASE_URL, xero_resource_name)
         headers = {"Accept": "application/json"}
         if self.user_agent:
-            headers["User-Agent"] = user_agent
+            headers["User-Agent"] = self.user_agent
         if since:
             headers["If-Modified-Since"] = self._format_since(since)
         request = requests.Request("GET", url, auth=self.oauth,
