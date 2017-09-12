@@ -2,6 +2,7 @@
 import os
 import singer
 from singer import metrics, utils
+from singer.catalog import Catalog
 from .pull import (
     IncrementingPull,
     BankTransfersPull,
@@ -88,6 +89,7 @@ def load_schema(tap_stream_id):
         refs[sub_stream_id] = load_schema(sub_stream_id)
     if refs:
         singer.resolve_schema_references(schema, refs)
+    schema["selected"] = True
     return schema
 
 
@@ -100,11 +102,7 @@ def discover():
                  key_properties=stream.pk_fields,
                  schema=load_schema(stream.tap_stream_id))
         )
-    return result
-
-
-def do_discover():
-    print(json.dumps(discover(), indent=4))
+    return Catalog.from_dict(result)
 
 
 def run_stream(config, state, stream):
@@ -133,7 +131,8 @@ def sync(config, state, catalog):
     start_idx = [e.tap_stream_id for e in STREAMS].index(currently_syncing) \
         if currently_syncing \
         else 0
-    stream_ids_to_sync = [c["tap_stream_id"] for c in catalog["streams"]]
+    stream_ids_to_sync = [c.tap_stream_id for c in catalog.streams
+                          if c.is_selected()]
     for stream in STREAMS[start_idx:]:
         if stream.tap_stream_id not in stream_ids_to_sync:
             continue
@@ -145,9 +144,11 @@ def sync(config, state, catalog):
 def main():
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
     if args.discover:
-        do_discover()
+        discover().dump()
+        print()
     else:
-        catalog = args.properties if args.properties else discover()
+        catalog = Catalog.from_dict(args.properties) \
+            if args.properties else discover()
         sync(args.config, args.state, catalog)
 
 if __name__ == "__main__":
