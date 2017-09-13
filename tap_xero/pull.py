@@ -137,6 +137,7 @@ class JournalPull(Puller):
     https://developer.xero.com/documentation/api/journals"""
     def yield_pages(self):
         first_num = self._bookmark.get("JournalNumber") or 0
+        self._bookmark["JournalNumber"] = first_num
         next_page_fn = lambda _, page: page[-1]["JournalNumber"]
         for page, next_num in self._paginate(first_page_num=first_num,
                                              pagination_key="offset",
