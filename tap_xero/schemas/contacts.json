@@ -83,7 +83,7 @@
     },
     "Addresses": {
       "items": {
-        "$ref": "#/definitions/addresses"
+        "$ref": "addresses"
       },
       "type": [
         "null",
@@ -92,7 +92,7 @@
     },
     "Phones": {
       "items": {
-        "$ref": "#/definitions/phones"
+        "$ref": "phones"
       },
       "type": [
         "null",
@@ -186,7 +186,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/tracking_categories"
+        "$ref": "tracking_categories"
       }
     },
     "PurchasesTrackingCategories": {
@@ -195,7 +195,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/tracking_categories"
+        "$ref": "tracking_categories"
       }
     },
     "TrackingCategoryName": {
@@ -218,7 +218,7 @@
     },
     "ContactGroups": {
       "items": {
-        "$ref": "#/definitions/contact_groups"
+        "$ref": "contact_groups"
       },
       "type": [
         "null",
@@ -232,7 +232,7 @@
       ]
     },
     "BrandingTheme": {
-      "$ref": "#/definitions/branding_themes"
+      "$ref": "branding_themes"
     },
     "BatchPayments": {
       "type": [
@@ -339,11 +339,11 @@
       ]
     }
   },
-  "definitions": {
-    "addresses": "FILLED IN BY tap-xero",
-    "phones": "FILLED IN BY tap-xero",
-    "contact_groups": "FILLED IN BY tap-xero",
-    "branding_themes": "FILLED IN BY tap-xero",
-    "tracking_categories": "FILLED IN BY tap-xero"
-  }
+  "tap_schema_dependencies": [
+    "addresses",
+    "phones",
+    "contact_groups",
+    "branding_themes",
+    "tracking_categories"
+  ]
 }

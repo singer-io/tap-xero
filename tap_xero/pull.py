@@ -91,6 +91,8 @@ class BankTransfersPull(IncrementingPull):
 
 
 class PaginatedPull(Puller):
+    FULL_PAGE_SIZE = 100
+
     def _paginate(self,
                   options={},
                   first_page_num=1,
@@ -109,6 +111,8 @@ class PaginatedPull(Puller):
             yield page, next_page_num
             curr_page_num = next_page_num
             num_pages_yielded += 1
+            if len(page) < self.FULL_PAGE_SIZE:
+                break
 
     def yield_pages(self):
         start = self._update_start_state()

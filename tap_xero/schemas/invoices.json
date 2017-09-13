@@ -11,7 +11,7 @@
       ]
     },
     "Contact": {
-      "$ref": "#/definitions/contacts"
+      "$ref": "contacts"
     },
     "Date": {
       "format": "date-time",
@@ -45,7 +45,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/line_items"
+        "$ref": "line_items"
       }
     },
     "SubTotal": {
@@ -177,7 +177,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/payments"
+        "$ref": "payments"
       }
     },
     "CreditNotes": {
@@ -186,7 +186,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/credit_notes"
+        "$ref": "credit_notes"
       }
     },
     "Prepayments": {
@@ -195,7 +195,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/prepayments"
+        "$ref": "prepayments"
       }
     },
     "Overpayments": {
@@ -204,7 +204,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/overpayments"
+        "$ref": "overpayments"
       }
     },
     "AmountDue": {
@@ -274,12 +274,12 @@
       ]
     }
   },
-  "definitions": {
-    "contacts": "FILLED IN BY tap-xero",
-    "payments": "FILLED IN BY tap-xero",
-    "prepayments": "FILLED IN BY tap-xero",
-    "overpayments": "FILLED IN BY tap-xero",
-    "line_items": "FILLED IN BY tap-xero",
-    "credit_notes": "FILLED IN BY tap-xero"
-  }
+  "tap_schema_dependencies": [
+    "contacts",
+    "payments",
+    "prepayments",
+    "overpayments",
+    "line_items",
+    "credit_notes"
+  ]
 }

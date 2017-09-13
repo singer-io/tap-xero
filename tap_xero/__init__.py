@@ -82,13 +82,12 @@ def get_abs_path(path):
 def load_schema(tap_stream_id):
     path = "schemas/{}.json".format(tap_stream_id)
     schema = utils.load_json(get_abs_path(path))
-    if "definitions" not in schema:
-        schema["definitions"] = {}
-    for sub_stream_id in list(schema["definitions"].keys()):
-        sub_schema = load_schema(sub_stream_id)
-        schema["definitions"][sub_stream_id] = sub_schema
-        if "definitions" in sub_schema:
-            schema["definitions"].update(sub_schema.pop("definitions"))
+    dependencies = schema.pop("tap_schema_dependencies", [])
+    refs = {}
+    for sub_stream_id in dependencies:
+        refs[sub_stream_id] = load_schema(sub_stream_id)
+    if refs:
+        singer.resolve_schema_references(schema, refs)
     return schema
 
 

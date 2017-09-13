@@ -1,13 +1,14 @@
 import requests
 from os.path import join
 import re
-from datetime import datetime
+from datetime import datetime, date, time
 import xero.utils
 from singer.utils import strftime
 import json
 import six
 from .credentials import build_oauth
 import decimal
+import pytz
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
@@ -20,6 +21,9 @@ def _json_load_object_hook(_dict):
         if isinstance(value, six.string_types):
             value = xero.utils.parse_date(value)
             if value:
+                if type(value) == date:
+                    value = datetime.combine(value, time.min)
+                value = value.replace(tzinfo=pytz.UTC)
                 _dict[key] = strftime(value)
     return _dict
 

@@ -11,7 +11,7 @@
       ]
     },
     "Contact": {
-      "$ref": "#/definitions/contacts"
+      "$ref": "contacts"
     },
     "Date": {
       "type": [
@@ -34,7 +34,7 @@
     },
     "LineItems": {
       "items": {
-        "$ref": "#/definitions/line_items"
+        "$ref": "line_items"
       },
       "type": [
         "null",
@@ -120,7 +120,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/allocations"
+        "$ref": "allocations"
       }
     },
     "Payments": {
@@ -129,7 +129,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/payments"
+        "$ref": "payments"
       }
     },
     "HasAttachments": {
@@ -152,10 +152,10 @@
       "format": "date-time"
     }
   },
-  "definitions": {
-    "contacts": "FILLED IN BY tap-xero",
-    "line_items": "FILLED IN BY tap-xero",
-    "payments": "FILLED IN BY tap-xero",
-    "allocations": "FILLED IN BY tap-xero"
-  }
+  "tap_schema_dependencies": [
+    "contacts",
+    "line_items",
+    "payments",
+    "allocations"
+  ]
 }
