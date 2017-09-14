@@ -96,7 +96,7 @@ def discover():
     result = {"streams": []}
     for stream in STREAMS:
         schema = load_schema(stream.tap_stream_id)
-        schema["selected"] = True
+        schema["selected"] = False
         result["streams"].append(
             dict(stream=stream.tap_stream_id,
                  tap_stream_id=stream.tap_stream_id,
