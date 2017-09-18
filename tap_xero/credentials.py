@@ -2,6 +2,7 @@ import boto3
 import json
 import backoff
 import singer
+from botocore.exceptions import ClientError as BotoClientError
 from requests_oauthlib import OAuth1
 from oauthlib.oauth1 import SIGNATURE_RSA
 from xero.auth import PartnerCredentials
@@ -30,7 +31,14 @@ def _s3_obj(config):
 
 
 def download_from_s3(config):
-    response = _s3_obj(config).get()
+    try:
+        response = _s3_obj(config).get()
+    except BotoClientError as ex:
+        if ex.response['Error']['Code'] == "NoSuchKey":
+            return None
+        else:
+            raise ex
+
     body = json.loads(response["Body"].read().decode("utf-8"))
     missing_keys = [k for k in REFRESHABLE_KEYS if k not in body]
     if missing_keys:
@@ -73,6 +81,7 @@ def _write_to_s3(config):
 def refresh(config):
     if not can_use_s3(config):
         raise CredentialsException("S3 not configured, refresh not supported")
+
     partner_creds = PartnerCredentials(
         config["consumer_key"],
         config["consumer_secret"],

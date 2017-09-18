@@ -22,6 +22,17 @@ REQUIRED_CONFIG_KEYS = ["start_date"] + CREDENTIALS_KEYS
 
 LOGGER = singer.get_logger()
 
+BAD_CREDS_MESSAGE = (
+    "Failed to refresh OAuth token using the credentials from the connection. "
+    "The token might need to be reauthorized from the integration's properties "
+    "or there could be another authentication issue. Please attempt to reauthorize "
+    "the integration."
+)
+
+
+class BadCredsException(Exception):
+    pass
+
 
 @attr.attributes
 class Stream(object):
@@ -122,7 +133,16 @@ def run_stream(config, state, stream):
 def init_credentials(config):
     if credentials.can_use_s3(config):
         creds = credentials.download_from_s3(config)
-        config.update(creds)
+        if creds:
+            config.update(creds)
+        else:
+            # no creds means we have to try to use what's in the config
+            # to refresh the token
+            try:
+                config = credentials.refresh()
+            except Exception as ex:
+                raise BadCredsException(BAD_CREDS_MESSAGE) from ex
+
     return config
 
 
