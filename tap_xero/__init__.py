@@ -139,7 +139,7 @@ def init_credentials(config):
             # no creds means we have to try to use what's in the config
             # to refresh the token
             try:
-                config = credentials.refresh()
+                config = credentials.refresh(config)
             except Exception as ex:
                 raise BadCredsException(BAD_CREDS_MESSAGE) from ex
 

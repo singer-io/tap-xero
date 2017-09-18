@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name="tap-xero",
-      version="0.1.2",
+      version="0.1.3",
       description="Singer.io tap for extracting data from the Xero API",
       author="Stitch",
       url="http://singer.io",
