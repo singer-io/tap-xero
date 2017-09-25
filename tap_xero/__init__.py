@@ -2,7 +2,7 @@
 import os
 import singer
 from singer import metrics, utils
-from singer.catalog import Catalog
+from singer.catalog import Catalog, CatalogEntry, Schema
 from .pull import (
     IncrementingPull,
     BankTransfersPull,
@@ -104,17 +104,18 @@ def load_schema(tap_stream_id):
 
 
 def discover():
-    result = {"streams": []}
+    catalog = Catalog([])
     for stream in STREAMS:
-        schema = load_schema(stream.tap_stream_id)
-        schema["selected"] = False
-        result["streams"].append(
-            dict(stream=stream.tap_stream_id,
-                 tap_stream_id=stream.tap_stream_id,
-                 key_properties=stream.pk_fields,
-                 schema=schema)
-        )
-    return Catalog.from_dict(result)
+        schema = Schema.from_dict(load_schema(stream.tap_stream_id),
+                                  inclusion="automatic")
+        schema.selected = False
+        catalog.streams.append(CatalogEntry(
+            stream=stream.tap_stream_id,
+            tap_stream_id=stream.tap_stream_id,
+            key_properties=stream.pk_fields,
+            schema=schema,
+        ))
+    return catalog
 
 
 def run_stream(config, state, stream):
