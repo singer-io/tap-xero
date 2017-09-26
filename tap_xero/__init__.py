@@ -108,7 +108,6 @@ def discover():
     for stream in STREAMS:
         schema = Schema.from_dict(load_schema(stream.tap_stream_id),
                                   inclusion="automatic")
-        schema.selected = False
         catalog.streams.append(CatalogEntry(
             stream=stream.tap_stream_id,
             tap_stream_id=stream.tap_stream_id,
