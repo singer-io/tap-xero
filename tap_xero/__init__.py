@@ -7,6 +7,7 @@ from singer.catalog import Catalog
 from singer.catalog import Catalog, CatalogEntry, Schema
 from . import streams as streams_
 from . import credentials
+from .xero import XeroClient
 
 CREDENTIALS_KEYS = ["consumer_key",
                     "consumer_secret",
@@ -43,7 +44,12 @@ def load_schema(tap_stream_id):
     return schema
 
 
-def discover():
+def ensure_credentials_are_valid(config):
+    XeroClient(config).filter("currencies")
+
+
+def discover(config):
+    ensure_credentials_are_valid(config)
     catalog = Catalog([])
     for stream in streams_.all_streams:
         schema = Schema.from_dict(load_schema(stream.tap_stream_id),
@@ -104,11 +110,11 @@ def sync(config, state, catalog):
 def main():
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
     if args.discover:
-        discover().dump()
+        discover(args.config).dump()
         print()
     else:
         catalog = Catalog.from_dict(args.properties) \
-            if args.properties else discover()
+            if args.properties else discover(args.config)
         sync(args.config, args.state, catalog)
 
 if __name__ == "__main__":
