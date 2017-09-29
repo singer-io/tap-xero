@@ -1,13 +1,14 @@
-import singer
-from singer import metrics
-import pendulum
 import time
 import datetime
-from .xero import XeroClient
-from . import credentials
+import singer
+import pendulum
+import attr
 from requests.exceptions import HTTPError
 from singer.utils import strftime
+from singer import metrics
 import backoff
+from .xero import XeroClient
+from . import credentials
 
 LOGGER = singer.get_logger()
 
@@ -165,3 +166,57 @@ class LinkedTransactionsPull(Puller):
 class EverythingPull(Puller):
     def yield_pages(self):
         yield self._make_request()
+
+
+@attr.attributes
+class Stream(object):
+    tap_stream_id = attr.attr()
+    pk_fields = attr.attr()
+    puller = attr.attr()
+
+all_streams = [
+    # PAGINATED STREAMS
+    # These endpoints have all the best properties: they return the
+    # UpdatedDateUTC property and support the Modified After, order, and page
+    # parameters
+    Stream("bank_transactions", ["BankTransactionID"], PaginatedPull),
+    Stream("contacts", ["ContactID"], PaginatedPull),
+    Stream("credit_notes", ["CreditNoteID"], PaginatedPull),
+    Stream("invoices", ["InvoiceID"], PaginatedPull),
+    Stream("manual_journals", ["ManualJournalID"], PaginatedPull),
+    Stream("overpayments", ["OverpaymentID"], PaginatedPull),
+    Stream("prepayments", ["PrepaymentID"], PaginatedPull),
+    Stream("purchase_orders", ["PurchaseOrderID"], PaginatedPull),
+
+    # JOURNALS STREAM
+    # This endpoint is paginated, but in its own special snowflake way.
+    Stream("journals", ["JournalID"], JournalPull),
+
+    # NON-PAGINATED STREAMS
+    # These endpoints do not support pagination, but do support the Modified At
+    # header.
+    Stream("accounts", ["AccountID"], IncrementingPull),
+    Stream("bank_transfers", ["BankTransferID"], BankTransfersPull),
+    Stream("employees", ["EmployeeID"], IncrementingPull),
+    Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull),
+    Stream("items", ["ItemID"], IncrementingPull),
+    Stream("payments", ["PaymentID"], IncrementingPull),
+    Stream("receipts", ["ReceiptID"], IncrementingPull),
+    Stream("users", ["UserID"], IncrementingPull),
+
+    # PULL EVERYTHING STREAMS
+    # These endpoints do not support the Modified After header (or paging), so
+    # we must pull all the data each time.
+    Stream("branding_themes", ["BrandingThemeID"], EverythingPull),
+    Stream("contact_groups", ["ContactGroupID"], EverythingPull),
+    Stream("currencies", ["Code"], EverythingPull),
+    Stream("organisations", ["OrganisationID"], EverythingPull),
+    Stream("repeating_invoices", ["RepeatingInvoiceID"], EverythingPull),
+    Stream("tax_rates", ["TaxType"], EverythingPull),
+    Stream("tracking_categories", ["TrackingCategoryID"], EverythingPull),
+
+    # LINKED TRANSACTIONS STREAM
+    # This endpoint is not paginated, but can do some manual filtering
+    Stream("linked_transactions", ["LinkedTransactionID"], LinkedTransactionsPull),
+]
+all_stream_ids = [s.tap_stream_id for s in all_streams]
