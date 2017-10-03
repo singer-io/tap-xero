@@ -1,13 +1,8 @@
-from collections import namedtuple
-import time
-import datetime
-import singer
-import pendulum
 from requests.exceptions import HTTPError
-from singer.utils import strftime
+import singer
 from singer import metrics
+from singer.utils import strftime
 import backoff
-from .xero import XeroClient
 from . import credentials
 from . import transform
 
@@ -34,7 +29,8 @@ class RateLimitException(Exception):
                       RateLimitException,
                       max_tries=10,
                       factor=2)
-def _make_request(ctx, tap_stream_id, filter_options={}):
+def _make_request(ctx, tap_stream_id, filter_options=None):
+    filter_options = filter_options or {}
     try:
         return _request_with_timer(tap_stream_id, ctx.client, filter_options)
     except HTTPError as e:
