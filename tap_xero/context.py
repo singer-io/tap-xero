@@ -1,4 +1,3 @@
-from datetime import datetime
 import singer
 from singer import bookmarks as bks_
 from .xero import XeroClient
