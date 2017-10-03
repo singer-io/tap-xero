@@ -159,7 +159,8 @@
               "boolean"
             ]
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "XeroNetworkKey": {
@@ -270,7 +271,8 @@
             "string"
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "Discount": {
       "type": [
@@ -302,7 +304,8 @@
                 "number"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         "AccountsPayable": {
           "type": [
@@ -322,9 +325,11 @@
                 "number"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "HasAttachments": {
       "type": [
@@ -345,5 +350,6 @@
     "contact_groups",
     "branding_themes",
     "tracking_categories"
-  ]
+  ],
+  "additionalProperties": false
 }

@@ -112,5 +112,6 @@
         "boolean"
       ]
     }
-  }
+  },
+  "additionalProperties": false
 }

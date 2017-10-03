@@ -16,9 +16,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -27,9 +27,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -78,7 +78,8 @@
             "string"
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "CreditNote": {
       "type": [
@@ -91,7 +92,8 @@
             "string"
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "Prepayments": {
       "type": [
@@ -109,7 +111,8 @@
               "string"
             ]
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "Overpayment": {
@@ -128,8 +131,8 @@
               "string"
             ]
           }
-        }
-
+        },
+        "additionalProperties": false
       }
     },
     "BankAmount": {
@@ -137,9 +140,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -163,5 +166,6 @@
   },
   "tap_schema_dependencies": [
     "accounts"
-  ]
+  ],
+  "additionalProperties": false
 }

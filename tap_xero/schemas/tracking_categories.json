@@ -64,7 +64,8 @@
               "boolean"
             ]
           }
-        }
+        },
+        "additionalProperties": false
       },
       "type": [
         "null",
@@ -77,5 +78,6 @@
         "string"
       ]
     }
-  }
+  },
+  "additionalProperties": false
 }

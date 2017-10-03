@@ -28,5 +28,6 @@
         "string"
       ]
     }
-  }
+  },
+  "additionalProperties": false
 }

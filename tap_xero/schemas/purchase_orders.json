@@ -113,9 +113,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -124,9 +124,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -135,9 +135,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -146,9 +146,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -157,9 +157,9 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
@@ -219,5 +219,6 @@
   "tap_schema_dependencies": [
     "contacts",
     "line_items"
-  ]
+  ],
+  "additionalProperties": false
 }

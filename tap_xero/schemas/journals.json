@@ -129,7 +129,8 @@
         "type": [
           "null",
           "object"
-        ]
+        ],
+        "additionalProperties": false
       },
       "type": [
         "null",
@@ -139,5 +140,6 @@
   },
   "tap_schema_dependencies": [
     "tracking_categories"
-  ]
+  ],
+  "additionalProperties": false
 }
