@@ -1,6 +1,6 @@
 import singer
 from singer import bookmarks as bks_
-from .xero import XeroClient
+from .http import XeroClient
 
 
 class Context(object):

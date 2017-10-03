@@ -7,7 +7,7 @@ from singer.catalog import Catalog
 from singer.catalog import Catalog, CatalogEntry, Schema
 from . import streams as streams_
 from . import credentials
-from .xero import XeroClient
+from .http import XeroClient
 from .context import Context
 
 CREDENTIALS_KEYS = ["consumer_key",
