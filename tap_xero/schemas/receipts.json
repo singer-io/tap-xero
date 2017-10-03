@@ -14,7 +14,7 @@
     "Contact": {
       "$ref": "contacts"
     },
-    "Lineitems": {
+    "LineItems": {
       "type": [
         "null",
         "array"
@@ -112,12 +112,20 @@
         "null",
         "string"
       ]
+    },
+    "ValidationErrors": {
+      "$ref": "validation_errors"
+    },
+    "Attachments": {
+      "$ref": "attachments"
     }
   },
   "tap_schema_dependencies": [
     "contacts",
     "line_items",
-    "users"
+    "users",
+    "validation_errors",
+    "attachments"
   ],
   "additionalProperties": false
 }

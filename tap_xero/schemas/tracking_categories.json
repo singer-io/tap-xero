@@ -21,6 +21,12 @@
         "string"
       ]
     },
+    "TrackingOptionID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "Options": {
       "items": {
         "type": [

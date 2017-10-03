@@ -181,9 +181,29 @@ class ContactGroups(Puller):
 class Contacts(PaginatedPull):
     def yield_pages(self):
         for contacts in super().yield_pages():
-            for contact in contacts:
-                transform.format_contact_groups(contact["ContactGroups"])
+            transform.format_contacts(contacts)
             yield contacts
+
+
+class Payments(IncrementingPull):
+    def yield_pages(self):
+        for payments in super().yield_pages():
+            transform.format_payments(payments)
+            yield payments
+
+
+class Receipts(IncrementingPull):
+    def yield_pages(self):
+        for receipts in super().yield_pages():
+            transform.format_receipts(receipts)
+            yield receipts
+
+
+class Users(IncrementingPull):
+    def yield_pages(self):
+        for users in super().yield_pages():
+            transform.format_users(users)
+            yield users
 
 
 class EverythingPull(Puller):
@@ -223,9 +243,9 @@ all_streams = [
     Stream("employees", ["EmployeeID"], IncrementingPull),
     Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull),
     Stream("items", ["ItemID"], IncrementingPull),
-    Stream("payments", ["PaymentID"], IncrementingPull),
-    Stream("receipts", ["ReceiptID"], IncrementingPull),
-    Stream("users", ["UserID"], IncrementingPull),
+    Stream("payments", ["PaymentID"], Payments),
+    Stream("receipts", ["ReceiptID"], Receipts),
+    Stream("users", ["UserID"], Users),
 
     # PULL EVERYTHING STREAMS
     # These endpoints do not support the Modified After header (or paging), so

@@ -20,6 +20,13 @@
         "string"
       ]
     },
+    "DueDate": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "Status": {
       "type": [
         "null",
@@ -33,26 +40,15 @@
       ]
     },
     "LineItems": {
-      "items": {
-        "$ref": "line_items"
-      },
       "type": [
         "null",
         "array"
-      ]
+      ],
+      "items": {
+        "$ref": "line_items"
+      }
     },
     "SubTotal": {
-      "type": [
-        "null",
-        "number"
-      ],
-      "minimum": -1e+33,
-      "maximum": 1e+33,
-      "multipleOf": 1e-05,
-      "exclusiveMinimum": true,
-      "exclusiveMaximum": true
-    },
-    "AppliedAmount": {
       "type": [
         "null",
         "number"
@@ -85,6 +81,17 @@
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
+    "TotalDiscount": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
     "UpdatedDateUTC": {
       "format": "date-time",
       "type": [
@@ -98,36 +105,6 @@
         "string"
       ]
     },
-    "FullyPaidOnDate": {
-      "format": "date-time",
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "CreditNoteID": {
-      "type": [
-        "string"
-      ]
-    },
-    "CreditNoteNumber": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "Reference": {
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    "SentToContact": {
-      "type": [
-        "null",
-        "boolean"
-      ]
-    },
     "CurrencyRate": {
       "type": [
         "null",
@@ -139,7 +116,62 @@
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
-    "RemainingCredit": {
+    "InvoiceID": {
+      "type": [
+        "string"
+      ]
+    },
+    "InvoiceNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "BrandingThemeID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Url": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SentToContact": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ExpectedPaymentDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "PlannedPaymentDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "HasAttachments": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "AmountDue": {
       "type": [
         "null",
         "number"
@@ -150,22 +182,49 @@
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
-    "Allocations": {
-      "items": {
-        "$ref": "allocations"
-      },
+    "AmountPaid": {
       "type": [
         "null",
-        "array"
-      ]
+        "number"
+      ],
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
     },
-    "BrandingThemeID": {
+    "FullyPaidOnDate": {
+      "format": "date-time",
       "type": [
         "null",
         "string"
       ]
     },
-    "HasAttachments": {
+    "AmountCredited": {
+      "type": [
+        "null",
+        "number"
+      ],
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
+      "exclusiveMinimum": true,
+      "exclusiveMaximum": true
+    },
+    "DueDateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "IsDiscounted": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "HasErrors": {
       "type": [
         "null",
         "boolean"
@@ -177,18 +236,11 @@
         "null",
         "string"
       ]
-    },
-    "ID": {
-      "type": [
-        "null",
-        "string"
-      ]
     }
   },
   "tap_schema_dependencies": [
     "contacts",
-    "line_items",
-    "allocations"
+    "line_items"
   ],
   "additionalProperties": false
 }

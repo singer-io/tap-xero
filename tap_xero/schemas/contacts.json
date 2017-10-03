@@ -337,11 +337,17 @@
         "boolean"
       ]
     },
+    "Attachments": {
+      "$ref": "attachments"
+    },
     "HasValidationErrors": {
       "type": [
         "null",
         "boolean"
       ]
+    },
+    "ValidationErrors": {
+      "$ref": "validation_errors"
     }
   },
   "tap_schema_dependencies": [
@@ -349,7 +355,9 @@
     "phones",
     "contact_groups",
     "branding_themes",
-    "tracking_categories"
+    "tracking_categories",
+    "validation_errors",
+    "attachments"
   ],
   "additionalProperties": false
 }

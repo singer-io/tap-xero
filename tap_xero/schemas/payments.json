@@ -68,18 +68,7 @@
       "$ref": "accounts"
     },
     "Invoice": {
-      "type": [
-        "null",
-        "object"
-      ],
-      "properties": {
-        "InvoiceID": {
-          "type": [
-            "string"
-          ]
-        }
-      },
-      "additionalProperties": false
+      "$ref": "nested_invoice"
     },
     "CreditNote": {
       "type": [
@@ -162,10 +151,17 @@
         "null",
         "boolean"
       ]
+    },
+    "BatchPaymentID": {
+      "type": [
+        "null",
+        "string"
+      ]
     }
   },
   "tap_schema_dependencies": [
-    "accounts"
+    "accounts",
+    "nested_invoice"
   ],
   "additionalProperties": false
 }

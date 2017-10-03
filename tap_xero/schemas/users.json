@@ -45,7 +45,13 @@
         "null",
         "string"
       ]
+    },
+    "ValidationErrors": {
+      "$ref": "validation_errors"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "tap_schema_dependencies": [
+    "validation_errors"
+  ]
 }

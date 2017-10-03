@@ -23,37 +23,11 @@
       "exclusiveMaximum": true
     },
     "Invoice": {
-      "type": [
-        "null",
-        "object"
-      ],
-      "properties": {
-        "IsDiscounted": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "HasErrors": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "InvoiceID": {
-          "type": [
-            "string"
-          ]
-        },
-        "InvoiceNumber": {
-          "type": [
-            "null",
-            "string"
-          ]
-        }
-      },
-      "additionalProperties": false
+      "$ref": "nested_invoice"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "tap_schema_dependencies": [
+    "nested_invoice"
+  ]
 }
