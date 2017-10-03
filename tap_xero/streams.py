@@ -1,8 +1,8 @@
+from collections import namedtuple
 import time
 import datetime
 import singer
 import pendulum
-import attr
 from requests.exceptions import HTTPError
 from singer.utils import strftime
 from singer import metrics
@@ -12,12 +12,13 @@ from . import credentials
 from . import transform
 
 LOGGER = singer.get_logger()
+FULL_PAGE_SIZE = 100
 
 
-def _request_with_timer(tap_stream_id, xero, options):
+def _request_with_timer(tap_stream_id, xero, filter_options):
     with metrics.http_request_timer(tap_stream_id) as timer:
         try:
-            resp = xero.filter(tap_stream_id, **options)
+            resp = xero.filter(tap_stream_id, **filter_options)
             timer.tags[metrics.Tag.http_status_code] = 200
             return resp
         except HTTPError as e:
@@ -29,237 +30,176 @@ class RateLimitException(Exception):
     pass
 
 
-class Puller(object):
-    bookmark_property = "UpdatedDateUTC"
+@backoff.on_exception(backoff.expo,
+                      RateLimitException,
+                      max_tries=10,
+                      factor=2)
+def _make_request(ctx, tap_stream_id, filter_options={}):
+    try:
+        return _request_with_timer(tap_stream_id, ctx.client, filter_options)
+    except HTTPError as e:
+        if e.response.status_code == 401:
+            credentials.refresh(ctx.config)
+        elif e.response.status_code == 503:
+            raise RateLimitException()
+        else:
+            raise
 
-    def __init__(self, config, state, tap_stream_id):
-        self.config = config
-        self.state = state
+
+class Stream(object):
+    def __init__(self, tap_stream_id, pk_fields, format_fn=None):
         self.tap_stream_id = tap_stream_id
-        self.xero = XeroClient(config)
+        self.pk_fields = pk_fields
+        self.format_fn = format_fn or (lambda x: x)
 
-    @backoff.on_exception(backoff.expo,
-                          RateLimitException,
-                          max_tries=10,
-                          factor=2)
-    def _make_request(self, options={}):
-        try:
-            return _request_with_timer(self.tap_stream_id, self.xero, options)
-        except HTTPError as e:
-            if e.response.status_code == 401:
-                credentials.refresh(self.config)
-            elif e.response.status_code == 503:
-                raise RateLimitException()
-            else:
-                raise
+    def metrics(self, records):
+        with metrics.record_counter(self.tap_stream_id) as counter:
+            counter.increment(len(records))
 
-    @property
-    def _order_by(self):
-        return self.bookmark_property + " ASC"
+    def write_records(self, records):
+        singer.write_records(self.tap_stream_id, records)
+        self.metrics(records)
 
-    @property
-    def _bookmark(self):
-        if "bookmarks" not in self.state:
-            self.state["bookmarks"] = {}
-        if self.tap_stream_id not in self.state["bookmarks"]:
-            self.state["bookmarks"][self.tap_stream_id] = {}
-        return self.state["bookmarks"][self.tap_stream_id]
 
-    @property
-    def _offset(self):
-        if "offset" not in self._bookmark:
-            self._bookmark["offset"] = {}
-        return self._bookmark["offset"]
+class BookmarkedStream(Stream):
+    def __init__(self, *args, bookmark_key="UpdatedDateUTC", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bookmark_key = bookmark_key
 
-    def _set_last_updated(self, updated_at):
-        if isinstance(updated_at, datetime.datetime):
-            updated_at = updated_at.isoformat()
-        self._bookmark[self.bookmark_property] = updated_at
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, self.bookmark_key]
+        start = ctx.update_start_date_bookmark(bookmark)
+        records = _make_request(ctx, self.tap_stream_id, dict(since=start))
+        if records:
+            self.format_fn(records)
+            self.write_records(records)
+            ctx.set_bookmark(bookmark, records[-1][self.bookmark_key])
+            ctx.write_state()
 
-    def _update_start_state(self):
-        if not self._bookmark.get(self.bookmark_property):
-            self._set_last_updated(self.config["start_date"])
-        return pendulum.parse(self._bookmark[self.bookmark_property])
 
-    FULL_PAGE_SIZE = 100
-
-    def _paginate(self,
-                  options={},
-                  first_page_num=1,
-                  pagination_key="page",
-                  get_next_page_num=lambda curr_page_num, _: curr_page_num + 1):
-        num_pages_yielded = 0
-        curr_page_num = first_page_num
+class PaginatedStream(Stream):
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, "UpdatedDateUTC"]
+        offset = [self.tap_stream_id, "page"]
+        start = ctx.update_start_date_bookmark(bookmark)
+        curr_page_num = ctx.get_offset(offset) or 1
+        filter_options = dict(since=start, order="UpdatedDateUTC ASC")
+        max_updated = start
         while True:
-            if num_pages_yielded > 1e6:
-                raise Exception("1 million pages doesn't seem realistic")
-            options[pagination_key] = curr_page_num
-            page = self._make_request(options)
-            if not page:
+            ctx.set_offset(offset, curr_page_num)
+            ctx.write_state()
+            filter_options["page"] = curr_page_num
+            records = _make_request(ctx, self.tap_stream_id, filter_options)
+            if records:
+                self.format_fn(records)
+                self.write_records(records)
+                max_updated = records[-1]["UpdatedDateUTC"]
+            if not records or len(records) < FULL_PAGE_SIZE:
                 break
-            next_page_num = get_next_page_num(curr_page_num, page)
-            yield page, next_page_num
-            curr_page_num = next_page_num
-            num_pages_yielded += 1
-            if len(page) < self.FULL_PAGE_SIZE:
-                break
-
-    def yield_pages(self):
-        raise NotImplemented()
+            curr_page_num = curr_page_num + 1
+        ctx.clear_offsets(self.tap_stream_id)
+        ctx.set_bookmark(bookmark, max_updated)
+        ctx.write_state()
 
 
-class IncrementingPull(Puller):
-    def yield_pages(self):
-        start = self._update_start_state()
-        page = self._make_request(dict(since=start))
-        if page:
-            self._set_last_updated(page[-1][self.bookmark_property])
-            yield page
-
-
-class BankTransfersPull(IncrementingPull):
-    bookmark_property = "CreatedDateUTC"
-
-
-class PaginatedPull(Puller):
-    def yield_pages(self):
-        start = self._update_start_state()
-        first_num = self._offset.get("page") or 1
-        options = dict(since=start, order=self._order_by)
-        for page, next_num in self._paginate(options, first_page_num=first_num):
-            self._offset["page"] = next_num
-            self._set_last_updated(page[-1][self.bookmark_property])
-            yield page
-        self._offset.pop("page", None)
-
-
-class JournalPull(Puller):
+class Journals(Stream):
     """The Journals endpoint is a special case. It has its own way of ordering
     and paging the data. See
     https://developer.xero.com/documentation/api/journals"""
-    def yield_pages(self):
-        first_num = self._bookmark.get("JournalNumber") or 0
-        self._bookmark["JournalNumber"] = first_num
-        next_page_fn = lambda _, page: page[-1]["JournalNumber"]
-        for page, next_num in self._paginate(first_page_num=first_num,
-                                             pagination_key="offset",
-                                             get_next_page_num=next_page_fn):
-            self._bookmark["JournalNumber"] = next_num
-            yield page
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, "JournalNumber"]
+        journal_number = ctx.get_bookmark(bookmark) or 0
+        while True:
+            ctx.set_bookmark(bookmark, journal_number)
+            ctx.write_state()
+            filter_options = {"offset": journal_number}
+            records = _make_request(ctx, self.tap_stream_id, filter_options)
+            if records:
+                self.write_records(records)
+                journal_number = records[-1]["JournalNumber"]
+            if not records or len(records) < FULL_PAGE_SIZE:
+                break
 
 
-class LinkedTransactionsPull(Puller):
+class LinkedTransactions(Stream):
     """The Linked Transactions endpoint is a special case. It supports
     pagination, but not the Modified At header, but the objects returned have
     the UpdatedDateUTC timestamp in them. Therefore we must always iterate over
     all of the data, but we can manually omit records based on the
     UpdatedDateUTC property."""
-    def yield_pages(self):
-        start = self._update_start_state()
-        first_num = self._offset.get("page") or 1
-        for page, next_page_num in self._paginate(first_page_num=first_num):
-            self._offset["page"] = next_page_num
-            self._set_last_updated(page[-1][self.bookmark_property])
-            yield [x for x in page if x["UpdatedDateUTC"] >= strftime(start)]
-        self._offset.pop("page", None)
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, "UpdatedDateUTC"]
+        offset = [self.tap_stream_id, "page"]
+        start = ctx.update_start_date_bookmark(bookmark)
+        curr_page_num = ctx.get_offset(offset) or 1
+        max_updated = start
+        while True:
+            ctx.set_offset(offset, curr_page_num)
+            ctx.write_state()
+            filter_options = {"page": curr_page_num}
+            raw_records = _make_request(ctx, self.tap_stream_id, filter_options)
+            records = [x for x in raw_records
+                       if x["UpdatedDateUTC"] >= strftime(start)]
+            if records:
+                self.write_records(records)
+                max_updated = records[-1]["UpdatedDateUTC"]
+            if not records or len(records) < FULL_PAGE_SIZE:
+                break
+        ctx.clear_offsets(self.tap_stream_id)
+        ctx.set_bookmark(bookmark, max_updated)
+        ctx.write_state()
 
 
-class CreditNotes(PaginatedPull):
-    def yield_pages(self):
-        for credit_notes in super().yield_pages():
-            transform.format_credit_notes(credit_notes)
-            yield credit_notes
+class Everything(Stream):
+    def sync(self, ctx):
+        records = _make_request(ctx, self.tap_stream_id)
+        self.format_fn(records)
+        self.write_records(records)
 
-
-class ContactGroups(Puller):
-    def yield_pages(self):
-        contact_groups = self._make_request()
-        transform.format_contact_groups(contact_groups)
-        yield contact_groups
-
-
-class Contacts(PaginatedPull):
-    def yield_pages(self):
-        for contacts in super().yield_pages():
-            transform.format_contacts(contacts)
-            yield contacts
-
-
-class Payments(IncrementingPull):
-    def yield_pages(self):
-        for payments in super().yield_pages():
-            transform.format_payments(payments)
-            yield payments
-
-
-class Receipts(IncrementingPull):
-    def yield_pages(self):
-        for receipts in super().yield_pages():
-            transform.format_receipts(receipts)
-            yield receipts
-
-
-class Users(IncrementingPull):
-    def yield_pages(self):
-        for users in super().yield_pages():
-            transform.format_users(users)
-            yield users
-
-
-class EverythingPull(Puller):
-    def yield_pages(self):
-        yield self._make_request()
-
-
-@attr.attributes
-class Stream(object):
-    tap_stream_id = attr.attr()
-    pk_fields = attr.attr()
-    puller = attr.attr()
 
 all_streams = [
     # PAGINATED STREAMS
     # These endpoints have all the best properties: they return the
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
-    Stream("bank_transactions", ["BankTransactionID"], PaginatedPull),
-    Stream("contacts", ["ContactID"], Contacts),
-    Stream("credit_notes", ["CreditNoteID"], CreditNotes),
-    Stream("invoices", ["InvoiceID"], PaginatedPull),
-    Stream("manual_journals", ["ManualJournalID"], PaginatedPull),
-    Stream("overpayments", ["OverpaymentID"], PaginatedPull),
-    Stream("prepayments", ["PrepaymentID"], PaginatedPull),
-    Stream("purchase_orders", ["PurchaseOrderID"], PaginatedPull),
+    PaginatedStream("bank_transactions", ["BankTransactionID"]),
+    PaginatedStream("contacts", ["ContactID"], transform.format_contacts),
+    PaginatedStream("credit_notes", ["CreditNoteID"], transform.format_credit_notes),
+    PaginatedStream("invoices", ["InvoiceID"]),
+    PaginatedStream("manual_journals", ["ManualJournalID"]),
+    PaginatedStream("overpayments", ["OverpaymentID"]),
+    PaginatedStream("prepayments", ["PrepaymentID"]),
+    PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
 
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
-    Stream("journals", ["JournalID"], JournalPull),
+    Journals("journals", ["JournalID"]),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
     # header.
-    Stream("accounts", ["AccountID"], IncrementingPull),
-    Stream("bank_transfers", ["BankTransferID"], BankTransfersPull),
-    Stream("employees", ["EmployeeID"], IncrementingPull),
-    Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull),
-    Stream("items", ["ItemID"], IncrementingPull),
-    Stream("payments", ["PaymentID"], Payments),
-    Stream("receipts", ["ReceiptID"], Receipts),
-    Stream("users", ["UserID"], Users),
+    BookmarkedStream("accounts", ["AccountID"]),
+    BookmarkedStream("bank_transfers", ["BankTransferID"], bookmark_key="CreatedDateUTC"),
+    BookmarkedStream("employees", ["EmployeeID"]),
+    BookmarkedStream("expense_claims", ["ExpenseClaimID"]),
+    BookmarkedStream("items", ["ItemID"]),
+    BookmarkedStream("payments", ["PaymentID"], transform.format_payments),
+    BookmarkedStream("receipts", ["ReceiptID"], transform.format_receipts),
+    BookmarkedStream("users", ["UserID"], transform.format_users),
 
     # PULL EVERYTHING STREAMS
     # These endpoints do not support the Modified After header (or paging), so
     # we must pull all the data each time.
-    Stream("branding_themes", ["BrandingThemeID"], EverythingPull),
-    Stream("contact_groups", ["ContactGroupID"], ContactGroups),
-    Stream("currencies", ["Code"], EverythingPull),
-    Stream("organisations", ["OrganisationID"], EverythingPull),
-    Stream("repeating_invoices", ["RepeatingInvoiceID"], EverythingPull),
-    Stream("tax_rates", ["TaxType"], EverythingPull),
-    Stream("tracking_categories", ["TrackingCategoryID"], EverythingPull),
+    Everything("branding_themes", ["BrandingThemeID"]),
+    Everything("contact_groups", ["ContactGroupID"], transform.format_contact_groups),
+    Everything("currencies", ["Code"]),
+    Everything("organisations", ["OrganisationID"]),
+    Everything("repeating_invoices", ["RepeatingInvoiceID"]),
+    Everything("tax_rates", ["TaxType"]),
+    Everything("tracking_categories", ["TrackingCategoryID"]),
 
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
-    Stream("linked_transactions", ["LinkedTransactionID"], LinkedTransactionsPull),
+    LinkedTransactions("linked_transactions", ["LinkedTransactionID"]),
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]

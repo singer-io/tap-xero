@@ -8,6 +8,7 @@ from singer.catalog import Catalog, CatalogEntry, Schema
 from . import streams as streams_
 from . import credentials
 from .xero import XeroClient
+from .context import Context
 
 CREDENTIALS_KEYS = ["consumer_key",
                     "consumer_secret",
@@ -63,19 +64,6 @@ def discover(config):
     return catalog
 
 
-def run_stream(config, state, stream):
-    state["currently_syncing"] = stream.tap_stream_id
-    schema = load_schema(stream.tap_stream_id)
-    singer.write_schema(stream.tap_stream_id, schema, stream.pk_fields)
-    puller = stream.puller(config, state, stream.tap_stream_id)
-    with metrics.record_counter(stream.tap_stream_id) as counter:
-        for page in puller.yield_pages():
-            counter.increment(len(page))
-            singer.write_records(stream.tap_stream_id, page)
-            singer.write_state(state)
-    singer.write_state(state)
-
-
 def init_credentials(config):
     if credentials.can_use_s3(config):
         creds = credentials.download_from_s3(config)
@@ -88,23 +76,34 @@ def init_credentials(config):
                 config = credentials.refresh(config)
             except Exception as ex:
                 raise BadCredsException(BAD_CREDS_MESSAGE) from ex
-
     return config
 
 
-def sync(config, state, catalog):
-    init_credentials(config)
-    currently_syncing = state.get("currently_syncing")
+def load_and_write_schema(stream):
+    singer.write_schema(
+        stream.tap_stream_id,
+        load_schema(stream.tap_stream_id),
+        stream.pk_fields,
+    )
+
+
+def sync(ctx):
+    init_credentials(ctx.config)
+    currently_syncing = ctx.state.get("currently_syncing")
     start_idx = streams_.all_stream_ids.index(currently_syncing) \
         if currently_syncing else 0
-    stream_ids_to_sync = [c.tap_stream_id for c in catalog.streams
-                          if c.is_selected()]
-    for stream in streams_.all_streams[start_idx:]:
-        if stream.tap_stream_id not in stream_ids_to_sync:
-            continue
-        run_stream(config, state, stream)
-    state["currently_syncing"] = None
-    singer.write_state(state)
+    stream_ids_to_sync = [cs.tap_stream_id for cs in ctx.catalog.streams
+                          if cs.is_selected()]
+    streams = [s for s in streams_.all_streams[start_idx:]
+               if s.tap_stream_id in stream_ids_to_sync]
+    for stream in streams:
+        load_and_write_schema(stream)
+        ctx.state["currently_syncing"] = stream.tap_stream_id
+        ctx.write_state()
+        stream.sync(ctx)
+    ctx.state["currently_syncing"] = None
+    ctx.write_state()
+
 
 
 def main():
@@ -115,7 +114,7 @@ def main():
     else:
         catalog = Catalog.from_dict(args.properties) \
             if args.properties else discover(args.config)
-        sync(args.config, args.state, catalog)
+        sync(Context(args.config, args.state, catalog))
 
 if __name__ == "__main__":
     main()
