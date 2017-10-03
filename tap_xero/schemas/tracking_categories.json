@@ -15,6 +15,12 @@
         "string"
       ]
     },
+    "Option": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "Options": {
       "items": {
         "type": [
