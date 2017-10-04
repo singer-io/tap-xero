@@ -40,5 +40,6 @@
         "string"
       ]
     }
-  }
+  },
+  "additionalProperties": false
 }

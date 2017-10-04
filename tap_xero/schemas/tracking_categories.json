@@ -15,6 +15,18 @@
         "string"
       ]
     },
+    "Option": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TrackingOptionID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "Options": {
       "items": {
         "type": [
@@ -64,7 +76,8 @@
               "boolean"
             ]
           }
-        }
+        },
+        "additionalProperties": false
       },
       "type": [
         "null",
@@ -77,5 +90,6 @@
         "string"
       ]
     }
-  }
+  },
+  "additionalProperties": false
 }

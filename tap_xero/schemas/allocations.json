@@ -16,42 +16,18 @@
         "null",
         "number"
       ],
-      "minimum": -10e32,
-      "maximum": 10e32,
-      "multipleOf": 10e-6,
+      "minimum": -1e+33,
+      "maximum": 1e+33,
+      "multipleOf": 1e-05,
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
     "Invoice": {
-      "type": [
-        "null",
-        "object"
-      ],
-      "properties": {
-        "IsDiscounted": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "HasErrors": {
-          "type": [
-            "null",
-            "boolean"
-          ]
-        },
-        "InvoiceID": {
-          "type": [
-            "string"
-          ]
-        },
-        "InvoiceNumber": {
-          "type": [
-            "null",
-            "string"
-          ]
-        }
-      }
+      "$ref": "nested_invoice"
     }
-  }
+  },
+  "additionalProperties": false,
+  "tap_schema_dependencies": [
+    "nested_invoice"
+  ]
 }

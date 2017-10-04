@@ -203,7 +203,8 @@
               "string"
             ]
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "PaymentTerms": {
@@ -230,7 +231,8 @@
                 "string"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         },
         "Bills": {
           "type": [
@@ -250,13 +252,16 @@
                 "string"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "tap_schema_dependencies": [
     "addresses",
     "phones"
-  ]
+  ],
+  "additionalProperties": false
 }

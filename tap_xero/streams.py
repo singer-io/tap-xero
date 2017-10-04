@@ -9,6 +9,7 @@ from singer import metrics
 import backoff
 from .xero import XeroClient
 from . import credentials
+from . import transform
 
 LOGGER = singer.get_logger()
 
@@ -163,6 +164,48 @@ class LinkedTransactionsPull(Puller):
         self._offset.pop("page", None)
 
 
+class CreditNotes(PaginatedPull):
+    def yield_pages(self):
+        for credit_notes in super().yield_pages():
+            transform.format_credit_notes(credit_notes)
+            yield credit_notes
+
+
+class ContactGroups(Puller):
+    def yield_pages(self):
+        contact_groups = self._make_request()
+        transform.format_contact_groups(contact_groups)
+        yield contact_groups
+
+
+class Contacts(PaginatedPull):
+    def yield_pages(self):
+        for contacts in super().yield_pages():
+            transform.format_contacts(contacts)
+            yield contacts
+
+
+class Payments(IncrementingPull):
+    def yield_pages(self):
+        for payments in super().yield_pages():
+            transform.format_payments(payments)
+            yield payments
+
+
+class Receipts(IncrementingPull):
+    def yield_pages(self):
+        for receipts in super().yield_pages():
+            transform.format_receipts(receipts)
+            yield receipts
+
+
+class Users(IncrementingPull):
+    def yield_pages(self):
+        for users in super().yield_pages():
+            transform.format_users(users)
+            yield users
+
+
 class EverythingPull(Puller):
     def yield_pages(self):
         yield self._make_request()
@@ -180,8 +223,8 @@ all_streams = [
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
     Stream("bank_transactions", ["BankTransactionID"], PaginatedPull),
-    Stream("contacts", ["ContactID"], PaginatedPull),
-    Stream("credit_notes", ["CreditNoteID"], PaginatedPull),
+    Stream("contacts", ["ContactID"], Contacts),
+    Stream("credit_notes", ["CreditNoteID"], CreditNotes),
     Stream("invoices", ["InvoiceID"], PaginatedPull),
     Stream("manual_journals", ["ManualJournalID"], PaginatedPull),
     Stream("overpayments", ["OverpaymentID"], PaginatedPull),
@@ -200,15 +243,15 @@ all_streams = [
     Stream("employees", ["EmployeeID"], IncrementingPull),
     Stream("expense_claims", ["ExpenseClaimID"], IncrementingPull),
     Stream("items", ["ItemID"], IncrementingPull),
-    Stream("payments", ["PaymentID"], IncrementingPull),
-    Stream("receipts", ["ReceiptID"], IncrementingPull),
-    Stream("users", ["UserID"], IncrementingPull),
+    Stream("payments", ["PaymentID"], Payments),
+    Stream("receipts", ["ReceiptID"], Receipts),
+    Stream("users", ["UserID"], Users),
 
     # PULL EVERYTHING STREAMS
     # These endpoints do not support the Modified After header (or paging), so
     # we must pull all the data each time.
     Stream("branding_themes", ["BrandingThemeID"], EverythingPull),
-    Stream("contact_groups", ["ContactGroupID"], EverythingPull),
+    Stream("contact_groups", ["ContactGroupID"], ContactGroups),
     Stream("currencies", ["Code"], EverythingPull),
     Stream("organisations", ["OrganisationID"], EverythingPull),
     Stream("repeating_invoices", ["RepeatingInvoiceID"], EverythingPull),
