@@ -14,7 +14,6 @@ setup(name="tap-xero",
           "singer-python==3.5.0",
           "pyxero<1",
           "requests",
-          "attrs",
           "boto3",
       ],
       entry_points="""
