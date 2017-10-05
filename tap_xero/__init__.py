@@ -97,9 +97,9 @@ def sync(ctx):
     streams = [s for s in streams_.all_streams[start_idx:]
                if s.tap_stream_id in stream_ids_to_sync]
     for stream in streams:
-        load_and_write_schema(stream)
         ctx.state["currently_syncing"] = stream.tap_stream_id
         ctx.write_state()
+        load_and_write_schema(stream)
         stream.sync(ctx)
     ctx.state["currently_syncing"] = None
     ctx.write_state()
