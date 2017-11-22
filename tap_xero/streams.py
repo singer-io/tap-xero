@@ -29,13 +29,17 @@ class RateLimitException(Exception):
                       RateLimitException,
                       max_tries=10,
                       factor=2)
-def _make_request(ctx, tap_stream_id, filter_options=None):
+def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
     filter_options = filter_options or {}
     try:
         return _request_with_timer(tap_stream_id, ctx.client, filter_options)
     except HTTPError as e:
+        if attempts == 1:
+            raise Exception("Received Not Authorized response after credential refresh.")
         if e.response.status_code == 401:
+            attempts += 1
             credentials.refresh(ctx.config)
+            _make_request(ctx, tap_stream_id, filter_options, attempts)
         elif e.response.status_code == 503:
             raise RateLimitException()
         else:
