@@ -49,21 +49,6 @@ def ensure_credentials_are_valid(config):
     XeroClient(config).filter("currencies")
 
 
-def discover(config):
-    ensure_credentials_are_valid(config)
-    catalog = Catalog([])
-    for stream in streams_.all_streams:
-        schema = Schema.from_dict(load_schema(stream.tap_stream_id),
-                                  inclusion="automatic")
-        catalog.streams.append(CatalogEntry(
-            stream=stream.tap_stream_id,
-            tap_stream_id=stream.tap_stream_id,
-            key_properties=stream.pk_fields,
-            schema=schema,
-        ))
-    return catalog
-
-
 def init_credentials(config):
     if credentials.can_use_s3(config):
         creds = credentials.download_from_s3(config)
@@ -77,6 +62,22 @@ def init_credentials(config):
             except Exception as ex:
                 raise BadCredsException(BAD_CREDS_MESSAGE) from ex
     return config
+
+
+def discover(config):
+    init_credentials(config)
+    ensure_credentials_are_valid(config)
+    catalog = Catalog([])
+    for stream in streams_.all_streams:
+        schema = Schema.from_dict(load_schema(stream.tap_stream_id),
+                                  inclusion="automatic")
+        catalog.streams.append(CatalogEntry(
+            stream=stream.tap_stream_id,
+            tap_stream_id=stream.tap_stream_id,
+            key_properties=stream.pk_fields,
+            schema=schema,
+        ))
+    return catalog
 
 
 def load_and_write_schema(stream):
