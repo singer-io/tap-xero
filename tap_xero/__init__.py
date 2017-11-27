@@ -65,7 +65,7 @@ def init_credentials(config):
 
 
 def discover(config):
-    init_credentials(config)
+    config = init_credentials(config)
     ensure_credentials_are_valid(config)
     catalog = Catalog([])
     for stream in streams_.all_streams:
