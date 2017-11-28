@@ -79,6 +79,7 @@ def _write_to_s3(config):
 
 
 def refresh(config):
+    LOGGER.info("Refreshing credentials")
     if not can_use_s3(config):
         raise CredentialsException("S3 not configured, refresh not supported")
 
@@ -96,3 +97,5 @@ def refresh(config):
     config["oauth_token_secret"] = partner_creds.oauth_token_secret
     config["oauth_session_handle"] = partner_creds.oauth_session_handle
     _write_to_s3(config)
+
+    return config

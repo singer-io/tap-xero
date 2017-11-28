@@ -54,11 +54,12 @@ def init_credentials(config):
         creds = credentials.download_from_s3(config)
         if creds:
             config.update(creds)
+            config.update(credentials.refresh(config))
         else:
             # no creds means we have to try to use what's in the config
             # to refresh the token
             try:
-                config = credentials.refresh(config)
+                config.update(credentials.refresh(config))
             except Exception as ex:
                 raise BadCredsException(BAD_CREDS_MESSAGE) from ex
     return config
