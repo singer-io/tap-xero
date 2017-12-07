@@ -38,7 +38,8 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
             raise Exception("Received Not Authorized response after credential refresh.")
         if e.response.status_code == 401:
             attempts += 1
-            credentials.refresh(ctx.config)
+            new_config = credentials.refresh(ctx.config)
+            ctx.config.update(new_config)
             _make_request(ctx, tap_stream_id, filter_options, attempts)
         elif e.response.status_code == 503:
             raise RateLimitException()
