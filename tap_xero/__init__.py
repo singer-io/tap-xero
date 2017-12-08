@@ -61,11 +61,9 @@ def init_credentials(config):
         ## outside of the tap
         try:
             LOGGER.info("Attempting refresh with config credentials.")
-            LOGGER.info("Oauth Token beings with %s", config["oauth_token"][:5])
             refresh_results = credentials.refresh(config)
             config.update(refresh_results)
             ensure_credentials_are_valid(config)
-            LOGGER.info("Refresh suceeded, new Oauth Token begins with %s", config["oauth_token"][:5])
         except XeroUnauthorized as e:
             ## Now attempt with S3 credentials
             creds = credentials.download_from_s3(config)
@@ -73,11 +71,9 @@ def init_credentials(config):
                 config.update(creds)
                 try:
                     LOGGER.info("Config credentials failed.  Attempting refresh with s3 credentials.")
-                    LOGGER.info("Oauth Token beings with %s", config["oauth_token"][:5])
                     refresh_results = credentials.refresh(config)
                     config.update(refresh_results)
                     ensure_credentials_are_valid(config)
-                    LOGGER.info("Refresh suceeded, new Oauth Token begins with %s", config["oauth_token"][:5])
                 except XeroUnauthorized as ex:
                     raise BadCredsException(BAD_CREDS_MESSAGE) from ex
             else:
@@ -109,7 +105,8 @@ def load_and_write_schema(stream):
 
 
 def sync(ctx):
-    init_credentials(ctx.config)
+    new_credentials = init_credentials(ctx.config)
+    ctx.client.update_credentials(new_credentials)
     currently_syncing = ctx.state.get("currently_syncing")
     start_idx = streams_.all_stream_ids.index(currently_syncing) \
         if currently_syncing else 0
