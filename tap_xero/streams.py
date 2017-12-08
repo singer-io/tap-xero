@@ -39,7 +39,7 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
         if e.response.status_code == 401:
             attempts += 1
             new_config = credentials.refresh(ctx.config)
-            ctx.config.update(new_config)
+            ctx.client.update_credentials(new_config)
             _make_request(ctx, tap_stream_id, filter_options, attempts)
         elif e.response.status_code == 503:
             raise RateLimitException()

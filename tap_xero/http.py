@@ -40,7 +40,10 @@ class XeroClient(object):
             return since.strftime('%a, %d %b %Y %H:%M:%S GMT')
         return '"{}"'.format(since)
 
-    def filter(self, tap_stream_id, *, since=None, **params):
+    def update_credentials(self, new_config):
+        self.oauth = build_oauth(new_config)
+
+    def filter(self, tap_stream_id, *args, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
         headers = {"Accept": "application/json"}
