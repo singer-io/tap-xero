@@ -24,7 +24,8 @@
     },
     "Invoice": {
       "$ref": "nested_invoice"
-    },
+    }
+  },
   "additionalProperties": false,
   "tap_schema_dependencies": [
     "nested_invoice"
