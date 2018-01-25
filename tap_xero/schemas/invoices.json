@@ -165,6 +165,13 @@
       ],
       "format": "date-time"
     },
+    "PlannedPaymentDateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "HasAttachments": {
       "type": [
         "null",
