@@ -153,7 +153,7 @@
       "type": [
         "null",
         "string"
-      ],
+      ]
     }
   },
   "tap_schema_dependencies": [
