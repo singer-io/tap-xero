@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.18
+  * Adding ExpectedPaymentDateString to invoice schema [#21](https://github.com/singer-io/tap-xero/pull/21)
+
 ## 0.1.17
   * Fix a bug in the bank_transactions schema.
 
