@@ -158,6 +158,13 @@
       ],
       "format": "date-time"
     },
+    "ExpectedPaymentDateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "PlannedPaymentDate": {
       "type": [
         "null",
