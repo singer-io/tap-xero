@@ -33,12 +33,6 @@ class XeroClient(object):
         self.session = requests.Session()
         self.oauth = build_oauth(config)
         self.user_agent = config.get("user_agent")
-        self._datetime_pattern = re.compile(r"\/Date\((\d+)\)\/")
-
-    def _format_since(self, since):
-        if isinstance(since, datetime):
-            return since.strftime('%a, %d %b %Y %H:%M:%S GMT')
-        return '"{}"'.format(since)
 
     def update_credentials(self, new_config):
         self.oauth = build_oauth(new_config)
@@ -50,7 +44,7 @@ class XeroClient(object):
         if self.user_agent:
             headers["User-Agent"] = self.user_agent
         if since:
-            headers["If-Modified-Since"] = self._format_since(since)
+            headers["If-Modified-Since"] = since
         request = requests.Request("GET", url, auth=self.oauth,
                                    headers=headers, params=params)
         response = self.session.send(request.prepare())
