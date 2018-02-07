@@ -38,6 +38,12 @@
               "boolean"
             ]
           },
+          "IsNonRecoverable": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
           "Rate": {
             "type": [
               "null",
