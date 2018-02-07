@@ -1,9 +1,9 @@
 # Changelog
 
 ## 0.1.19
-  * Fixes usage of 'since' parameter[#24](https://github.com/singer-io/tap-xero/pull/24)
-  * Adds TrackingOptionName and TrackingCategoryName to tracking_categories sub-schema[#25](https://github.com/singer-io/tap-xero/pull/25)
-  * Adds IsNonRecoverable field to tax_rates schema[#26](https://github.com/singer-io/tap-xero/pull/26)
+  * Fixes usage of 'since' parameter [#24](https://github.com/singer-io/tap-xero/pull/24)
+  * Adds TrackingOptionName and TrackingCategoryName to tracking_categories sub-schema [#25](https://github.com/singer-io/tap-xero/pull/25)
+  * Adds IsNonRecoverable field to tax_rates schema [#26](https://github.com/singer-io/tap-xero/pull/26)
 
 ## 0.1.18
   * Adding ExpectedPaymentDateString to invoice schema [#21](https://github.com/singer-io/tap-xero/pull/21)
