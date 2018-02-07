@@ -21,7 +21,19 @@
         "string"
       ]
     },
+    "TrackingCategoryName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "TrackingOptionID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TrackingOptionName": {
       "type": [
         "null",
         "string"
