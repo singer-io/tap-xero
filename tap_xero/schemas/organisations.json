@@ -208,60 +208,13 @@
       }
     },
     "PaymentTerms": {
-      "type": [
-        "null",
-        "object"
-      ],
-      "properties": {
-        "Sales": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "properties": {
-            "Day": {
-              "type": [
-                "null",
-                "integer"
-              ]
-            },
-            "Type": {
-              "type": [
-                "null",
-                "string"
-              ]
-            }
-          },
-          "additionalProperties": false
-        },
-        "Bills": {
-          "type": [
-            "null",
-            "object"
-          ],
-          "properties": {
-            "Day": {
-              "type": [
-                "null",
-                "integer"
-              ]
-            },
-            "Type": {
-              "type": [
-                "null",
-                "string"
-              ]
-            }
-          },
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
+      "$ref": "payment_terms"
     }
   },
   "tap_schema_dependencies": [
     "addresses",
-    "phones"
+    "phones",
+    "payment_terms"
   ],
   "additionalProperties": false
 }
