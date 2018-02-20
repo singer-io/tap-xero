@@ -3,6 +3,7 @@ import singer
 from singer import metrics
 from singer.utils import strftime
 import backoff
+import pendulum
 from . import credentials
 from . import transform
 
@@ -140,7 +141,7 @@ class LinkedTransactions(Stream):
             filter_options = {"page": curr_page_num}
             raw_records = _make_request(ctx, self.tap_stream_id, filter_options)
             records = [x for x in raw_records
-                       if x["UpdatedDateUTC"] >= strftime(start)]
+                       if pendulum.parse(x["UpdatedDateUTC"]) >= pendulum.parse(start)]
             if records:
                 self.write_records(records)
                 max_updated = records[-1]["UpdatedDateUTC"]
