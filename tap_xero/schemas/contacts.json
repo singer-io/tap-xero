@@ -212,10 +212,7 @@
       ]
     },
     "PaymentTerms": {
-      "type": [
-        "null",
-        "string"
-      ]
+      "$ref": "payment_terms"
     },
     "ContactGroups": {
       "items": {
@@ -357,7 +354,8 @@
     "branding_themes",
     "tracking_categories",
     "validation_errors",
-    "attachments"
+    "attachments",
+    "payment_terms"
   ],
   "additionalProperties": false
 }
