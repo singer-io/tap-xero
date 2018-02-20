@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.20
+  * Fixes PaymentTerm schema issue in contacts stream [#31](https://github.com/singer-io/tap-xero/pull/31)
+  * Fixes bug in LinkedTransactions stream where start time was not parsed properly into datetime [#28](https://github.com/singer-io/tap-xero/pull/28)
+
 ## 0.1.19
   * Fixes usage of 'since' parameter [#24](https://github.com/singer-io/tap-xero/pull/24)
   * Adds TrackingOptionName and TrackingCategoryName to tracking_categories sub-schema [#25](https://github.com/singer-io/tap-xero/pull/25)
