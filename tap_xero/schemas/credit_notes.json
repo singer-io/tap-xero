@@ -20,6 +20,20 @@
         "string"
       ]
     },
+    "DueDate": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DueDateString": {
+      "format": "date-time",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "Status": {
       "type": [
         "null",
