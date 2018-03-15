@@ -169,8 +169,8 @@ all_streams = [
     PaginatedStream("credit_notes", ["CreditNoteID"], transform.format_credit_notes),
     PaginatedStream("invoices", ["InvoiceID"]),
     PaginatedStream("manual_journals", ["ManualJournalID"]),
-    PaginatedStream("overpayments", ["OverpaymentID"]),
-    PaginatedStream("prepayments", ["PrepaymentID"]),
+    PaginatedStream("overpayments", ["OverpaymentID"], transform.format_over_pre_payments),
+    PaginatedStream("prepayments", ["PrepaymentID"], transform.format_over_pre_payments),
     PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
 
     # JOURNALS STREAM
