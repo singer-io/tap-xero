@@ -143,6 +143,12 @@
         "$ref": "payments"
       }
     },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "HasAttachments": {
       "type": [
         "null",

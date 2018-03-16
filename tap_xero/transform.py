@@ -28,6 +28,11 @@ def format_payments(payments):
         _format_nested_invoice(invoice)
 
 
+def format_over_pre_payments(over_pre_payments):
+    for payment in over_pre_payments:
+        _format_allocations(payment.get("Allocations", []))
+
+
 def strip_warnings(records):
     for record in records:
         record.pop("Warnings", None)
