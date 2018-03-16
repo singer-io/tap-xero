@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.21
+  * Fixes formatting of overpayments and prepayments [#37](https://github.com/singer-io/tap-xero/pull/37)
+
 ## 0.1.20
   * Fixes PaymentTerm schema issue in contacts stream [#31](https://github.com/singer-io/tap-xero/pull/31)
   * Fixes bug in LinkedTransactions stream where start time was not parsed properly into datetime [#28](https://github.com/singer-io/tap-xero/pull/28)
