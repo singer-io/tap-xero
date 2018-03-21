@@ -50,7 +50,7 @@ class XeroClient(object):
                                    headers=headers, params=params)
         response = self.session.send(request.prepare())
         if response.status_code == 401:
-            raise XeroUnauthorized(e.response)
+            raise XeroUnauthorized(response)
         response.raise_for_status()
         response_meta = json.loads(response.text,
                                    object_hook=_json_load_object_hook,
