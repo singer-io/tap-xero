@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.23
+  * Fix for refreshing credentials after short term expiration.
+
 ## 0.1.21
   * Fixes formatting of overpayments and prepayments [#37](https://github.com/singer-io/tap-xero/pull/37)
 
