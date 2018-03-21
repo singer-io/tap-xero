@@ -9,6 +9,7 @@ from singer.utils import strftime
 import six
 import pytz
 from .credentials import build_oauth
+from xero.exceptions import XeroUnauthorized
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
@@ -48,6 +49,8 @@ class XeroClient(object):
         request = requests.Request("GET", url, auth=self.oauth,
                                    headers=headers, params=params)
         response = self.session.send(request.prepare())
+        if response.status_code == 401:
+            raise XeroUnauthorized(e.response)
         response.raise_for_status()
         response_meta = json.loads(response.text,
                                    object_hook=_json_load_object_hook,
