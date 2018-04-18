@@ -36,6 +36,10 @@ This tap:
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
 
+## Limitations
+
+ - Only designed to work with Xero [Partner Applications](https://developer.xero.com/documentation/auth-and-limits/partner-applications), not Private Applications.
+
 ---
 
 Copyright &copy; 2017 Stitch
