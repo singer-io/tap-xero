@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.24
+  * Add "ID" and "AppliedAmount" fields to prepayments schema [#44](https://github.com/singer-io/tap-xero/pull/44/files)
+
 ## 0.1.23
   * Fix for refreshing credentials after short term expiration.
 
