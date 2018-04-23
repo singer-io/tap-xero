@@ -135,6 +135,15 @@
         "$ref": "allocations"
       }
     },
+    "Payments": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "payments"
+      }
+    },
     "HasAttachments": {
       "type": [
         "null",
