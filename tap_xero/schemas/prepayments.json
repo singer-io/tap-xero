@@ -172,7 +172,8 @@
   "tap_schema_dependencies": [
     "allocations",
     "contacts",
-    "line_items"
+    "line_items",
+    "payments"
   ],
   "additionalProperties": false
 }
