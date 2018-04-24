@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.25
+  * Add Payments array to prepayments schema [#47](https://github.com/singer-io/tap-xero/pull/47)
+
 ## 0.1.24
   * Add "ID" and "AppliedAmount" fields to prepayments schema [#44](https://github.com/singer-io/tap-xero/pull/44/files)
 
