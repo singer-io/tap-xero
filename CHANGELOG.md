@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.26
+  * Add payments to tap_schema_dependencies in prepayments schema
+
 ## 0.1.25
   * Add Payments array to prepayments schema [#47](https://github.com/singer-io/tap-xero/pull/47)
 
