@@ -4,6 +4,7 @@ from singer import metrics
 from singer.utils import strftime
 import backoff
 import pendulum
+from xero.exceptions import XeroUnauthorized
 from . import credentials
 from . import transform
 
@@ -34,18 +35,17 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
     filter_options = filter_options or {}
     try:
         return _request_with_timer(tap_stream_id, ctx.client, filter_options)
-    except HTTPError as e:
+    except XeroUnauthorized:
         if attempts == 1:
             raise Exception("Received Not Authorized response after credential refresh.")
-        if e.response.status_code == 401:
-            attempts += 1
-            new_config = credentials.refresh(ctx.config)
-            ctx.client.update_credentials(new_config)
-            _make_request(ctx, tap_stream_id, filter_options, attempts)
-        elif e.response.status_code == 503:
+        attempts += 1
+        new_config = credentials.refresh(ctx.config)
+        ctx.client.update_credentials(new_config)
+        _make_request(ctx, tap_stream_id, filter_options, attempts)
+    except HTTPError as e:
+        if e.response.status_code == 503:
             raise RateLimitException()
-        else:
-            raise
+        raise
 
 
 class Stream(object):
