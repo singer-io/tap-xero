@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.27
+  * Fixes issue where credentials wouldn't refresh properly during a tap run > 30 min
+
 ## 0.1.26
   * Add payments to tap_schema_dependencies in prepayments schema
 
