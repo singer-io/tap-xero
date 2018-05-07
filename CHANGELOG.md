@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.28
+  * Fixes [bug](https://github.com/singer-io/tap-xero/issues/50) where empty list was being returned during an API call after re-auth [#51](https://github.com/singer-io/tap-xero/pull/51)
+
 ## 0.1.27
   * Fixes issue where credentials wouldn't refresh properly during a tap run > 30 min
 
