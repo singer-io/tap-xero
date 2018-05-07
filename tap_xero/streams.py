@@ -38,14 +38,14 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
     except XeroUnauthorized:
         if attempts == 1:
             raise Exception("Received Not Authorized response after credential refresh.")
-        attempts += 1
         new_config = credentials.refresh(ctx.config)
         ctx.client.update_credentials(new_config)
-        _make_request(ctx, tap_stream_id, filter_options, attempts)
+        return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
     except HTTPError as e:
         if e.response.status_code == 503:
             raise RateLimitException()
         raise
+    assert False
 
 
 class Stream(object):
