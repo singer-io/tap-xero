@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.29
+  * Adds "TotalDiscount" to repeating_invoices schema [#55](https://github.com/singer-io/tap-xero/pull/55)
+  * Fixes [bug](https://github.com/singer-io/tap-xero/issues/53) where linked transaction page was not incrementing [#54](https://github.com/singer-io/tap-xero/pull/54)
+
 ## 0.1.28
   * Fixes [bug](https://github.com/singer-io/tap-xero/issues/50) where empty list was being returned during an API call after re-auth [#51](https://github.com/singer-io/tap-xero/pull/51)
 
