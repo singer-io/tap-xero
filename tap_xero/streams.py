@@ -98,7 +98,7 @@ class PaginatedStream(Stream):
                 max_updated = records[-1]["UpdatedDateUTC"]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
-            curr_page_num = curr_page_num + 1
+            curr_page_num += 1
         ctx.clear_offsets(self.tap_stream_id)
         ctx.set_bookmark(bookmark, max_updated)
         ctx.write_state()
@@ -147,6 +147,7 @@ class LinkedTransactions(Stream):
                 max_updated = records[-1]["UpdatedDateUTC"]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
+            curr_page_num += 1
         ctx.clear_offsets(self.tap_stream_id)
         ctx.set_bookmark(bookmark, max_updated)
         ctx.write_state()
