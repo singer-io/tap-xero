@@ -68,6 +68,12 @@
             "exclusiveMinimum": true,
             "exclusiveMaximum": true
           },
+          "AccountID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "AccountCode": {
             "type": [
               "null",
