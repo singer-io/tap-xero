@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.30
+  * Adds `AccountID` to the schema for manual_journal.JournalLines [#57](https://github.com/singer-io/tap-xero/pull/57)
+
 ## 0.1.29
   * Adds "TotalDiscount" to repeating_invoices schema [#55](https://github.com/singer-io/tap-xero/pull/55)
   * Fixes [bug](https://github.com/singer-io/tap-xero/issues/53) where linked transaction page was not incrementing [#54](https://github.com/singer-io/tap-xero/pull/54)
