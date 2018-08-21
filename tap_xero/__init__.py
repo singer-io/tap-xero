@@ -2,7 +2,7 @@
 import os
 import singer
 import json
-from singer import metrics, utils
+from singer import metadata, metrics, utils
 from singer.catalog import Catalog
 from singer.catalog import Catalog, CatalogEntry, Schema
 from xero.exceptions import XeroUnauthorized
@@ -45,6 +45,23 @@ def load_schema(tap_stream_id):
         singer.resolve_schema_references(schema, refs)
     return schema
 
+def load_metadata(stream, schema):
+    mdata = metadata.new()
+
+    mdata = metadata.write(mdata, (), 'table-key-properties', stream.pk_fields)
+    mdata = metadata.write(mdata, (), 'forced-replication-method', "INCREMENTAL")
+
+    if stream.bookmark_key:
+        mdata = metadata.write(mdata, (), 'valid-replication-keys', [stream.bookmark_key])
+
+    for field_name in schema['properties'].keys():
+        if field_name in stream.pk_fields or field_name == stream.bookmark_key:
+            mdata = metadata.write(mdata, ('properties', field_name), 'inclusion', 'automatic')
+        else:
+            mdata = metadata.write(mdata, ('properties', field_name), 'inclusion', 'available')
+
+    return metadata.to_list(mdata)
+
 
 def ensure_credentials_are_valid(config):
     XeroClient(config).filter("currencies")
@@ -85,13 +102,16 @@ def discover(config):
     config = init_credentials(config)
     catalog = Catalog([])
     for stream in streams_.all_streams:
-        schema = Schema.from_dict(load_schema(stream.tap_stream_id),
-                                  inclusion="automatic")
+        schema_dict = load_schema(stream.tap_stream_id)
+        mdata = load_metadata(stream, schema_dict)
+
+        schema = Schema.from_dict(schema_dict)
         catalog.streams.append(CatalogEntry(
             stream=stream.tap_stream_id,
             tap_stream_id=stream.tap_stream_id,
             key_properties=stream.pk_fields,
             schema=schema,
+            metadata=mdata
         ))
     return catalog
 
