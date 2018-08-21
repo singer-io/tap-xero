@@ -1,6 +1,6 @@
 from requests.exceptions import HTTPError
 import singer
-from singer import metrics
+from singer import metadata, metrics, Transformer
 from singer.utils import strftime
 import backoff
 import pendulum
@@ -49,39 +49,43 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
 
 
 class Stream(object):
-    def __init__(self, tap_stream_id, pk_fields, format_fn=None):
+    def __init__(self, tap_stream_id, pk_fields, bookmark_key="UpdatedDateUTC", format_fn=None):
         self.tap_stream_id = tap_stream_id
         self.pk_fields = pk_fields
         self.format_fn = format_fn or (lambda x: x)
+        self.bookmark_key = bookmark_key
+        self.replication_method = "INCREMENTAL"
 
     def metrics(self, records):
         with metrics.record_counter(self.tap_stream_id) as counter:
             counter.increment(len(records))
 
-    def write_records(self, records):
-        singer.write_records(self.tap_stream_id, records)
+    def write_records(self, records, ctx):
+        stream = ctx.catalog.get_stream(self.tap_stream_id)
+        schema = stream.schema.to_dict()
+        mdata = stream.metadata
+        for rec in records:
+            with Transformer() as transformer:
+                rec = transformer.transform(rec, schema, metadata.to_map(mdata))
+                singer.write_record(self.tap_stream_id, rec)
         self.metrics(records)
 
 
 class BookmarkedStream(Stream):
-    def __init__(self, *args, bookmark_key="UpdatedDateUTC", **kwargs):
-        super().__init__(*args, **kwargs)
-        self.bookmark_key = bookmark_key
-
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         start = ctx.update_start_date_bookmark(bookmark)
         records = _make_request(ctx, self.tap_stream_id, dict(since=start))
         if records:
             self.format_fn(records)
-            self.write_records(records)
+            self.write_records(records, ctx)
             ctx.set_bookmark(bookmark, records[-1][self.bookmark_key])
             ctx.write_state()
 
 
 class PaginatedStream(Stream):
     def sync(self, ctx):
-        bookmark = [self.tap_stream_id, "UpdatedDateUTC"]
+        bookmark = [self.tap_stream_id, self.bookmark_key]
         offset = [self.tap_stream_id, "page"]
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
@@ -94,8 +98,8 @@ class PaginatedStream(Stream):
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
                 self.format_fn(records)
-                self.write_records(records)
-                max_updated = records[-1]["UpdatedDateUTC"]
+                self.write_records(records, ctx)
+                max_updated = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
             curr_page_num += 1
@@ -109,7 +113,7 @@ class Journals(Stream):
     and paging the data. See
     https://developer.xero.com/documentation/api/journals"""
     def sync(self, ctx):
-        bookmark = [self.tap_stream_id, "JournalNumber"]
+        bookmark = [self.tap_stream_id, self.bookmark_key]
         journal_number = ctx.get_bookmark(bookmark) or 0
         while True:
             ctx.set_bookmark(bookmark, journal_number)
@@ -117,8 +121,8 @@ class Journals(Stream):
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
-                self.write_records(records)
-                journal_number = records[-1]["JournalNumber"]
+                self.write_records(records, ctx)
+                journal_number = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
 
@@ -130,7 +134,7 @@ class LinkedTransactions(Stream):
     all of the data, but we can manually omit records based on the
     UpdatedDateUTC property."""
     def sync(self, ctx):
-        bookmark = [self.tap_stream_id, "UpdatedDateUTC"]
+        bookmark = [self.tap_stream_id, self.bookmark_key]
         offset = [self.tap_stream_id, "page"]
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
@@ -141,10 +145,10 @@ class LinkedTransactions(Stream):
             filter_options = {"page": curr_page_num}
             raw_records = _make_request(ctx, self.tap_stream_id, filter_options)
             records = [x for x in raw_records
-                       if pendulum.parse(x["UpdatedDateUTC"]) >= pendulum.parse(start)]
+                       if pendulum.parse(x[self.bookmark_key]) >= pendulum.parse(start)]
             if records:
-                self.write_records(records)
-                max_updated = records[-1]["UpdatedDateUTC"]
+                self.write_records(records, ctx)
+                max_updated = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
             curr_page_num += 1
@@ -154,10 +158,15 @@ class LinkedTransactions(Stream):
 
 
 class Everything(Stream):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bookmark_key = None
+        self.replication_method = "FULL_TABLE"
+
     def sync(self, ctx):
         records = _make_request(ctx, self.tap_stream_id)
         self.format_fn(records)
-        self.write_records(records)
+        self.write_records(records, ctx)
 
 
 all_streams = [
@@ -166,17 +175,17 @@ all_streams = [
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
     PaginatedStream("bank_transactions", ["BankTransactionID"]),
-    PaginatedStream("contacts", ["ContactID"], transform.format_contacts),
-    PaginatedStream("credit_notes", ["CreditNoteID"], transform.format_credit_notes),
+    PaginatedStream("contacts", ["ContactID"], format_fn=transform.format_contacts),
+    PaginatedStream("credit_notes", ["CreditNoteID"], format_fn=transform.format_credit_notes),
     PaginatedStream("invoices", ["InvoiceID"]),
     PaginatedStream("manual_journals", ["ManualJournalID"]),
-    PaginatedStream("overpayments", ["OverpaymentID"], transform.format_over_pre_payments),
-    PaginatedStream("prepayments", ["PrepaymentID"], transform.format_over_pre_payments),
+    PaginatedStream("overpayments", ["OverpaymentID"], format_fn=transform.format_over_pre_payments),
+    PaginatedStream("prepayments", ["PrepaymentID"], format_fn=transform.format_over_pre_payments),
     PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
 
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
-    Journals("journals", ["JournalID"]),
+    Journals("journals", ["JournalID"], bookmark_key="JournalNumber"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
@@ -186,15 +195,15 @@ all_streams = [
     BookmarkedStream("employees", ["EmployeeID"]),
     BookmarkedStream("expense_claims", ["ExpenseClaimID"]),
     BookmarkedStream("items", ["ItemID"]),
-    BookmarkedStream("payments", ["PaymentID"], transform.format_payments),
-    BookmarkedStream("receipts", ["ReceiptID"], transform.format_receipts),
-    BookmarkedStream("users", ["UserID"], transform.format_users),
+    BookmarkedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
+    BookmarkedStream("receipts", ["ReceiptID"], format_fn=transform.format_receipts),
+    BookmarkedStream("users", ["UserID"], format_fn=transform.format_users),
 
     # PULL EVERYTHING STREAMS
     # These endpoints do not support the Modified After header (or paging), so
     # we must pull all the data each time.
     Everything("branding_themes", ["BrandingThemeID"]),
-    Everything("contact_groups", ["ContactGroupID"], transform.format_contact_groups),
+    Everything("contact_groups", ["ContactGroupID"], format_fn=transform.format_contact_groups),
     Everything("currencies", ["Code"]),
     Everything("organisations", ["OrganisationID"]),
     Everything("repeating_invoices", ["RepeatingInvoiceID"]),
@@ -203,6 +212,6 @@ all_streams = [
 
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
-    LinkedTransactions("linked_transactions", ["LinkedTransactionID"]),
+    LinkedTransactions("linked_transactions", ["LinkedTransactionID"], bookmark_key="UpdatedDateUTC"),
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]
