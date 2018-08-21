@@ -49,7 +49,7 @@ def load_metadata(stream, schema):
     mdata = metadata.new()
 
     mdata = metadata.write(mdata, (), 'table-key-properties', stream.pk_fields)
-    mdata = metadata.write(mdata, (), 'forced-replication-method', "INCREMENTAL")
+    mdata = metadata.write(mdata, (), 'forced-replication-method', stream.replication_method)
 
     if stream.bookmark_key:
         mdata = metadata.write(mdata, (), 'valid-replication-keys', [stream.bookmark_key])
