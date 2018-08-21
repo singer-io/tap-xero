@@ -1,9 +1,8 @@
 from requests.exceptions import HTTPError
 import singer
 from singer import metadata, metrics, Transformer
-from singer.utils import strftime
+from singer.utils import strftime, strptime_with_tz
 import backoff
-import pendulum
 from xero.exceptions import XeroUnauthorized
 from . import credentials
 from . import transform
@@ -145,7 +144,7 @@ class LinkedTransactions(Stream):
             filter_options = {"page": curr_page_num}
             raw_records = _make_request(ctx, self.tap_stream_id, filter_options)
             records = [x for x in raw_records
-                       if pendulum.parse(x[self.bookmark_key]) >= pendulum.parse(start)]
+                       if strptime_with_tz(x[self.bookmark_key]) >= strptime_with_tz(start)]
             if records:
                 self.write_records(records, ctx)
                 max_updated = records[-1][self.bookmark_key]
