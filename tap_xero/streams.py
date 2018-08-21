@@ -60,7 +60,7 @@ class Stream(object):
         with metrics.record_counter(self.tap_stream_id) as counter:
             counter.increment(len(records))
 
-    def write_records(self, records):
+    def write_records(self, records, ctx):
         stream = ctx.catalog.get_stream(self.tap_stream_id)
         schema = stream.schema.to_dict()
         mdata = stream.metadata
@@ -78,13 +78,7 @@ class BookmarkedStream(Stream):
         records = _make_request(ctx, self.tap_stream_id, dict(since=start))
         if records:
             self.format_fn(records)
-            stream = ctx.catalog.get_stream(self.tap_stream_id)
-            schema = stream.schema.to_dict()
-            mdata = stream.metadata
-            for rec in records:
-                with Transformer() as transformer:
-                    rec = transformer.transform(rec, schema, metadata.to_map(mdata))
-                    singer.write_record(self.tap_stream_id, rec)
+            self.write_records(records, ctx)
             ctx.set_bookmark(bookmark, records[-1][self.bookmark_key])
             ctx.write_state()
 
@@ -104,7 +98,7 @@ class PaginatedStream(Stream):
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
                 self.format_fn(records)
-                self.write_records(records)
+                self.write_records(records, ctx)
                 max_updated = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
@@ -127,7 +121,7 @@ class Journals(Stream):
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
-                self.write_records(records)
+                self.write_records(records, ctx)
                 journal_number = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
@@ -153,7 +147,7 @@ class LinkedTransactions(Stream):
             records = [x for x in raw_records
                        if pendulum.parse(x[self.bookmark_key]) >= pendulum.parse(start)]
             if records:
-                self.write_records(records)
+                self.write_records(records, ctx)
                 max_updated = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
@@ -172,7 +166,7 @@ class Everything(Stream):
     def sync(self, ctx):
         records = _make_request(ctx, self.tap_stream_id)
         self.format_fn(records)
-        self.write_records(records)
+        self.write_records(records, ctx)
 
 
 all_streams = [
