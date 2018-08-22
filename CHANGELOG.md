@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0
+  * Preparing for release
+
+## 0.2.1
+  * Fixes a bug removing a reference to the pendulum library which is no longer used
+
+## 0.2.0
+  * Updates the tap to use metadata and allow for property selection [#58](https://github.com/singer-io/tap-xero/pull/58)
+
 ## 0.1.30
   * Adds `AccountID` to the schema for manual_journal.JournalLines [#57](https://github.com/singer-io/tap-xero/pull/57)
 
