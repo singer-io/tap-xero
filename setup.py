@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name="tap-xero",
-      version="1.0.0",
+      version="1.0.1",
       description="Singer.io tap for extracting data from the Xero API",
       author="Stitch",
       url="http://singer.io",
@@ -13,7 +13,7 @@ setup(name="tap-xero",
           # without this being here explicitly, there are dependency issues
           "singer-python==5.2.0",
           "pyxero<1",
-          "requests",
+          "requests==2.20.0",
           "boto3",
       ],
       entry_points="""
