@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2
+  * Restrict the version of pyxero being used more explicitly
+
 ## 1.0.1
   * Update version of `requests` to `2.20.0` in response to CVE 2018-18074
 
