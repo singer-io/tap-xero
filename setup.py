@@ -12,7 +12,7 @@ setup(name="tap-xero",
           "python-dateutil==2.6.0",  # This is required by singer-python,
           # without this being here explicitly, there are dependency issues
           "singer-python==5.2.0",
-          "pyxero<1",
+          "pyxero==0.9.1",
           "requests==2.20.0",
           "boto3",
       ],
