@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.3
+  * Add handling for date formatting when an invoice is voided
+
 ## 1.0.2
   * Restrict the version of pyxero being used more explicitly
 
