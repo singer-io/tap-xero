@@ -94,7 +94,7 @@ def init_credentials(config):
                 except XeroUnauthorized as ex:
                     raise BadCredsException(BAD_CREDS_MESSAGE) from ex
             else:
-                raise BadCredsException(BAD_CREDS_MESSAGE) from ex
+                raise BadCredsException(BAD_CREDS_MESSAGE) from e
 
     return config
 
