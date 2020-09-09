@@ -1,7 +1,10 @@
 # Changelog
 
+## 1.0.4
+  * Add handling for date formatting on JournalDate for when Xero returns the date as '/Date(0+0000)/' [#64](https://github.com/singer-io/tap-xero/pull/64)
+
 ## 1.0.3
-  * Add handling for date formatting when an invoice is voided
+  * Add handling for date formatting when an invoice is voided [#62](https://github.com/singer-io/tap-xero/pull/62)
 
 ## 1.0.2
   * Restrict the version of pyxero being used more explicitly
