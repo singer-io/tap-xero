@@ -120,6 +120,7 @@ class Journals(Stream):
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
+                self.format_fn(records)
                 self.write_records(records, ctx)
                 journal_number = records[-1][self.bookmark_key]
             if not records or len(records) < FULL_PAGE_SIZE:
@@ -184,7 +185,7 @@ all_streams = [
 
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
-    Journals("journals", ["JournalID"], bookmark_key="JournalNumber"),
+    Journals("journals", ["JournalID"], bookmark_key="JournalNumber", format_fn=transform.format_journals),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
