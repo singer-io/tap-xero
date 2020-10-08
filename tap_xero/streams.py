@@ -3,7 +3,6 @@ import singer
 from singer import metadata, metrics, Transformer
 from singer.utils import strptime_with_tz
 import backoff
-from xero.exceptions import XeroUnauthorized
 from . import transform
 
 LOGGER = singer.get_logger()
@@ -33,12 +32,13 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
     filter_options = filter_options or {}
     try:
         return _request_with_timer(tap_stream_id, ctx.client, filter_options)
-    except XeroUnauthorized as err:
-        if attempts == 1:
-            raise Exception("Received Not Authorized response after credential refresh.") from err
-        ctx.refresh_credentials()
-        return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
     except HTTPError as e:
+        if e.response.status_code == 401:
+            if attempts == 1:
+                raise Exception("Received Not Authorized response after credential refresh.") from e
+            ctx.refresh_credentials()
+            return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
+
         if e.response.status_code == 503:
             raise RateLimitException() from e
         raise
