@@ -9,13 +9,16 @@ setup(name="tap-xero",
       classifiers=["Programming Language :: Python :: 3 :: Only"],
       py_modules=["tap_xero"],
       install_requires=[
-          "python-dateutil==2.6.0",  # This is required by singer-python,
-          # without this being here explicitly, there are dependency issues
-          "singer-python==5.2.0",
-          "pyxero==0.9.1",
+          "singer-python==5.9.0",
+          "pyxero==0.9.2",
           "requests==2.20.0",
-          "boto3",
+          "boto3==1.14.57",
       ],
+      extras_require={
+          'dev': [
+              'ipdb',
+          ]
+      },
       entry_points="""
           [console_scripts]
           tap-xero=tap_xero:main

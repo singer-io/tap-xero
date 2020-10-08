@@ -37,8 +37,7 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
     except XeroUnauthorized:
         if attempts == 1:
             raise Exception("Received Not Authorized response after credential refresh.")
-        new_config = credentials.refresh(ctx.config)
-        ctx.client.update_credentials(new_config)
+        ctx.refresh_credentials()
         return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
     except HTTPError as e:
         if e.response.status_code == 503:
@@ -78,7 +77,8 @@ class BookmarkedStream(Stream):
         if records:
             self.format_fn(records)
             self.write_records(records, ctx)
-            ctx.set_bookmark(bookmark, records[-1][self.bookmark_key])
+            max_bookmark_value = max([record[self.bookmark_key] for record in records])
+            ctx.set_bookmark(bookmark, max_bookmark_value)
             ctx.write_state()
 
 
@@ -115,14 +115,14 @@ class Journals(Stream):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         journal_number = ctx.get_bookmark(bookmark) or 0
         while True:
-            ctx.set_bookmark(bookmark, journal_number)
-            ctx.write_state()
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
-                journal_number = records[-1][self.bookmark_key]
+                journal_number = max((record[self.bookmark_key] for record in records))
+                ctx.set_bookmark(bookmark, journal_number)
+                ctx.write_state()
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
 
