@@ -29,14 +29,14 @@ jobs:
             source dev_env.sh
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
             pip install .[dev]
-            run-a-test --tap=tap-xero \
-                       --target=target-stitch \
-                       --orchestrator=stitch-orchestrator \
-                       --email=harrison+sandboxtest@stitchdata.com \
-                       --password=$SANDBOX_PASSWORD \
-                       --client-id=50 \
-                       --token=$STITCH_API_TOKEN \
-                       tap_tester.scenarios.xero_bookmarks
+            run-test --tap=tap-xero \
+                     --target=target-stitch \
+                     --orchestrator=stitch-orchestrator \
+                     --email=harrison+sandboxtest@stitchdata.com \
+                     --password=$SANDBOX_PASSWORD \
+                     --client-id=50 \
+                     --token=$STITCH_API_TOKEN \
+                     tests
 workflows:
   version: 2
   commit:
