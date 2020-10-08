@@ -3,7 +3,7 @@ from singer import bookmarks as bks_
 from .http import XeroClient
 
 
-class Context(object):
+class Context():
     def __init__(self, config, state, catalog, config_path):
         self.config = config
         self.config_path = config_path

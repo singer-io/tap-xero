@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 import os
-import singer
 import json
+import singer
 from singer import metadata, metrics, utils
-from singer.catalog import Catalog
 from singer.catalog import Catalog, CatalogEntry, Schema
 from xero.exceptions import XeroUnauthorized
 from . import streams as streams_

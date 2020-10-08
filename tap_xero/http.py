@@ -2,14 +2,12 @@ from base64 import b64encode
 import json
 import decimal
 from os.path import join
-import re
 from datetime import datetime, date, time
 import requests
 import xero.utils
 from singer.utils import strftime
 import six
 import pytz
-from .credentials import build_oauth
 from xero.exceptions import XeroUnauthorized
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
@@ -23,21 +21,22 @@ def _json_load_object_hook(_dict):
         if isinstance(value, six.string_types):
             value = xero.utils.parse_date(value)
             if value:
-                if type(value) == date:
+                if isinstance(value, date):
                     value = datetime.combine(value, time.min)
                 value = value.replace(tzinfo=pytz.UTC)
                 _dict[key] = strftime(value)
     return _dict
 
+def update_config_file(config, config_path):
+    with open(config_path, 'w') as config_file:
+        json.dump(config, config_file, indent=2)
 
-class XeroClient(object):
+class XeroClient():
     def __init__(self, config):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
-
-    def update_config_file(self, config, config_path):
-        with open(config_path, 'w') as config_file:
-            json.dump(config, config_file, indent=2)
+        self.tenant_id = None
+        self.access_token = None
 
     def refresh_credentials(self, config, config_path):
 
@@ -58,11 +57,11 @@ class XeroClient(object):
 
         # Write to config file
         config['refresh_token'] = resp["refresh_token"]
-        self.update_config_file(config, config_path)
+        update_config_file(config, config_path)
         self.access_token = resp["access_token"]
         self.tenant_id = config['tenant_id']
 
-    def filter(self, tap_stream_id, *args, since=None, **params):
+    def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
         headers = {"Accept": "application/json",
