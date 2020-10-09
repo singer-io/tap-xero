@@ -3,7 +3,7 @@ import json
 import tap_tester.menagerie as menagerie
 import tap_tester.runner as runner
 
-from .base import XeroScenarioBase
+from base import XeroScenarioBase
 
 class XeroBookmarks(XeroScenarioBase):
     def name(self):

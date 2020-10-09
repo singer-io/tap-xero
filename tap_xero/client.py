@@ -1,15 +1,44 @@
 from base64 import b64encode
+import re
 import json
 import decimal
 from os.path import join
 from datetime import datetime, date, time
 import requests
-import xero.utils
-from singer.utils import strftime
+from singer.utils import strftime, strptime_to_utc
 import six
 import pytz
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
+
+
+def parse_date(value):
+    # Xero datetimes can be .NET JSON date strings which look like
+    # "/Date(1419937200000+0000)/"
+    # https://developer.xero.com/documentation/api/requests-and-responses
+    pattern = r'Date\((\d+)([-+])?(\d+)?\)'
+    match = re.search(pattern, value)
+
+    if not match:
+        try:
+            return strptime_to_utc(value)
+        except Exception as e:
+            raise RuntimeError("Got unknown datetime format") from e
+
+    millis_timestamp, offset_sign, offset = match.groups()
+    if offset:
+        if offset_sign == '+':
+            offset_sign = 1
+        else:
+            offset_sign = -1
+        offset_hours = offset_sign * int(offset[:2])
+        offset_minutes  = offset_sign * int(offset[2:])
+    else:
+        offset_hours = 0
+        offset_minutes = 0
+
+    return datetime.datetime.utcfromtimestamp((int(millis_timestamp) / 1000)) \
+        + datetime.timedelta(hours=offset_hours, minutes=offset_minutes)
 
 
 def _json_load_object_hook(_dict):
@@ -18,7 +47,7 @@ def _json_load_object_hook(_dict):
     # to format the dates according to RFC3339
     for key, value in _dict.items():
         if isinstance(value, six.string_types):
-            value = xero.utils.parse_date(value)
+            value = parse_date(value)
             if value:
                 if isinstance(value, date):
                     value = datetime.combine(value, time.min)

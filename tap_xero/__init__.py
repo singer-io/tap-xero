@@ -5,7 +5,7 @@ import singer
 from singer import metadata, metrics, utils
 from singer.catalog import Catalog, CatalogEntry, Schema
 from . import streams as streams_
-from .http import XeroClient
+from .client import XeroClient
 from .context import Context
 
 REQUIRED_CONFIG_KEYS = [
