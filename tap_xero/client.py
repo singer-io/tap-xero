@@ -22,7 +22,7 @@ def parse_date(value):
     if not match:
         try:
             return strptime_to_utc(value)
-        except Exception as e:
+        except Exception:
             #raise RuntimeError("Got unknown datetime format: {}".format(value)) from e
             return None
 
