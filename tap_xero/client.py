@@ -3,7 +3,7 @@ import re
 import json
 import decimal
 from os.path import join
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 import requests
 from singer.utils import strftime, strptime_to_utc
 import six
@@ -23,7 +23,8 @@ def parse_date(value):
         try:
             return strptime_to_utc(value)
         except Exception as e:
-            raise RuntimeError("Got unknown datetime format") from e
+            #raise RuntimeError("Got unknown datetime format: {}".format(value)) from e
+            return None
 
     millis_timestamp, offset_sign, offset = match.groups()
     if offset:
@@ -37,8 +38,8 @@ def parse_date(value):
         offset_hours = 0
         offset_minutes = 0
 
-    return datetime.datetime.utcfromtimestamp((int(millis_timestamp) / 1000)) \
-        + datetime.timedelta(hours=offset_hours, minutes=offset_minutes)
+    return datetime.utcfromtimestamp((int(millis_timestamp) / 1000)) \
+        + timedelta(hours=offset_hours, minutes=offset_minutes)
 
 
 def _json_load_object_hook(_dict):

@@ -7,7 +7,7 @@ from base import XeroScenarioBase
 
 class XeroBookmarks(XeroScenarioBase):
     def name(self):
-        return "tap_tester_xero_bookmarks"
+        return "tap_tester_xero_common_connection"
 
     def check_output_record_counts(self):
         counts_by_stream = runner.examine_target_output_file(
