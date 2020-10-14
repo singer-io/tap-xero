@@ -1,10 +1,8 @@
 from requests.exceptions import HTTPError
 import singer
 from singer import metadata, metrics, Transformer
-from singer.utils import strftime, strptime_with_tz
+from singer.utils import strptime_with_tz
 import backoff
-from xero.exceptions import XeroUnauthorized
-from . import credentials
 from . import transform
 
 LOGGER = singer.get_logger()
@@ -34,20 +32,20 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
     filter_options = filter_options or {}
     try:
         return _request_with_timer(tap_stream_id, ctx.client, filter_options)
-    except XeroUnauthorized:
-        if attempts == 1:
-            raise Exception("Received Not Authorized response after credential refresh.")
-        new_config = credentials.refresh(ctx.config)
-        ctx.client.update_credentials(new_config)
-        return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
     except HTTPError as e:
+        if e.response.status_code == 401:
+            if attempts == 1:
+                raise Exception("Received Not Authorized response after credential refresh.") from e
+            ctx.refresh_credentials()
+            return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
+
         if e.response.status_code == 503:
-            raise RateLimitException()
+            raise RateLimitException() from e
         raise
     assert False
 
 
-class Stream(object):
+class Stream():
     def __init__(self, tap_stream_id, pk_fields, bookmark_key="UpdatedDateUTC", format_fn=None):
         self.tap_stream_id = tap_stream_id
         self.pk_fields = pk_fields
@@ -78,7 +76,8 @@ class BookmarkedStream(Stream):
         if records:
             self.format_fn(records)
             self.write_records(records, ctx)
-            ctx.set_bookmark(bookmark, records[-1][self.bookmark_key])
+            max_bookmark_value = max([record[self.bookmark_key] for record in records])
+            ctx.set_bookmark(bookmark, max_bookmark_value)
             ctx.write_state()
 
 
@@ -115,14 +114,14 @@ class Journals(Stream):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         journal_number = ctx.get_bookmark(bookmark) or 0
         while True:
-            ctx.set_bookmark(bookmark, journal_number)
-            ctx.write_state()
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
-                journal_number = records[-1][self.bookmark_key]
+                journal_number = max((record[self.bookmark_key] for record in records))
+                ctx.set_bookmark(bookmark, journal_number)
+                ctx.write_state()
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
 

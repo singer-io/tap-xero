@@ -1,14 +1,18 @@
 import singer
 from singer import bookmarks as bks_
-from .http import XeroClient
+from .client import XeroClient
 
 
-class Context(object):
-    def __init__(self, config, state, catalog):
+class Context():
+    def __init__(self, config, state, catalog, config_path):
         self.config = config
+        self.config_path = config_path
         self.state = state
         self.catalog = catalog
         self.client = XeroClient(config)
+
+    def refresh_credentials(self):
+        self.client.refresh_credentials(self.config, self.config_path)
 
     def get_bookmark(self, path):
         return bks_.get_bookmark(self.state, *path)
