@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0
+  * Switch from OAuth1 to OAuth2. This will no longer work with OAuth1 credentials and any users will need to [migrate their tokens](https://developer.xero.com/documentation/oauth2/migrate) [#66](https://github.com/singer-io/tap-xero/pull/66)
+
 ## 1.0.4
   * Add handling for date formatting on JournalDate for when Xero returns the date as '/Date(0+0000)/' [#64](https://github.com/singer-io/tap-xero/pull/64)
 
