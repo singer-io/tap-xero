@@ -26,7 +26,7 @@ def parse_date(value):
         if iso8601match:
             try:
                 return strptime_to_utc(value)
-            except:
+            except Exception:
                 return None
         else:
             return None
