@@ -15,7 +15,8 @@ setup(name="tap-xero",
       extras_require={
           'dev': [
               'ipdb',
-              'pylint'
+              'pylint',
+              'nose'
           ]
       },
       entry_points="""
