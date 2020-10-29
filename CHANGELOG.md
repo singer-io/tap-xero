@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1
+  * Check for if a value is in datetime format before parsing as a datetime [#70](https://github.com/singer-io/tap-xero/pull/70)
+
 ## 2.0.0
   * Switch from OAuth1 to OAuth2. This will no longer work with OAuth1 credentials and any users will need to [migrate their tokens](https://developer.xero.com/documentation/oauth2/migrate) [#66](https://github.com/singer-io/tap-xero/pull/66)
 
