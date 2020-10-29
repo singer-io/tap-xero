@@ -19,10 +19,16 @@ def parse_date(value):
     pattern = r'Date\((\d+)([-+])?(\d+)?\)'
     match = re.search(pattern, value)
 
+    iso8601pattern = r'((\d{4})-([0-2]\d)-0?([0-3]\d)T([0-5]\d):([0-5]\d):([0-6]\d))'
+
     if not match:
-        try:
-            return strptime_to_utc(value)
-        except Exception:
+        iso8601match = re.search(iso8601pattern, value)
+        if iso8601match:
+            try:
+                return strptime_to_utc(value)
+            except Exception:
+                return None
+        else:
             return None
 
     millis_timestamp, offset_sign, offset = match.groups()
