@@ -16,7 +16,7 @@ def parse_date(value):
     # Xero datetimes can be .NET JSON date strings which look like
     # "/Date(1419937200000+0000)/"
     # https://developer.xero.com/documentation/api/requests-and-responses
-    pattern = r'Date\((\d+)([-+])?(\d+)?\)'
+    pattern = r'Date\((\-?\d+)([-+])?(\d+)?\)'
     match = re.search(pattern, value)
 
     iso8601pattern = r'((\d{4})-([0-2]\d)-0?([0-3]\d)T([0-5]\d):([0-5]\d):([0-6]\d))'
