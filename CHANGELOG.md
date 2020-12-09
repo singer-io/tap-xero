@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.2
+  * Add handling for date formatting on negative dates [#74](https://github.com/singer-io/tap-xero/pull/74)
+
 ## 2.0.1
   * Check for if a value is in datetime format before parsing as a datetime [#70](https://github.com/singer-io/tap-xero/pull/70)
 
