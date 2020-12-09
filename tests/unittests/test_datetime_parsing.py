@@ -27,6 +27,7 @@ class TestDatetimeParsing(unittest.TestCase):
             '/Date(1603895333000+0000)/',
             '/Date(814890533000+0000)/',
             '/Date(1130509733000+0000)/',
+            '/Date(-1565568000000+0000)/',
         ]
 
         parsed_dates = [parse_date(x) for x in dates]
@@ -35,6 +36,7 @@ class TestDatetimeParsing(unittest.TestCase):
             datetime.datetime(2020, 10, 28, 14, 28, 53),
             datetime.datetime(1995, 10, 28, 14, 28, 53),
             datetime.datetime(2005, 10, 28, 14, 28, 53),
+            datetime.datetime(1920, 5, 23, 00, 00, 00),
         ]
 
         self.assertEquals(parsed_dates, expected_dates)
