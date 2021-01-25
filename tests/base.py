@@ -131,7 +131,7 @@ class XeroScenarioBase(unittest.TestCase):
         return {
             "start_date" : self.start_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "tenant_id": os.getenv('TAP_XERO_TENANT_ID'),
-            "xero_user_id": os.getenv('TAP_XERO_XERO_USER_ID'),
+            "xero_user_id": os.getenv('TAP_XERO_USER_ID'),
         }
 
     def get_bookmark_default(self, stream):
