@@ -179,6 +179,7 @@ all_streams = [
     PaginatedStream("invoices", ["InvoiceID"], format_fn=transform.format_invoices),
     PaginatedStream("manual_journals", ["ManualJournalID"]),
     PaginatedStream("overpayments", ["OverpaymentID"], format_fn=transform.format_over_pre_payments),
+    PaginatedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
     PaginatedStream("prepayments", ["PrepaymentID"], format_fn=transform.format_over_pre_payments),
     PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
 
@@ -194,7 +195,6 @@ all_streams = [
     BookmarkedStream("employees", ["EmployeeID"]),
     BookmarkedStream("expense_claims", ["ExpenseClaimID"]),
     BookmarkedStream("items", ["ItemID"]),
-    BookmarkedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
     BookmarkedStream("receipts", ["ReceiptID"], format_fn=transform.format_receipts),
     BookmarkedStream("users", ["UserID"], format_fn=transform.format_users),
 
@@ -214,3 +214,13 @@ all_streams = [
     LinkedTransactions("linked_transactions", ["LinkedTransactionID"], bookmark_key="UpdatedDateUTC"),
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]
+
+
+# Page param
+# credit_notes, payments, invoices, bank_transactions, contacts, manual_journals, ---- ALL PaginatedStream
+# Not Journals, Accounts
+
+# payments, ----- otherwise, none in BookmarkedStream
+
+# None in Everything
+# None in LinkedTransactions
