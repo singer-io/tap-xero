@@ -214,13 +214,3 @@ all_streams = [
     LinkedTransactions("linked_transactions", ["LinkedTransactionID"], bookmark_key="UpdatedDateUTC"),
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]
-
-
-# Page param
-# credit_notes, payments, invoices, bank_transactions, contacts, manual_journals, ---- ALL PaginatedStream
-# Not Journals, Accounts
-
-# payments, ----- otherwise, none in BookmarkedStream
-
-# None in Everything
-# None in LinkedTransactions
