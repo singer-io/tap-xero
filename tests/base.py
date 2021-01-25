@@ -26,7 +26,7 @@ class XeroScenarioBase(unittest.TestCase):
         }
         required_props = {
             "tenant_id": 'TAP_XERO_TENANT_ID',
-            "xero_user_id": 'TAP_XERO_XERO_USER_ID'
+            "xero_user_id": 'TAP_XERO_USER_ID'
         }
         missing_creds = [v for v in required_creds.values() if not os.getenv(v)]
         missing_props = [v for v in required_props.values() if not os.getenv(v)]
