@@ -19,16 +19,21 @@ class XeroScenarioBase(unittest.TestCase):
     start_date = utils.strftime(start_dt)
 
     def setUp(self):
-        required_env = {
+        required_creds = {
             "client_id": 'TAP_XERO_CLIENT_ID',
             "client_secret": 'TAP_XERO_CLIENT_SECRET',
             "refresh_token": 'TAP_XERO_REFRESH_TOKEN',
-            "tenant_id": 'TAP_XERO_TENANT_ID',
         }
-        missing_envs = [v for v in required_env.values() if not os.getenv(v)]
-        if missing_envs:
+        required_props = {
+            "tenant_id": 'TAP_XERO_TENANT_ID',
+            "xero_user_id": 'TAP_XERO_USER_ID'
+        }
+        missing_creds = [v for v in required_creds.values() if not os.getenv(v)]
+        missing_props = [v for v in required_props.values() if not os.getenv(v)]
+        if missing_creds or missing_props:
+            missing_envs = missing_creds + missing_props
             raise Exception("set " + ", ".join(missing_envs))
-        self._credentials = {k: os.getenv(v) for k, v in required_env.items()}
+        self._credentials = {k: os.getenv(v) for k, v in required_creds.items()}
         self.conn_id = connections.ensure_connection(self, payload_hook=preserve_refresh_token)
 
     def get_type(self):
@@ -36,6 +41,7 @@ class XeroScenarioBase(unittest.TestCase):
 
     def get_credentials(self):
         self._credentials["client_secret"] = os.getenv('TAP_XERO_CLIENT_SECRET')
+        self._credentials["client_id"] = os.getenv('TAP_XERO_CLIENT_ID')
         self._credentials["refresh_token"] = "refresh_token"
         self._credentials["access_token"] = "access_token"
         return self._credentials
@@ -124,9 +130,8 @@ class XeroScenarioBase(unittest.TestCase):
     def get_properties(self):
         return {
             "start_date" : self.start_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "client_id": os.getenv('TAP_XERO_CLIENT_ID'),
             "tenant_id": os.getenv('TAP_XERO_TENANT_ID'),
-            "xero_user_id": os.getenv('TAP_XERO_XERO_USER_ID'),
+            "xero_user_id": os.getenv('TAP_XERO_USER_ID'),
         }
 
     def get_bookmark_default(self, stream):

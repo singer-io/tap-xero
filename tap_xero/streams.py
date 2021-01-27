@@ -179,6 +179,7 @@ all_streams = [
     PaginatedStream("invoices", ["InvoiceID"], format_fn=transform.format_invoices),
     PaginatedStream("manual_journals", ["ManualJournalID"]),
     PaginatedStream("overpayments", ["OverpaymentID"], format_fn=transform.format_over_pre_payments),
+    PaginatedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
     PaginatedStream("prepayments", ["PrepaymentID"], format_fn=transform.format_over_pre_payments),
     PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
 
@@ -194,7 +195,6 @@ all_streams = [
     BookmarkedStream("employees", ["EmployeeID"]),
     BookmarkedStream("expense_claims", ["ExpenseClaimID"]),
     BookmarkedStream("items", ["ItemID"]),
-    BookmarkedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
     BookmarkedStream("receipts", ["ReceiptID"], format_fn=transform.format_receipts),
     BookmarkedStream("users", ["UserID"], format_fn=transform.format_users),
 
