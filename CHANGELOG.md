@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.3
+  * Switching the Payments stream to use the PaginatedStream class as that API endpoint can paginate using the "page" query param [#76](https://github.com/singer-io/tap-xero/pull/76)
+
 ## 2.0.2
   * Add handling for date formatting on negative dates [#74](https://github.com/singer-io/tap-xero/pull/74)
 
