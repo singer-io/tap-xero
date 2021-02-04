@@ -52,6 +52,7 @@ class Stream():
         self.format_fn = format_fn or (lambda x: x)
         self.bookmark_key = bookmark_key
         self.replication_method = "INCREMENTAL"
+        self.filter_options = {}
 
     def metrics(self, records):
         with metrics.record_counter(self.tap_stream_id) as counter:
@@ -82,18 +83,20 @@ class BookmarkedStream(Stream):
 
 
 class PaginatedStream(Stream):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         offset = [self.tap_stream_id, "page"]
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
-        filter_options = dict(since=start, order="UpdatedDateUTC ASC")
+        self.filter_options.update(dict(since=start, order="UpdatedDateUTC ASC"))
         max_updated = start
         while True:
             ctx.set_offset(offset, curr_page_num)
             ctx.write_state()
-            filter_options["page"] = curr_page_num
-            records = _make_request(ctx, self.tap_stream_id, filter_options)
+            self.filter_options["page"] = curr_page_num
+            records = _make_request(ctx, self.tap_stream_id, self.filter_options)
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
@@ -105,6 +108,11 @@ class PaginatedStream(Stream):
         ctx.set_bookmark(bookmark, max_updated)
         ctx.write_state()
 
+class Contacts(PaginatedStream):
+    def __init__(self, *args, **kwargs):
+        super().__init__('contacts', ["ContactID"],
+                         format_fn=transform.format_contacts, *args, **kwargs)
+        self.filter_options.update({'includeArchived': 'true'})
 
 class Journals(Stream):
     """The Journals endpoint is a special case. It has its own way of ordering
@@ -174,7 +182,7 @@ all_streams = [
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
     PaginatedStream("bank_transactions", ["BankTransactionID"]),
-    PaginatedStream("contacts", ["ContactID"], format_fn=transform.format_contacts),
+    Contacts(),
     PaginatedStream("credit_notes", ["CreditNoteID"], format_fn=transform.format_credit_notes),
     PaginatedStream("invoices", ["InvoiceID"], format_fn=transform.format_invoices),
     PaginatedStream("manual_journals", ["ManualJournalID"]),
