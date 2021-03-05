@@ -55,7 +55,7 @@ def _json_load_object_hook(_dict):
         if isinstance(value, six.string_types):
             value = parse_date(value)
             if value:
-                if isinstance(value, date):
+                if type(value) is date:
                     value = datetime.combine(value, time.min)
                 value = value.replace(tzinfo=pytz.UTC)
                 _dict[key] = strftime(value)
