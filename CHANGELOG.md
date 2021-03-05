@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4
+  * In json parsing hook, explicitly check for `date` type values to add 0 hh:mm:ss to so that the parser avoids truncating `datetime` objects [#79](https://github.com/singer-io/tap-xero/pull/79)
+
 ## 2.0.3
   * Switching the Payments stream to use the PaginatedStream class as that API endpoint can paginate using the "page" query param [#76](https://github.com/singer-io/tap-xero/pull/76)
 
