@@ -16,7 +16,7 @@ jobs:
           name: 'JSON Validator'
           command: |
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            stitch-validate-json /usr/local/share/virtualenvs/tap-xero/lib/python3.5/site-packages/tap_xero/schemas/*.json
+            stitch-validate-json tap_xero/schemas/*.json
       - run:
           name: 'pylint'
           command: |
