@@ -106,6 +106,7 @@ def sync(ctx):
         ctx.state["currently_syncing"] = stream.tap_stream_id
         ctx.write_state()
         load_and_write_schema(stream)
+        LOGGER.info("Syncing stream: %s", stream.tap_stream_id)
         stream.sync(ctx)
     ctx.state["currently_syncing"] = None
     ctx.write_state()
@@ -118,8 +119,12 @@ def main_impl():
         discover(Context(args.config, {}, {}, args.config_path)).dump()
         print()
     else:
-        catalog = Catalog.from_dict(args.properties) \
-            if args.properties else discover(Context(args.config, {}, {}, args.config_path))
+        if args.catalog:
+            catalog = args.catalog
+        else:
+            LOGGER.info("Running sync without provided Catalog. Discovering.")
+            catalog = discover(Context(args.config, {}, {}, args.config_path))
+
         sync(Context(args.config, args.state, catalog, args.config_path))
 
 def main():
