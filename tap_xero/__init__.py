@@ -106,6 +106,7 @@ def sync(ctx):
         ctx.state["currently_syncing"] = stream.tap_stream_id
         ctx.write_state()
         load_and_write_schema(stream)
+        LOGGER.info("Syncing stream: %s", stream.tap_stream_id)
         stream.sync(ctx)
     ctx.state["currently_syncing"] = None
     ctx.write_state()
