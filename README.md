@@ -40,6 +40,40 @@ This tap:
 
  - Only designed to work with Xero [Partner Applications](https://developer.xero.com/documentation/auth-and-limits/partner-applications), not Private Applications.
 
+## Getting started
+
+### Configuration
+
+The configuration should take the following form:
+
+```json
+{
+  "start_date": "2020-04-01",
+  "client_id": "...",
+  "client_secret": "...",
+  "tenant_id": "...",
+  "refresh_token": "..."
+}
+```
+
+Choose your preferred start date. You will need to get the other 4 values from the Xero API.
+
+ * Client ID and Secret are provided by the [Xero developer portal](http://developer.xero.com),
+   if you create a new OAuth2 app.
+ * To get the tenant ID and refresh token, you will need to set up a web app
+   to receive the OAuth2 repsonse. A simple script for this is available at
+   [sminnee/tap-xero-config](http://github.com/sminnee/tap-xero-config).
+
+### Running without installation
+
+When making improvements to tap-xero, you will likely to want to run the 
+script without installing the pacakge. You can do this with the following
+command:
+
+```
+> python -m tap_xero.__init__ -c yourconfig.json -p catalog.json
+```
+
 ---
 
 Copyright &copy; 2017 Stitch
