@@ -41,6 +41,7 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
 
         if e.response.status_code == 503:
             raise RateLimitException() from e
+
         raise
     assert False
 
@@ -174,6 +175,7 @@ all_streams = [
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
     PaginatedStream("bank_transactions", ["BankTransactionID"]),
+    PaginatedStream("quotes", "QuoteID"),
     PaginatedStream("contacts", ["ContactID"], format_fn=transform.format_contacts),
     PaginatedStream("credit_notes", ["CreditNoteID"], format_fn=transform.format_credit_notes),
     PaginatedStream("invoices", ["InvoiceID"], format_fn=transform.format_invoices),
