@@ -5,7 +5,6 @@ from unittest import mock
 import decimal
 import json
 
-json_decode_error_str = '{\'key\': \'value\'}'
 
 def mocked_session(*args, **kwargs):
     class Mocksession:
@@ -18,15 +17,26 @@ def mocked_session(*args, **kwargs):
         
     return Mocksession(args[0], 200)
 
-def mocked_request(*args, **kwargs):
-    class Mockresponse:
-        def __init__(self, resp):
-            self.json_data = resp
 
-        def prepare(self):
-            return self.json_data
+class Mockresponse:
+    def __init__(self, resp):
+        self.json_data = resp
 
+    def prepare(self):
+        return self.json_data
+
+
+def mocked_failing_request(*args, **kwargs):
+    # Invalid json string
+    json_decode_error_str = '{\'Contacts\': \'value\'}'
     return Mockresponse(json_decode_error_str)
+
+
+def mocked_successful_request(*args, **kwargs):
+    # Valid json string
+    json_decode_str = '{"Contacts": "value"}'
+    return Mockresponse(json_decode_str)
+
 
 class TestFilterFunExceptionHandling(unittest.TestCase):
     """
@@ -34,8 +44,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
     """
 
     @mock.patch('requests.Session.send', side_effect=mocked_session)
-    @mock.patch('requests.Request', side_effect=mocked_request)
-    def test_json_decode_exception(self, mocked_session, mocked_request):
+    @mock.patch('requests.Request', side_effect=mocked_failing_request)
+    def test_json_decode_exception(self, mocked_session, mocked_failing_request):
         config = {}
         tap_stream_id = "contacts"
 
@@ -47,17 +57,15 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         except json.decoder.JSONDecodeError as e:
             pass
 
-        self.assertEqual(mocked_request.call_count, 3)
+        self.assertEqual(mocked_failing_request.call_count, 3)
         self.assertEqual(mocked_session.call_count, 3)
 
+
     @mock.patch('requests.Session.send', side_effect=mocked_session)
-    @mock.patch('requests.Request', side_effect=mocked_request)
-    def test_normal_filter_execution(self, mocked_session, mocked_request):
+    @mock.patch('requests.Request', side_effect=mocked_successful_request)
+    def test_normal_filter_execution(self, mocked_session, mocked_successful_request):
         config = {}
         tap_stream_id = "contacts"
-
-        global json_decode_error_str
-        json_decode_error_str = '{"Contacts": "value"}'
 
         xero_client = client_.XeroClient(config)
         xero_client.access_token = "123"
@@ -67,7 +75,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         except json.decoder.JSONDecodeError as e:
             pass
 
-        self.assertEqual(mocked_request.call_count, 1)
+        self.assertEqual(mocked_successful_request.call_count, 1)
         self.assertEqual(mocked_session.call_count, 1)
 
 
