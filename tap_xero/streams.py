@@ -87,7 +87,12 @@ class PaginatedStream(Stream):
         offset = [self.tap_stream_id, "page"]
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
+
         filter_options = dict(since=start, order="UpdatedDateUTC ASC")
+        if self.tap_stream_id == "contacts":
+            if ctx.config.get("includeArchivedContacts") == "true":
+                filter_options["includeArchived"] = "true"
+
         max_updated = start
         while True:
             ctx.set_offset(offset, curr_page_num)
