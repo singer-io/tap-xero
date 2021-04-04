@@ -8,8 +8,22 @@ import requests
 from singer.utils import strftime, strptime_to_utc
 import six
 import pytz
+import backoff
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
+
+
+class XeroError(Exception):
+    pass
+
+
+class XeroTooManyError(XeroError):
+    pass
+
+
+ERROR_CODE_EXCEPTION_MAPPING = {
+    429: XeroTooManyError
+}
 
 
 def parse_date(value):
@@ -96,6 +110,7 @@ class XeroClient():
         self.access_token = resp["access_token"]
         self.tenant_id = config['tenant_id']
 
+    @backoff.on_exception(backoff.expo, XeroTooManyError, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
@@ -109,9 +124,37 @@ class XeroClient():
 
         request = requests.Request("GET", url, headers=headers, params=params)
         response = self.session.send(request.prepare())
-        response.raise_for_status()
-        response_meta = json.loads(response.text,
-                                   object_hook=_json_load_object_hook,
-                                   parse_float=decimal.Decimal)
-        response_body = response_meta.pop(xero_resource_name)
-        return response_body
+
+        if response.status_code != 200:
+            raise_for_error(response)
+            return None
+        else:
+            response_meta = json.loads(response.text,
+                                    object_hook=_json_load_object_hook,
+                                    parse_float=decimal.Decimal)
+            response_body = response_meta.pop(xero_resource_name)
+            return response_body
+
+
+def raise_for_error(resp):
+    try:
+        resp.raise_for_status()
+    except (requests.HTTPError, requests.ConnectionError) as error:
+        try:
+            error_code = resp.status_code
+
+            # Response for Status code 429 contains all necessary information in the headers parameter
+            if error_code == 429:
+                # Forming a response message for raising custom exception
+                resp_headers = resp.headers
+                message = "Error: Too Many Requests. Please retry after {} seconds".format(resp_headers.get("Retry-After"))
+            else:
+                # Forming a response message for raising custom exception
+                response_json = resp.json()
+                message = "Error: {}".format(response_json.get("error", response_json.get("Title", response_json.get("Detail", "Unknown Error"))))
+
+            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, XeroError)
+            raise exc(message)
+
+        except (ValueError, TypeError):
+            raise XeroError(error)
