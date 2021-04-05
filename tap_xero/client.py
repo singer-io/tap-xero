@@ -17,12 +17,63 @@ class XeroError(Exception):
     pass
 
 
+class XeroBadRequestError(XeroError):
+    pass
+
+
+class XeroUnauthorizedError(XeroError):
+    pass
+
+
+class XeroForbiddenError(XeroError):
+    pass
+
+
+class XeroNotFoundError(XeroError):
+    pass
+
+
 class XeroTooManyError(XeroError):
     pass
 
 
+class XeroInternalError(XeroError):
+    pass
+
+
+class XeroNotImplementedError(XeroError):
+    pass
+
+
 ERROR_CODE_EXCEPTION_MAPPING = {
-    429: XeroTooManyError
+    400: {
+        "raise_exception": XeroBadRequestError,
+        "message": "A validation exception has occurred."
+    },
+    401: {
+        "raise_exception": XeroUnauthorizedError,
+        "message": "Invalid authorization credentials."
+    },
+    403: {
+        "raise_exception": XeroForbiddenError,
+        "message": "User doesn't have permission to access the resource."
+    },
+    404: {
+        "raise_exception": XeroNotFoundError,
+        "message": "The resource you have specified cannot be found."
+    },
+    429: {
+        "raise_exception": XeroTooManyError,
+        "message": "The API rate limit for your organisation/application pairing has been exceeded"
+    },
+    500: {
+        "raise_exception": XeroInternalError,
+        "message": "An unhandled error with the Xero API. Contact the Xero API team if problems persist."
+    },
+    501: {
+        "raise_exception": XeroNotImplementedError,
+        "message": "The method you have called has not been implemented."
+    }
 }
 
 
@@ -143,18 +194,33 @@ def raise_for_error(resp):
         try:
             error_code = resp.status_code
 
-            # Response for Status code 429 contains all necessary information in the headers parameter
+            # Handling status code 429 specially since the required information is present in the headers
             if error_code == 429:
-                # Forming a response message for raising custom exception
                 resp_headers = resp.headers
-                message = "Error: Too Many Requests. Please retry after {} seconds".format(resp_headers.get("Retry-After"))
+                api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
+                message = "HTTP-error-code: 429, Error: {}. Please retry after {} seconds".format(api_rate_limit_message, resp_headers.get("Retry-After"))
+            # Handling status code 403 specially since response of API does not contain enough information
+            elif error_code in (403, 401):
+                api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
+                message = "HTTP-error-code: {}, Error: {}".format(error_code, api_message)
             else:
                 # Forming a response message for raising custom exception
-                response_json = resp.json()
-                message = "Error: {}".format(response_json.get("error", response_json.get("Title", response_json.get("Detail", "Unknown Error"))))
+                try:
+                    response_json = resp.json()
+                except Exception:
+                    response_json = {}
 
-            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, XeroError)
-            raise exc(message)
+                message = "HTTP-error-code: {}, Error: {}".format(
+                    error_code,
+                    response_json.get(
+                        "error", response_json.get(
+                            "Title", response_json.get(
+                                "Detail", ERROR_CODE_EXCEPTION_MAPPING.get(
+                                    error_code, {}).get("message", "Unknown Error")
+                                ))))
+
+            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", XeroError)
+            raise exc(message) from None
 
         except (ValueError, TypeError):
-            raise XeroError(error)
+            raise XeroError(error) from None
