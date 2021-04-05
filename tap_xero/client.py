@@ -110,7 +110,7 @@ class XeroClient():
         self.access_token = resp["access_token"]
         self.tenant_id = config['tenant_id']
 
-    @backoff.on_exception(backoff.expo, XeroTooManyError, max_tries=3)
+    @backoff.on_exception(backoff.expo, XeroTooManyError, max_tries=3, factor=2)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
