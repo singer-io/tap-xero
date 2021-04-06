@@ -165,11 +165,10 @@ class XeroClient():
             self.tenant_id = config['tenant_id']
 
 
-    def check_platform_access(self, config, config_path, check_authentication=True):
+    def check_platform_access(self, config, config_path):
 
         # Validating the authentication of the provided configuration
-        if check_authentication:
-            self.refresh_credentials(config, config_path)
+        self.refresh_credentials(config, config_path)
 
         headers = {
             "Authorization": "Bearer " + self.access_token,

@@ -16,7 +16,7 @@ def mocked_session(*args, **kwargs):
                 self.headers = headers
 
         def raise_for_status(self):
-            if not raise_error:
+            if not self.raise_error:
                 return self.status_code
 
             raise requests.HTTPError("sample message")
@@ -44,6 +44,12 @@ class Mockresponse:
 
     def prepare(self):
         return (self.json_data, self.status_code, self.content, self.headers, self.raise_error)
+
+    def raise_for_status(self):
+        if not self.raise_error:
+            return self.status_code
+
+        raise requests.HTTPError("sample message")
 
 
 def mocked_forbidden_403_exception(*args, **kwargs):
@@ -94,12 +100,18 @@ def mock_successful_request(*args, **kwargs):
     return Mockresponse(json_decode_str, 200)
 
 
+def mock_successful_session_post(*args, **kwargs):
+    json_decode_str = {"access_token": "123", "refresh_token": "345"}
+
+    return mocked_session((json_decode_str, 200, [], None, False))
+
+
+@mock.patch('requests.Session.send', side_effect=mocked_session)
 class TestFilterFunExceptionHandling(unittest.TestCase):
     """
     Test cases to verify if the exceptions are handled as expected while communicating with Xero Environment 
     """
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_badrequest_400_error)
     def test_badrequest_400_error(self, mocked_session, mocked_badrequest_400_error):
         config = {}
@@ -119,7 +131,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_unauthorized_401_error)
     def test_unauthorized_401_error(self, mocked_session, mocked_unauthorized_401_error):
         config = {}
@@ -139,7 +150,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_forbidden_403_exception)
     def test_forbidden_403_exception(self, mocked_session, mocked_forbidden_403_exception):
         config = {}
@@ -159,7 +169,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_notfound_404_error)
     def test_notfound_404_error(self, mocked_session, mocked_notfound_404_error):
         config = {}
@@ -179,7 +188,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_internalservererror_500_error)
     def test_internalservererror_500_error(self, mocked_session, mocked_internalservererror_500_error):
         config = {}
@@ -199,7 +207,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_notimplemented_501_error)
     def test_notimplemented_501_error(self, mocked_session, mocked_notimplemented_501_error):
         config = {}
@@ -219,7 +226,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_failed_429_request)
     def test_too_many_requests_429_error(self, mocked_session, mocked_failed_429_request):
         config = {}
@@ -240,7 +246,6 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             pass
 
 
-    @mock.patch('requests.Session.send', side_effect=mocked_session)
     @mock.patch('requests.Request', side_effect=mocked_failed_429_request)
     def test_too_many_requests_429_backoff_behavior(self, mocked_session, mocked_failed_429_request):
         config = {}
@@ -258,29 +263,34 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         self.assertEqual(mocked_session.call_count, 3)
 
 
-@mock.patch("tap_xero.client.XeroClient.refresh_credentials")
+
 @mock.patch('requests.Session.send', side_effect=mocked_session)
 class TestCheckPlatformAccessBehavior(unittest.TestCase):
 
-
-    @mock.patch('requests.Request', side_effect=mock_successful_request)
-    def test_check_refresh_credential_call(self, mocked_refresh_credentials, mocked_session, mock_successful_request):
-
-        config = {}
+    @mock.patch('requests.Session.post', side_effect=mocked_unauthorized_401_error)
+    def test_check_unauthorized_401_error_in_discovery_mode(self, mocked_unauthorized_401_error, mocked_session):
+        config = {
+            "client_id": "123",
+            "client_secret": "123",
+            "refresh_token": "123",
+            "tenant_id": "123"
+        }
         config_path = ""
 
         xero_client = client_.XeroClient(config)
-        xero_client.access_token = "123"
-        xero_client.tenant_id = "123"
 
-        # Validating the default value of 'refresh_credentials' argument of check_platform_access function
-        xero_client.check_platform_access(config, config_path)
-        self.assertEqual(mocked_refresh_credentials.call_count, 1)
+        try:
+            xero_client.check_platform_access(config, config_path)
+        except client_.XeroUnauthorizedError as e:
+            expected_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
+            self.assertEqual(str(e) ,expected_message)
 
 
+    @mock.patch("tap_xero.client.XeroClient.refresh_credentials")
     @mock.patch('requests.Request', side_effect=mocked_forbidden_403_exception)
-    def test_check_refresh_credential_function_skip_and_throw_403(self, mocked_refresh_credentials, mocked_session, mocked_forbidden_403_exception):
+    def test_check_forbidden_403_error_in_discovery_mode(self, mocked_refresh_credentials, mocked_session, mocked_forbidden_403_exception):
 
+        mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
 
@@ -289,24 +299,33 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path, check_authentication=False)
+            xero_client.check_platform_access(config, config_path)
         except client_.XeroForbiddenError as e:
             expected_message = "HTTP-error-code: 403, Error: User doesn't have permission to access the resource."
             self.assertEqual(str(e) ,expected_message)
 
 
-    @mock.patch('requests.Request', side_effect=mocked_unauthorized_401_error)
-    def test_check_refresh_credential_function_skip_and_throw_401(self, mocked_refresh_credentials, mocked_session, mocked_unauthorized_401_error):
+    @mock.patch('requests.Session.post', side_effect=mock_successful_session_post)
+    @mock.patch('tap_xero.client.update_config_file')
+    @mock.patch('requests.Request', side_effect=mock_successful_request)
+    def test_check_success_200_in_discovery_mode(self, mock_successful_session_post, mocked_update_config_file, mocked_session, mock_successful_request):
 
-        config = {}
+        mocked_update_config_file.return_value = ""
+
+        config = {
+            "client_id": "123",
+            "client_secret": "123",
+            "refresh_token": "123",
+            "tenant_id": "123"
+        }
         config_path = ""
 
         xero_client = client_.XeroClient(config)
-        xero_client.access_token = "123"
-        xero_client.tenant_id = "123"
+        expected_access_token = "123"
+        expected_refresh_token = "345"
 
-        try:
-            xero_client.check_platform_access(config, config_path, check_authentication=False)
-        except client_.XeroUnauthorizedError as e:
-            expected_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
-            self.assertEqual(str(e) ,expected_message)
+        xero_client.check_platform_access(config, config_path)
+
+        self.assertEqual(xero_client.access_token, expected_access_token)
+        self.assertEqual(config["refresh_token"], expected_refresh_token)
+        self.assertEqual(xero_client.tenant_id, config["tenant_id"])
