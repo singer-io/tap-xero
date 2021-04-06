@@ -152,14 +152,39 @@ class XeroClient():
             "refresh_token": config["refresh_token"],
         }
         resp = self.session.post("https://identity.xero.com/connect/token", headers=headers, data=post_body)
-        resp.raise_for_status()
-        resp = resp.json()
 
-        # Write to config file
-        config['refresh_token'] = resp["refresh_token"]
-        update_config_file(config, config_path)
-        self.access_token = resp["access_token"]
-        self.tenant_id = config['tenant_id']
+        if resp.status_code != 200:
+            raise_for_error(resp)
+        else:
+            resp = resp.json()
+
+            # Write to config file
+            config['refresh_token'] = resp["refresh_token"]
+            update_config_file(config, config_path)
+            self.access_token = resp["access_token"]
+            self.tenant_id = config['tenant_id']
+
+
+    def check_platform_access(self, config, config_path, check_authentication=True):
+
+        # Validating the authentication of the provided configuration
+        if check_authentication:
+            self.refresh_credentials(config, config_path)
+
+        headers = {
+            "Authorization": "Bearer " + self.access_token,
+            "Xero-Tenant-Id": self.tenant_id,
+            "Content-Type": "application/json"
+        }
+
+        # Validating the authorization of the provided configuration
+        contacts_url = "https://api.xero.com/api.xro/2.0/Contacts"
+        request = requests.Request("GET", contacts_url, headers=headers)
+        response = self.session.send(request.prepare())
+
+        if response.status_code != 200:
+            raise_for_error(response)
+
 
     @backoff.on_exception(backoff.expo, XeroTooManyError, max_tries=3, factor=2)
     def filter(self, tap_stream_id, since=None, **params):

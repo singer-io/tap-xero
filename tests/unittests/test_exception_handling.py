@@ -87,6 +87,13 @@ def mocked_notimplemented_501_error(*args, **kwargs):
 
     return Mockresponse(json_decode_str, 501, raise_error=True)
 
+
+def mock_successful_request(*args, **kwargs):
+    json_decode_str = {}
+
+    return Mockresponse(json_decode_str, 200)
+
+
 class TestFilterFunExceptionHandling(unittest.TestCase):
     """
     Test cases to verify if the exceptions are handled as expected while communicating with Xero Environment 
@@ -249,3 +256,57 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
 
         self.assertEqual(mocked_failed_429_request.call_count, 3)
         self.assertEqual(mocked_session.call_count, 3)
+
+
+@mock.patch("tap_xero.client.XeroClient.refresh_credentials")
+@mock.patch('requests.Session.send', side_effect=mocked_session)
+class TestCheckPlatformAccessBehavior(unittest.TestCase):
+
+
+    @mock.patch('requests.Request', side_effect=mock_successful_request)
+    def test_check_refresh_credential_call(self, mocked_refresh_credentials, mocked_session, mock_successful_request):
+
+        config = {}
+        config_path = ""
+
+        xero_client = client_.XeroClient(config)
+        xero_client.access_token = "123"
+        xero_client.tenant_id = "123"
+
+        # Validating the default value of 'refresh_credentials' argument of check_platform_access function
+        xero_client.check_platform_access(config, config_path)
+        self.assertEqual(mocked_refresh_credentials.call_count, 1)
+
+
+    @mock.patch('requests.Request', side_effect=mocked_forbidden_403_exception)
+    def test_check_refresh_credential_function_skip_and_throw_403(self, mocked_refresh_credentials, mocked_session, mocked_forbidden_403_exception):
+
+        config = {}
+        config_path = ""
+
+        xero_client = client_.XeroClient(config)
+        xero_client.access_token = "123"
+        xero_client.tenant_id = "123"
+
+        try:
+            xero_client.check_platform_access(config, config_path, check_authentication=False)
+        except client_.XeroForbiddenError as e:
+            expected_message = "HTTP-error-code: 403, Error: User doesn't have permission to access the resource."
+            self.assertEqual(str(e) ,expected_message)
+
+
+    @mock.patch('requests.Request', side_effect=mocked_unauthorized_401_error)
+    def test_check_refresh_credential_function_skip_and_throw_401(self, mocked_refresh_credentials, mocked_session, mocked_unauthorized_401_error):
+
+        config = {}
+        config_path = ""
+
+        xero_client = client_.XeroClient(config)
+        xero_client.access_token = "123"
+        xero_client.tenant_id = "123"
+
+        try:
+            xero_client.check_platform_access(config, config_path, check_authentication=False)
+        except client_.XeroUnauthorizedError as e:
+            expected_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
+            self.assertEqual(str(e) ,expected_message)
