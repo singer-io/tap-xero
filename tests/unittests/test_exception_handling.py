@@ -106,11 +106,57 @@ def mock_successful_session_post(*args, **kwargs):
     return mocked_session((json_decode_str, 200, [], None, False))
 
 
+def mocked_jsondecode_failing_request(*args, **kwargs):
+    # Invalid json string
+    json_decode_error_str = '{\'Contacts\': \'value\'}'
+    return Mockresponse(json_decode_error_str, 200)
+
+
+def mocked_jsondecode_successful_request(*args, **kwargs):
+    # Valid json string
+    json_decode_str = '{"Contacts": "value"}'
+    return Mockresponse(json_decode_str, 200)
+
+
 @mock.patch('requests.Session.send', side_effect=mocked_session)
 class TestFilterFunExceptionHandling(unittest.TestCase):
     """
     Test cases to verify if the exceptions are handled as expected while communicating with Xero Environment 
     """
+
+    @mock.patch('requests.Request', side_effect=mocked_jsondecode_failing_request)
+    def test_json_decode_exception(self, mocked_session, mocked_jsondecode_failing_request):
+        config = {}
+        tap_stream_id = "contacts"
+
+        xero_client = client_.XeroClient(config)
+        xero_client.access_token = "123"
+        xero_client.tenant_id = "123"
+        try:
+            filter_func_exec = xero_client.filter(tap_stream_id)
+        except json.decoder.JSONDecodeError as e:
+            pass
+
+        self.assertEqual(mocked_jsondecode_failing_request.call_count, 3)
+        self.assertEqual(mocked_session.call_count, 3)
+
+
+    @mock.patch('requests.Request', side_effect=mocked_jsondecode_successful_request)
+    def test_normal_filter_execution(self, mocked_session, mocked_jsondecode_successful_request):
+        config = {}
+        tap_stream_id = "contacts"
+
+        xero_client = client_.XeroClient(config)
+        xero_client.access_token = "123"
+        xero_client.tenant_id = "123"
+        try:
+            filter_func_exec = xero_client.filter(tap_stream_id)
+        except json.decoder.JSONDecodeError as e:
+            pass
+
+        self.assertEqual(mocked_jsondecode_successful_request.call_count, 1)
+        self.assertEqual(mocked_session.call_count, 1)
+
 
     @mock.patch('requests.Request', side_effect=mocked_badrequest_400_error)
     def test_badrequest_400_error(self, mocked_session, mocked_badrequest_400_error):

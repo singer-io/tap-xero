@@ -185,6 +185,7 @@ class XeroClient():
             raise_for_error(response)
 
 
+    @backoff.on_exception(backoff.expo,json.decoder.JSONDecodeError,max_tries=3)
     @backoff.on_exception(backoff.expo, XeroTooManyError, max_tries=3, factor=2)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
