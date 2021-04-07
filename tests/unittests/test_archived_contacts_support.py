@@ -37,8 +37,7 @@ class TestSupportArchivedContacts(unittest.TestCase):
     def test_archived_contacts_selected(self, mocked_make_request_method):
         mocked_make_request_method.return_value = []
         tap_stream_id = "contacts"
-        pk_fields = ["ContactID"]
-        contacts_stream_execution = stream_.PaginatedStream(tap_stream_id, pk_fields)
+        contacts_stream_execution = stream_.Contacts()
 
         # ArchivedContacts parameter set to true in the MockConfig class
         ctx = MockConfig()
@@ -53,8 +52,7 @@ class TestSupportArchivedContacts(unittest.TestCase):
     def test_archived_contacts_not_selected(self, mocked_make_request_method):
         mocked_make_request_method.return_value = []
         tap_stream_id = "contacts"
-        pk_fields = ["ContactID"]
-        contacts_stream_execution = stream_.PaginatedStream(tap_stream_id, pk_fields)
+        contacts_stream_execution = stream_.Contacts()
 
         # ArchivedContacts parameter set to true in the MockConfig class
         ctx = MockConfig()
@@ -88,8 +86,7 @@ class TestSupportArchivedContacts(unittest.TestCase):
     def test_archived_contacts_option_not_passed_in_config(self, mocked_make_request_method):
         mocked_make_request_method.return_value = []
         tap_stream_id = "contacts"
-        pk_fields = ["ContactID"]
-        contacts_stream_execution = stream_.PaginatedStream(tap_stream_id, pk_fields)
+        contacts_stream_execution = stream_.Contacts()
 
         # ArchivedContacts parameter set to true in the MockConfig class
         ctx = MockConfig()
