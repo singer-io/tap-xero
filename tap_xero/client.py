@@ -8,6 +8,7 @@ import requests
 from singer.utils import strftime, strptime_to_utc
 import six
 import pytz
+import backoff
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
@@ -96,6 +97,9 @@ class XeroClient():
         self.access_token = resp["access_token"]
         self.tenant_id = config['tenant_id']
 
+    @backoff.on_exception(backoff.expo,
+                          json.decoder.JSONDecodeError,
+                          max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
