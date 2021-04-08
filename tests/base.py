@@ -74,6 +74,7 @@ class XeroScenarioBase(unittest.TestCase):
             "tax_rates": ["TaxType"],
             "tracking_categories": ["TrackingCategoryID"],
             "linked_transactions": ["LinkedTransactionID"],
+            "quotes": ["QuoteID"],
         }
 
     @property
@@ -101,6 +102,7 @@ class XeroScenarioBase(unittest.TestCase):
             "receipts": ["UpdatedDateUTC"],
             "users": ["UpdatedDateUTC"],
             "linked_transactions": ["UpdatedDateUTC"],
+            "quotes": ["UpdatedDateUTC"]
         }
 
     @property
