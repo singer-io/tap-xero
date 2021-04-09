@@ -68,7 +68,7 @@ def ensure_credentials_are_valid(config):
     XeroClient(config).filter("currencies")
 
 def discover(ctx):
-    ctx.refresh_credentials()
+    ctx.check_platform_access()
     catalog = Catalog([])
     for stream in streams_.all_streams:
         schema_dict = load_schema(stream.tap_stream_id)
