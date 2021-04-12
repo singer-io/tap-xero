@@ -13,6 +13,70 @@ import backoff
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
 
+class XeroError(Exception):
+    pass
+
+
+class XeroBadRequestError(XeroError):
+    pass
+
+
+class XeroUnauthorizedError(XeroError):
+    pass
+
+
+class XeroForbiddenError(XeroError):
+    pass
+
+
+class XeroNotFoundError(XeroError):
+    pass
+
+
+class XeroTooManyError(XeroError):
+    pass
+
+
+class XeroInternalError(XeroError):
+    pass
+
+
+class XeroNotImplementedError(XeroError):
+    pass
+
+
+ERROR_CODE_EXCEPTION_MAPPING = {
+    400: {
+        "raise_exception": XeroBadRequestError,
+        "message": "A validation exception has occurred."
+    },
+    401: {
+        "raise_exception": XeroUnauthorizedError,
+        "message": "Invalid authorization credentials."
+    },
+    403: {
+        "raise_exception": XeroForbiddenError,
+        "message": "User doesn't have permission to access the resource."
+    },
+    404: {
+        "raise_exception": XeroNotFoundError,
+        "message": "The resource you have specified cannot be found."
+    },
+    429: {
+        "raise_exception": XeroTooManyError,
+        "message": "The API rate limit for your organisation/application pairing has been exceeded"
+    },
+    500: {
+        "raise_exception": XeroInternalError,
+        "message": "An unhandled error with the Xero API. Contact the Xero API team if problems persist."
+    },
+    501: {
+        "raise_exception": XeroNotImplementedError,
+        "message": "The method you have called has not been implemented."
+    }
+}
+
+
 def parse_date(value):
     # Xero datetimes can be .NET JSON date strings which look like
     # "/Date(1419937200000+0000)/"
@@ -88,18 +152,40 @@ class XeroClient():
             "refresh_token": config["refresh_token"],
         }
         resp = self.session.post("https://identity.xero.com/connect/token", headers=headers, data=post_body)
-        resp.raise_for_status()
-        resp = resp.json()
 
-        # Write to config file
-        config['refresh_token'] = resp["refresh_token"]
-        update_config_file(config, config_path)
-        self.access_token = resp["access_token"]
-        self.tenant_id = config['tenant_id']
+        if resp.status_code != 200:
+            raise_for_error(resp)
+        else:
+            resp = resp.json()
 
-    @backoff.on_exception(backoff.expo,
-                          json.decoder.JSONDecodeError,
-                          max_tries=3)
+            # Write to config file
+            config['refresh_token'] = resp["refresh_token"]
+            update_config_file(config, config_path)
+            self.access_token = resp["access_token"]
+            self.tenant_id = config['tenant_id']
+
+
+    def check_platform_access(self, config, config_path):
+
+        # Validating the authentication of the provided configuration
+        self.refresh_credentials(config, config_path)
+
+        headers = {
+            "Authorization": "Bearer " + self.access_token,
+            "Xero-Tenant-Id": self.tenant_id,
+            "Content-Type": "application/json"
+        }
+
+        # Validating the authorization of the provided configuration
+        contacts_url = "https://api.xero.com/api.xro/2.0/Contacts"
+        request = requests.Request("GET", contacts_url, headers=headers)
+        response = self.session.send(request.prepare())
+
+        if response.status_code != 200:
+            raise_for_error(response)
+
+
+    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroTooManyError), max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
@@ -113,9 +199,52 @@ class XeroClient():
 
         request = requests.Request("GET", url, headers=headers, params=params)
         response = self.session.send(request.prepare())
-        response.raise_for_status()
-        response_meta = json.loads(response.text,
-                                   object_hook=_json_load_object_hook,
-                                   parse_float=decimal.Decimal)
-        response_body = response_meta.pop(xero_resource_name)
-        return response_body
+
+        if response.status_code != 200:
+            raise_for_error(response)
+            return None
+        else:
+            response_meta = json.loads(response.text,
+                                    object_hook=_json_load_object_hook,
+                                    parse_float=decimal.Decimal)
+            response_body = response_meta.pop(xero_resource_name)
+            return response_body
+
+
+def raise_for_error(resp):
+    try:
+        resp.raise_for_status()
+    except (requests.HTTPError, requests.ConnectionError) as error:
+        try:
+            error_code = resp.status_code
+
+            # Handling status code 429 specially since the required information is present in the headers
+            if error_code == 429:
+                resp_headers = resp.headers
+                api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
+                message = "HTTP-error-code: 429, Error: {}. Please retry after {} seconds".format(api_rate_limit_message, resp_headers.get("Retry-After"))
+            # Handling status code 403 specially since response of API does not contain enough information
+            elif error_code in (403, 401):
+                api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
+                message = "HTTP-error-code: {}, Error: {}".format(error_code, api_message)
+            else:
+                # Forming a response message for raising custom exception
+                try:
+                    response_json = resp.json()
+                except Exception:
+                    response_json = {}
+
+                message = "HTTP-error-code: {}, Error: {}".format(
+                    error_code,
+                    response_json.get(
+                        "error", response_json.get(
+                            "Title", response_json.get(
+                                "Detail", ERROR_CODE_EXCEPTION_MAPPING.get(
+                                    error_code, {}).get("message", "Unknown Error")
+                                ))))
+
+            exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", XeroError)
+            raise exc(message) from None
+
+        except (ValueError, TypeError):
+            raise XeroError(error) from None
