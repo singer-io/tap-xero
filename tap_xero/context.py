@@ -14,6 +14,9 @@ class Context():
     def refresh_credentials(self):
         self.client.refresh_credentials(self.config, self.config_path)
 
+    def check_platform_access(self):
+        self.client.check_platform_access(self.config, self.config_path)
+
     def get_bookmark(self, path):
         return bks_.get_bookmark(self.state, *path)
 
