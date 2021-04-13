@@ -1,24 +1,29 @@
-import json
-
 import tap_tester.menagerie as menagerie
 import tap_tester.runner as runner
+import tap_tester.connections as connections
 
-from base import XeroScenarioBase
+from base import XeroScenarioBase, preserve_refresh_token
 
 class TestArchivedContacts(XeroScenarioBase):
+
+    def setUp(self):
+        self.includeArchivedContacts = None
+        super().setUp()
 
     def name(self):
         return "tap_tester_xero_common_connection"
 
     def get_properties(self):
         properties = super().get_properties()
-        properties["includeArchivedContacts"] = "true"
+
+        # includeArchivedContacts is an optional property for configuration
+        if self.includeArchivedContacts:
+            properties["includeArchivedContacts"] = self.includeArchivedContacts
 
         return properties
 
-
-    def test_get_archived_contacts(self):
-        runner.run_check_job_and_check_status(self)
+    def get_records_from_xero_platform(self):
+        only_active_contacts = runner.run_check_job_and_check_status(self)
 
         found_catalogs = menagerie.get_catalogs(self.conn_id)
         self.check_all_streams_in_catalogs(found_catalogs)
@@ -30,5 +35,25 @@ class TestArchivedContacts(XeroScenarioBase):
         runner.run_sync_job_and_check_status(self)
         records = runner.get_upserts_from_target_output()
 
-        contacts_status = [record["ContactStatus"] for record in records]
-        self.assertIn("ARCHIVED", contacts_status)
+        return records
+
+
+    def test_get_archived_contacts(self):
+        # Tap-Xero be default will collect only active records
+        only_active_records = self.get_records_from_xero_platform()
+        contacts_status_1 = [record["ContactStatus"] for record in only_active_records]
+
+        # Verifying that no ARCHIVED contacts are returned
+        self.assertEqual(True, "ARCHIVED" not in contacts_status_1)
+        self.assertIn("ACTIVE", contacts_status_1)
+
+        # Configuring the tap to collect Archived records as well
+        self.includeArchivedContacts = "true"
+        self.conn_id = connections.ensure_connection(self, payload_hook=preserve_refresh_token)
+        # Tap-Xero be default should now collect Active and archived records
+        active_and_archived_records = self.get_records_from_xero_platform()
+        contacts_status_2 = [record["ContactStatus"] for record in active_and_archived_records]
+
+        # Verifying that ARCHIVED and ACTIVE contacts are returned
+        self.assertIn("ARCHIVED", contacts_status_2)
+        self.assertIn("ACTIVE", contacts_status_2)
