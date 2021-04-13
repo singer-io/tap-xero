@@ -175,7 +175,7 @@ all_streams = [
     # UpdatedDateUTC property and support the Modified After, order, and page
     # parameters
     PaginatedStream("bank_transactions", ["BankTransactionID"]),
-    PaginatedStream("quotes", "QuoteID"),
+    PaginatedStream("quotes", ["QuoteID"]),
     PaginatedStream("contacts", ["ContactID"], format_fn=transform.format_contacts),
     PaginatedStream("credit_notes", ["CreditNoteID"], format_fn=transform.format_credit_notes),
     PaginatedStream("invoices", ["InvoiceID"], format_fn=transform.format_invoices),
