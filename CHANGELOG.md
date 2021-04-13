@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+  * Add retry to JSON decode error [#83](https://github.com/singer-io/tap-xero/pull/83)
+  * Add backoff mechanism for 429 errors. Validate authorization during discovery [#85](https://github.com/singer-io/tap-xero/pull/85)
+  * Add Quotes stream support [#86](https://github.com/singer-io/tap-xero/pull/86)
+  * Increase the allowable precision in the CurrencyRate schema from `1e-06` to `1e-10` [#87](https://github.com/singer-io/tap-xero/pull/87)
+
 ## 2.0.4
   * In json parsing hook, explicitly check for `date` type values to add 0 hh:mm:ss to so that the parser avoids truncating `datetime` objects [#79](https://github.com/singer-io/tap-xero/pull/79)
 
