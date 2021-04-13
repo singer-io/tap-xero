@@ -177,7 +177,7 @@ class XeroClient():
         }
 
         # Validating the authorization of the provided configuration
-        contacts_url = "https://api.xero.com/api.xro/2.0/Contacts"
+        contacts_url = join(BASE_URL, "Contacts")
         request = requests.Request("GET", contacts_url, headers=headers)
         response = self.session.send(request.prepare())
 
