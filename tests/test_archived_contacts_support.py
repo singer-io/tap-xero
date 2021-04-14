@@ -42,10 +42,11 @@ class TestArchivedContacts(XeroScenarioBase):
         # Tap-Xero be default will collect only active records
         only_active_records = self.get_records_from_xero_platform()
         contacts_status_1 = [record["ContactStatus"] for record in only_active_records]
+        number_of_contacts_received_1 = len(only_active_records)
 
         # Verifying that no ARCHIVED contacts are returned
         self.assertEqual(True, "ARCHIVED" not in contacts_status_1)
-        self.assertIn("ACTIVE", contacts_status_1)
+        self.assertSetEqual({"ACTIVE"}, set(contacts_status_1))
 
         # Configuring the tap to collect Archived records as well
         self.includeArchivedContacts = "true"
@@ -53,7 +54,10 @@ class TestArchivedContacts(XeroScenarioBase):
         # Tap-Xero be default should now collect Active and archived records
         active_and_archived_records = self.get_records_from_xero_platform()
         contacts_status_2 = [record["ContactStatus"] for record in active_and_archived_records]
+        number_of_contacts_received_2 = len(active_and_archived_records)
 
         # Verifying that ARCHIVED and ACTIVE contacts are returned
-        self.assertIn("ARCHIVED", contacts_status_2)
-        self.assertIn("ACTIVE", contacts_status_2)
+        self.assertSetEqual({"ACTIVE", "ARCHIVED"}, set(contacts_status_2))
+
+        # Verifying that second sync provided more contacts then the first sync
+        self.assertGreater(number_of_contacts_received_2, number_of_contacts_received_1)
