@@ -41,6 +41,7 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
 
         if e.response.status_code == 503:
             raise RateLimitException() from e
+
         raise
     assert False
 
@@ -193,6 +194,7 @@ all_streams = [
     # parameters
     PaginatedStream("bank_transactions", ["BankTransactionID"]),
     Contacts(),
+    PaginatedStream("quotes", ["QuoteID"]),
     PaginatedStream("credit_notes", ["CreditNoteID"], format_fn=transform.format_credit_notes),
     PaginatedStream("invoices", ["InvoiceID"], format_fn=transform.format_invoices),
     PaginatedStream("manual_journals", ["ManualJournalID"]),
