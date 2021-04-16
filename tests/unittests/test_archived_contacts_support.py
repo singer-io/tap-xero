@@ -6,7 +6,7 @@ from unittest import mock
 class MockConfig:
     def __init__(self):
         self.config = {
-            "includeArchivedContacts": "true"
+            "include_archived_contacts": "true"
         }
 
     def update_start_date_bookmark(self,bookmark):
@@ -58,8 +58,8 @@ class TestSupportArchivedContacts(unittest.TestCase):
         # ArchivedContacts parameter set to true in the MockConfig class
         ctx = MockConfig()
 
-        # Customer may also pass a boolean parameter for includeArchivedContacts
-        ctx.config["includeArchivedContacts"] = True
+        # Customer may also pass a boolean parameter for include_archived_contacts
+        ctx.config["include_archived_contacts"] = True
         sync_resp = contacts_stream_execution.sync(ctx)
 
         expected_filter_options = dict(since="2021-04-01", order="UpdatedDateUTC ASC", includeArchived="true", page=1)
@@ -76,8 +76,8 @@ class TestSupportArchivedContacts(unittest.TestCase):
 
         # ArchivedContacts parameter set to true in the MockConfig class
         ctx = MockConfig()
-        # Seeting the archived contacts parameter value to "false" to get only active contacts result
-        ctx.config["includeArchivedContacts"] = "false"
+        # Setting the archived contacts parameter value to "false" to get only active contacts result
+        ctx.config["include_archived_contacts"] = "false"
         sync_resp = contacts_stream_execution.sync(ctx)
 
         expected_filter_options = dict(since="2021-04-01", order="UpdatedDateUTC ASC", page=1)
@@ -111,8 +111,8 @@ class TestSupportArchivedContacts(unittest.TestCase):
         # ArchivedContacts parameter set to true in the MockConfig class
         ctx = MockConfig()
 
-        # Deleting the 'includeArchivedContacts' option from the config dictionary
-        del ctx.config["includeArchivedContacts"]
+        # Deleting the 'include_archived_contacts' option from the config dictionary
+        del ctx.config["include_archived_contacts"]
         sync_resp = contacts_stream_execution.sync(ctx)
 
         expected_filter_options = dict(since="2021-04-01", order="UpdatedDateUTC ASC", page=1)

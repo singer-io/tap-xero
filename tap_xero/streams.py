@@ -119,7 +119,7 @@ class Contacts(PaginatedStream):
 
     def sync(self, ctx):
         # Parameter to collect archived contacts from the Xero platform
-        if ctx.config.get("includeArchivedContacts") in ["true", True]:
+        if ctx.config.get("include_archived_contacts") in ["true", True]:
             self.filter_options.update({'includeArchived': "true"})
 
         super().sync(ctx)

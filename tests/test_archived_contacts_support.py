@@ -7,7 +7,7 @@ from base import XeroScenarioBase, preserve_refresh_token
 class TestArchivedContacts(XeroScenarioBase):
 
     def setUp(self):
-        self.includeArchivedContacts = None
+        self.include_archived_contacts = None
         super().setUp()
 
     def name(self):
@@ -16,9 +16,9 @@ class TestArchivedContacts(XeroScenarioBase):
     def get_properties(self):
         properties = super().get_properties()
 
-        # includeArchivedContacts is an optional property for configuration
-        if self.includeArchivedContacts:
-            properties["includeArchivedContacts"] = self.includeArchivedContacts
+        # include_archived_contacts is an optional property for configuration
+        if self.include_archived_contacts:
+            properties["include_archived_contacts"] = self.include_archived_contacts
 
         return properties
 
@@ -49,7 +49,7 @@ class TestArchivedContacts(XeroScenarioBase):
         self.assertSetEqual({"ACTIVE"}, set(contacts_status_1))
 
         # Configuring the tap to collect Archived records as well
-        self.includeArchivedContacts = "true"
+        self.include_archived_contacts = "true"
         self.conn_id = connections.ensure_connection(self, payload_hook=preserve_refresh_token)
         # Tap-Xero be default should now collect Active and archived records
         active_and_archived_records = self.get_records_from_xero_platform()
