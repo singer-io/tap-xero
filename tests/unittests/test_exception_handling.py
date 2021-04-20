@@ -306,9 +306,9 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         xero_client.tenant_id = "123"
 
         try:
-            # Verifying if the custom exception 'XeroTooManyErrorInMinute' is raised on receiving status code 429 with minute limit exceeded
+            # Verifying if the custom exception 'XeroTooManyInMinuteError' is raised on receiving status code 429 with minute limit exceeded
             filter_func_exec = xero_client.filter(tap_stream_id)
-        except client_.XeroTooManyErrorInMinute as e:
+        except client_.XeroTooManyInMinuteError as e:
             expected_error_message = "HTTP-error-code: 429, Error: The API rate limit for your organisation/application pairing has been exceeded. Please retry after 5 seconds"
             
             # Verifying the message formed for the custom exception
@@ -344,7 +344,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         xero_client.tenant_id = "123"
         try:
             filter_func_exec = xero_client.filter(tap_stream_id)
-        except (requests.HTTPError, client_.XeroTooManyErrorInMinute) as e:
+        except (requests.HTTPError, client_.XeroTooManyInMinuteError) as e:
             pass
 
         self.assertEqual(mocked_failed_429_request_in_minute.call_count, 3)
@@ -518,7 +518,7 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
 
         try:
             xero_client.check_platform_access(config, config_path)
-        except client_.XeroTooManyErrorInMinute as e:
+        except client_.XeroTooManyInMinuteError as e:
             expected_message = "HTTP-error-code: 429, Error: The API rate limit for your organisation/application pairing has been exceeded. Please retry after 5 seconds"
             self.assertEqual(str(e.message), expected_message)
 
@@ -559,7 +559,7 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
 
         try:
             xero_client.check_platform_access(config, config_path)
-        except (requests.HTTPError, client_.XeroTooManyErrorInMinute) as e:
+        except (requests.HTTPError, client_.XeroTooManyInMinuteError) as e:
             pass
 
         self.assertEqual(mocked_failed_429_request_in_minute.call_count, 3)

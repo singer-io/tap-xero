@@ -43,7 +43,7 @@ class XeroNotFoundError(XeroError):
 class XeroTooManyError(XeroError):
     pass
 
-class XeroTooManyErrorInMinute(XeroError):
+class XeroTooManyInMinuteError(XeroError):
     pass
 
 class XeroInternalError(XeroError):
@@ -193,7 +193,7 @@ class XeroClient():
 
 
     @backoff.on_exception(backoff.expo, XeroInternalError, max_tries=3)
-    @backoff.on_exception(retry_after_wait_gen, XeroTooManyErrorInMinute, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
+    @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def check_platform_access(self, config, config_path):
 
         # Validating the authentication of the provided configuration
@@ -215,7 +215,7 @@ class XeroClient():
 
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
-    @backoff.on_exception(retry_after_wait_gen, XeroTooManyErrorInMinute, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
+    @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
@@ -254,9 +254,9 @@ def raise_for_error(resp):
                 api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
                 message = "HTTP-error-code: 429, Error: {}. Please retry after {} seconds".format(api_rate_limit_message, resp_headers.get("Retry-After"))
 
-                #Raise XeroTooManyErrorInMinute exception if minute limit is reached
+                #Raise XeroTooManyInMinuteError exception if minute limit is reached
                 if resp_headers.get("X-Rate-Limit-Problem") == 'minute':
-                    raise XeroTooManyErrorInMinute(message, resp)
+                    raise XeroTooManyInMinuteError(message, resp)
             # Handling status code 403 specially since response of API does not contain enough information
             elif error_code in (403, 401):
                 api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
