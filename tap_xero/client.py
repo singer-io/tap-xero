@@ -4,7 +4,6 @@ import json
 import decimal
 import sys
 import math
-import singer
 from os.path import join
 from datetime import datetime, date, time, timedelta
 import requests
@@ -12,6 +11,7 @@ from singer.utils import strftime, strptime_to_utc
 import six
 import pytz
 import backoff
+import singer
 
 LOGGER = singer.get_logger()
 
@@ -20,6 +20,7 @@ BASE_URL = "https://api.xero.com/api.xro/2.0"
 
 class XeroError(Exception):
     def __init__(self, message=None, response=None):
+        super().__init__(message)
         self.message = message
         self.response = response
 
@@ -148,14 +149,14 @@ def is_not_status_code_fn(status_code):
         return False
     return gen_fn
 
-def retry_after_wait_gen(**kwargs):
+def retry_after_wait_gen():
     while True:
         # This is called in an except block so we can retrieve the exception
         # and check it.
         exc_info = sys.exc_info()
         resp = exc_info[1].response
         sleep_time_str = resp.headers.get('Retry-After')
-        LOGGER.info("Received 429 -- sleeping for {} seconds".format(sleep_time_str))
+        LOGGER.info("Received 429 -- sleeping for %s seconds", sleep_time_str)
         yield math.floor(float(sleep_time_str))
 
 class XeroClient():
@@ -256,7 +257,7 @@ def raise_for_error(resp):
 
                 #Raise XeroTooManyInMinuteError exception if minute limit is reached
                 if resp_headers.get("X-Rate-Limit-Problem") == 'minute':
-                    raise XeroTooManyInMinuteError(message, resp)
+                    raise XeroTooManyInMinuteError(message, resp) from None
             # Handling status code 403 specially since response of API does not contain enough information
             elif error_code in (403, 401):
                 api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
