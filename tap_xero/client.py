@@ -2,6 +2,9 @@ from base64 import b64encode
 import re
 import json
 import decimal
+import sys
+import math
+import singer
 from os.path import join
 from datetime import datetime, date, time, timedelta
 import requests
@@ -10,11 +13,15 @@ import six
 import pytz
 import backoff
 
+LOGGER = singer.get_logger()
+
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
 
 class XeroError(Exception):
-    pass
+    def __init__(self, message=None, response=None):
+        self.message = message
+        self.response = response
 
 
 class XeroBadRequestError(XeroError):
@@ -36,6 +43,8 @@ class XeroNotFoundError(XeroError):
 class XeroTooManyError(XeroError):
     pass
 
+class XeroTooManyErrorInMinute(XeroError):
+    pass
 
 class XeroInternalError(XeroError):
     pass
@@ -131,6 +140,24 @@ def update_config_file(config, config_path):
     with open(config_path, 'w') as config_file:
         json.dump(config, config_file, indent=2)
 
+def is_not_status_code_fn(status_code):
+    def gen_fn(exc):
+        if getattr(exc, 'response', None) and getattr(exc.response, 'status_code', None) and exc.response.status_code not in status_code:
+            return True
+        # Retry other errors up to the max
+        return False
+    return gen_fn
+
+def retry_after_wait_gen(**kwargs):
+    while True:
+        # This is called in an except block so we can retrieve the exception
+        # and check it.
+        exc_info = sys.exc_info()
+        resp = exc_info[1].response
+        sleep_time_str = resp.headers.get('Retry-After')
+        LOGGER.info("Received 429 -- sleeping for {} seconds".format(sleep_time_str))
+        yield math.floor(float(sleep_time_str))
+
 class XeroClient():
     def __init__(self, config):
         self.session = requests.Session()
@@ -165,6 +192,8 @@ class XeroClient():
             self.tenant_id = config['tenant_id']
 
 
+    @backoff.on_exception(backoff.expo, XeroInternalError, max_tries=3)
+    @backoff.on_exception(retry_after_wait_gen, XeroTooManyErrorInMinute, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def check_platform_access(self, config, config_path):
 
         # Validating the authentication of the provided configuration
@@ -185,7 +214,8 @@ class XeroClient():
             raise_for_error(response)
 
 
-    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroTooManyError), max_tries=3)
+    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
+    @backoff.on_exception(retry_after_wait_gen, XeroTooManyErrorInMinute, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(BASE_URL, xero_resource_name)
@@ -223,6 +253,10 @@ def raise_for_error(resp):
                 resp_headers = resp.headers
                 api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
                 message = "HTTP-error-code: 429, Error: {}. Please retry after {} seconds".format(api_rate_limit_message, resp_headers.get("Retry-After"))
+
+                #Raise XeroTooManyErrorInMinute exception if minute limit is reached
+                if resp_headers.get("X-Rate-Limit-Problem") == 'minute':
+                    raise XeroTooManyErrorInMinute(message, resp)
             # Handling status code 403 specially since response of API does not contain enough information
             elif error_code in (403, 401):
                 api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
@@ -244,7 +278,7 @@ def raise_for_error(resp):
                                 ))))
 
             exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", XeroError)
-            raise exc(message) from None
+            raise exc(message, resp) from None
 
         except (ValueError, TypeError):
             raise XeroError(error) from None
