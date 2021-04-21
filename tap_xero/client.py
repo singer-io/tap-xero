@@ -174,7 +174,7 @@ def retry_after_wait_gen():
         exc_info = sys.exc_info()
         resp = exc_info[1].response
         sleep_time_str = resp.headers.get('Retry-After')
-        LOGGER.info("Received 429 -- sleeping for %s seconds", sleep_time_str)
+        LOGGER.info("API rate limit exceeded -- sleeping for %s seconds", sleep_time_str)
         yield math.floor(float(sleep_time_str))
 
 class XeroClient():
