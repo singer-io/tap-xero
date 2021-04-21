@@ -41,17 +41,27 @@ class XeroNotFoundError(XeroError):
     pass
 
 
+class XeroPreConditionFailedError(XeroError):
+    pass
+
+
 class XeroTooManyError(XeroError):
     pass
 
+
 class XeroTooManyInMinuteError(XeroError):
     pass
+
 
 class XeroInternalError(XeroError):
     pass
 
 
 class XeroNotImplementedError(XeroError):
+    pass
+
+
+class XeroNotAvailableError(XeroError):
     pass
 
 
@@ -72,6 +82,10 @@ ERROR_CODE_EXCEPTION_MAPPING = {
         "raise_exception": XeroNotFoundError,
         "message": "The resource you have specified cannot be found."
     },
+    412: {
+        "raise_exception": XeroPreConditionFailedError,
+        "message": "One or more conditions given in the request header fields were invalid."
+    },
     429: {
         "raise_exception": XeroTooManyError,
         "message": "The API rate limit for your organisation/application pairing has been exceeded"
@@ -83,6 +97,10 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     501: {
         "raise_exception": XeroNotImplementedError,
         "message": "The method you have called has not been implemented."
+    },
+    503: {
+        "raise_exception": XeroNotAvailableError,
+        "message": "API service is currently unavailable."
     }
 }
 
