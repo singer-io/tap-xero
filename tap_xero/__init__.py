@@ -20,7 +20,7 @@ REQUIRED_CONFIG_KEYS = [
 LOGGER = singer.get_logger()
 
 BAD_CREDS_MESSAGE = (
-    "Failed to refresh OAuth token using the credentials from both the config and S3. "
+    "Failed to refresh OAuth token using the credentials. "
     "The token might need to be reauthorized from the integration's properties "
     "or there could be another authentication issue. Please attempt to reauthorize "
     "the integration."
