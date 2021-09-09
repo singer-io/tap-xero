@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.1
+  * Make the TotalDiscount schema on the Quotes stream the same as the schema on the other streams [#93](https://github.com/singer-io/tap-xero/pull/93)
+
 ## 2.2.0
   * Additional handling for HTTP 429 responses from Xero [#90](https://github.com/singer-io/tap-xero/pull/90)
   * Adding a feature to allow the syncing of Archived Contacts via `include_archived_contacts` config [#84](https://github.com/singer-io/tap-xero/pull/84)
