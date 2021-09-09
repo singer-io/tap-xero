@@ -76,12 +76,15 @@
             "exclusiveMaximum": true
         },
         "TotalDiscount":{
-            "type":[
-                "null",
-                "number"
+            "type": [
+              "null",
+              "number"
             ],
-            "minimum": 0,
-            "maximum": 100
+            "minimum": -1e+33,
+            "maximum": 1e+33,
+            "multipleOf": 1e-05,
+            "exclusiveMinimum": true,
+            "exclusiveMaximum": true
         },
         "UpdatedDateUTC": {
             "type": [
@@ -166,4 +169,3 @@
     ],
     "additionalProperties": false
   }
-  
