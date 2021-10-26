@@ -147,7 +147,7 @@ class Journals(Stream):
 
 class Assets(Stream):
     def __init__(self, *args, **kwargs):
-        self.status = kwargs.pop("status")
+        self.statuses = kwargs.pop("statuses") or ["REGISTERED"]
         super().__init__(*args, **kwargs)
 
     def sync(self, ctx):
@@ -156,14 +156,14 @@ class Assets(Stream):
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
 
-        self.filter_options.update(dict(status=self.status, orderBy="PurchaseDate", sortDirection="ASC", legacy=True))
+        self.filter_options.update(dict(orderBy="PurchaseDate", sortDirection="ASC", legacy=True))
 
         max_updated = start
         while True:
             ctx.set_offset(offset, curr_page_num)
             ctx.write_state()
             self.filter_options["page"] = curr_page_num
-            records = _make_request(ctx, self.tap_stream_id, self.filter_options)
+            records = self._make_request_by_status(ctx=ctx)
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
@@ -174,6 +174,13 @@ class Assets(Stream):
         ctx.clear_offsets(self.tap_stream_id)
         ctx.set_bookmark(bookmark, max_updated)
         ctx.write_state()
+
+    def _make_request_by_status(self, ctx):
+        records = []
+        for status in self.statuses:
+            self.filter_options["status"] = status
+            records.extend(_make_request(ctx, self.tap_stream_id, self.filter_options))
+        return records
 
 
 class LinkedTransactions(Stream):
@@ -240,9 +247,7 @@ all_streams = [
 
     # ASSETS STREAM
     # This endpoint supports pagination and sorting, but has additional filter_option
-    Assets("registered_assets", ["assetId"], bookmark_key="assetNumber", status="REGISTERED"),
-    Assets("draft_assets", ["assetId"], bookmark_key="assetNumber", status="DRAFT"),
-    Assets("disposed_assets", ["assetId"], bookmark_key="assetNumber", status="DISPOSED"),
+    Assets("assets", ["assetId"], bookmark_key="assetNumber", statuses=["DRAFT", "DISPOSED", "REGISTERED"]),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
