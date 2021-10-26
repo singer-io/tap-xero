@@ -228,28 +228,11 @@ all_streams = [
     Everything("repeating_invoices", ["RepeatingInvoiceID"]),
     Everything("tax_rates", ["TaxType"]),
     Everything("tracking_categories", ["TrackingCategoryID"]),
-
     Everything("budgets", ["BudgetID"]),
+    Everything("reports", ["ReportId"]),
 
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
     LinkedTransactions("linked_transactions", ["LinkedTransactionID"], bookmark_key="UpdatedDateUTC"),
-
-    # Journal Streams
-    # Journals  # DONE
-
-    # Paginated
-    # bank_transactions  # DONE
-    # payroll employees  (Needs special base_url) payroll.xro/1.0 instead of api.xero/2.0
-
-    # Everything
-    # Budgets
-    # Reports
-    # Reports/TenNinetyNine
-
-    # Paginated Special Case
-    # Assets (Needs special base_url) assets.xro/1.0 instead of api.xero/2.0
-
-
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]
