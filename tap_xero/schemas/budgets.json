@@ -30,15 +30,24 @@
       "format": "date-time"
     },
     "Tracking": {
-      "$ref": "tracking_categories"
+      "items": {
+        "$ref": "tracking_categories"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
     },
     "BudgetLines": {
-      "$ref": "budget_lines"
+      "items": {
+        "$ref": "budget_lines"
+      },
+      "type": ["null", "array"]
     }
   },
   "tap_schema_dependencies": [
-    "tracking_categories",
-    "budget_lines"
+    "budget_lines",
+    "tracking_categories"
   ],
   "additionalProperties": false
 }

@@ -6,17 +6,15 @@
   "properties": {
     "AccountID": {
       "type": [
-        "null",
         "string"
       ]
     },
     "AccountCode": {
       "type": [
-        "null",
         "string"
       ]
     },
-    "Balances": {
+    "BudgetBalances": {
       "$ref": "balances"
     }
   },
