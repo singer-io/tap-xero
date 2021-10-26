@@ -15,7 +15,7 @@ import singer
 
 LOGGER = singer.get_logger()
 
-BASE_URL = "https://api.xero.com/api.xro/2.0"
+XERO_API_BASE_URL = "https://api.xero.com/api.xro/2.0"
 
 
 class XeroError(Exception):
@@ -181,6 +181,7 @@ class XeroClient():
     def __init__(self, config):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
+        self.default_api_base_url = config.get("api_base_url", XERO_API_BASE_URL)
         self.tenant_id = None
         self.access_token = None
 
@@ -225,7 +226,7 @@ class XeroClient():
         }
 
         # Validating the authorization of the provided configuration
-        contacts_url = join(BASE_URL, "Invoices")
+        contacts_url = join(XERO_API_BASE_URL, "Invoices")
         request = requests.Request("GET", contacts_url, headers=headers)
         response = self.session.send(request.prepare())
 
@@ -237,7 +238,7 @@ class XeroClient():
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
-        url = join(BASE_URL, xero_resource_name)
+        url = join(self.default_api_base_url, xero_resource_name)
         headers = {"Accept": "application/json",
                    "Authorization": "Bearer " + self.access_token,
                    "Xero-tenant-id": self.tenant_id}
