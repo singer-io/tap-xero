@@ -225,7 +225,7 @@ class XeroClient():
         }
 
         # Validating the authorization of the provided configuration
-        contacts_url = join(BASE_URL, "Contacts")
+        contacts_url = join(BASE_URL, "Invoices")
         request = requests.Request("GET", contacts_url, headers=headers)
         response = self.session.send(request.prepare())
 
