@@ -1,0 +1,38 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "ReportID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportDate": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  }
+}
