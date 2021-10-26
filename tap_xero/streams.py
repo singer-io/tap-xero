@@ -145,6 +145,36 @@ class Journals(Stream):
                 break
 
 
+class Assets(Stream):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, self.bookmark_key]
+        offset = [self.tap_stream_id, "page"]
+        start = ctx.update_start_date_bookmark(bookmark)
+        curr_page_num = ctx.get_offset(offset) or 1
+
+        self.filter_options.update(dict(status="REGISTERED", orderBy="PurchaseDate", sortDirection="ASC", legacy=True))
+
+        max_updated = start
+        while True:
+            ctx.set_offset(offset, curr_page_num)
+            ctx.write_state()
+            self.filter_options["page"] = curr_page_num
+            records = _make_request(ctx, self.tap_stream_id, self.filter_options)
+            if records:
+                self.format_fn(records)
+                self.write_records(records, ctx)
+                max_updated = records[-1][self.bookmark_key]
+            if not records or len(records) < FULL_PAGE_SIZE:
+                break
+            curr_page_num += 1
+        ctx.clear_offsets(self.tap_stream_id)
+        ctx.set_bookmark(bookmark, max_updated)
+        ctx.write_state()
+
+
 class LinkedTransactions(Stream):
     """The Linked Transactions endpoint is a special case. It supports
     pagination, but not the Modified At header, but the objects returned have
@@ -206,6 +236,8 @@ all_streams = [
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
     Journals("journals", ["JournalID"], bookmark_key="JournalNumber", format_fn=transform.format_journals),
+
+    Assets("assets", ["assetId"], bookmark_key="assetNumber"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
