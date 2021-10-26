@@ -236,7 +236,7 @@ class XeroClient():
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def filter(self, tap_stream_id, since=None, **params):
+    def filter(self, tap_stream_id, legacy=False, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
         url = join(self.default_api_base_url, xero_resource_name)
         headers = {"Accept": "application/json",
@@ -257,7 +257,7 @@ class XeroClient():
             response_meta = json.loads(response.text,
                                     object_hook=_json_load_object_hook,
                                     parse_float=decimal.Decimal)
-            response_body = response_meta.pop(xero_resource_name)
+            response_body = response_meta.pop(xero_resource_name if not legacy else "items")
             return response_body
 
 
