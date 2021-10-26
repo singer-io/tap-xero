@@ -147,6 +147,7 @@ class Journals(Stream):
 
 class Assets(Stream):
     def __init__(self, *args, **kwargs):
+        self.status = kwargs.pop("status")
         super().__init__(*args, **kwargs)
 
     def sync(self, ctx):
@@ -155,7 +156,7 @@ class Assets(Stream):
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
 
-        self.filter_options.update(dict(status="REGISTERED", orderBy="PurchaseDate", sortDirection="ASC", legacy=True))
+        self.filter_options.update(dict(status=self.status, orderBy="PurchaseDate", sortDirection="ASC", legacy=True))
 
         max_updated = start
         while True:
@@ -237,7 +238,7 @@ all_streams = [
     # This endpoint is paginated, but in its own special snowflake way.
     Journals("journals", ["JournalID"], bookmark_key="JournalNumber", format_fn=transform.format_journals),
 
-    Assets("assets", ["assetId"], bookmark_key="assetNumber"),
+    Assets("assets", ["assetId"], bookmark_key="assetNumber", status="REGISTERED"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
