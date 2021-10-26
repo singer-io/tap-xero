@@ -1,0 +1,44 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "BudgetID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Description": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Tracking": {
+      "$ref": "tracking_categories"
+    },
+    "BudgetLines": {
+      "$ref": "budget_lines"
+    }
+  },
+  "tap_schema_dependencies": [
+    "tracking_categories",
+    "budget_lines"
+  ],
+  "additionalProperties": false
+}
