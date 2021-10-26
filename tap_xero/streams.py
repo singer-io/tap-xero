@@ -238,7 +238,11 @@ all_streams = [
     # This endpoint is paginated, but in its own special snowflake way.
     Journals("journals", ["JournalID"], bookmark_key="JournalNumber", format_fn=transform.format_journals),
 
-    Assets("assets", ["assetId"], bookmark_key="assetNumber", status="REGISTERED"),
+    # ASSETS STREAM
+    # This endpoint supports pagination and sorting, but has additional filter_option
+    Assets("registered_assets", ["assetId"], bookmark_key="assetNumber", status="REGISTERED"),
+    Assets("draft_assets", ["assetId"], bookmark_key="assetNumber", status="DRAFT"),
+    Assets("disposed_assets", ["assetId"], bookmark_key="assetNumber", status="DISPOSED"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
