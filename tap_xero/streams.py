@@ -10,10 +10,10 @@ LOGGER = singer.get_logger()
 FULL_PAGE_SIZE = 100
 
 
-def _request_with_timer(tap_stream_id, xero, filter_options):
+def _request_with_timer(tap_stream_id, xero, api_name, filter_options):
     with metrics.http_request_timer(tap_stream_id) as timer:
         try:
-            resp = xero.filter(tap_stream_id, **filter_options)
+            resp = xero.filter(tap_stream_id=tap_stream_id, api_name=api_name, **filter_options)
             timer.tags[metrics.Tag.http_status_code] = 200
             return resp
         except HTTPError as e:
@@ -29,10 +29,10 @@ class RateLimitException(Exception):
                       RateLimitException,
                       max_tries=10,
                       factor=2)
-def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
+def _make_request(ctx, tap_stream_id, api_name, filter_options=None, attempts=0):
     filter_options = filter_options or {}
     try:
-        return _request_with_timer(tap_stream_id, ctx.client, filter_options)
+        return _request_with_timer(tap_stream_id, ctx.client, api_name, filter_options)
     except HTTPError as e:
         if e.response.status_code == 401:
             if attempts == 1:
@@ -172,7 +172,7 @@ class Assets(Stream):
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
 
-        self.filter_options.update(dict(orderBy="PurchaseDate", sortDirection="ASC", legacy=True))
+        self.filter_options.update(dict(orderBy="PurchaseDate", sortDirection="ASC"))
 
         max_updated = start
         while True:
@@ -195,7 +195,7 @@ class Assets(Stream):
         records = []
         for status in self.statuses:
             self.filter_options["status"] = status
-            records.extend(_make_request(ctx, self.tap_stream_id, self.filter_options))
+            records.extend(_make_request(ctx, self.tap_stream_id, self.api_name, self.filter_options))
         return records
 
 
@@ -204,10 +204,10 @@ class PayrollEmployees(Stream):
         super().__init__(*args, **kwargs)
 
     def get_individual_employee(self, ctx, individual_employee_id):
-        return _make_request(ctx, individual_employee_id, self.filter_options)
+        return _make_request(ctx, individual_employee_id, self.api_name, self.filter_options)[0]
 
     def get_employees(self, ctx, tap_stream_id):
-        records = _make_request(ctx, self.tap_stream_id, self.filter_options)
+        records = _make_request(ctx, tap_stream_id, self.api_name, self.filter_options)
 
         for record in records:
             employee_id = record["EmployeeID"]
