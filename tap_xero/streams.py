@@ -1,3 +1,4 @@
+from os.path import join
 from requests.exceptions import HTTPError
 import singer
 from singer import metadata, metrics, Transformer
@@ -145,6 +146,20 @@ class Journals(Stream):
                 break
 
 
+class Reports(Stream):
+    def __init__(self, *args, **kwargs):
+        self.report_types = kwargs.pop("report_types") or []
+        super().__init__(*args, **kwargs)
+
+    def sync(self, ctx):
+        filter_options = ctx.config.get("date_range", {})
+        for report_type in self.report_types:
+            tap_stream_id_with_type = join(self.tap_stream_id, report_type)
+            records = _make_request(ctx, tap_stream_id_with_type, filter_options)
+            self.format_fn(records)
+            self.write_records(records, ctx)
+
+
 class Assets(Stream):
     def __init__(self, *args, **kwargs):
         self.statuses = kwargs.pop("statuses") or ["REGISTERED"]
@@ -249,6 +264,7 @@ all_streams = [
     # ASSETS STREAM
     # This endpoint supports pagination and sorting, but has additional filter_option
     Assets("assets", ["assetId"], bookmark_key="assetNumber", statuses=["DRAFT", "DISPOSED", "REGISTERED"]),
+    Reports("reports", ["ReportID"], report_types=["BalanceSheet", "ProfitAndLoss"]),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
@@ -271,8 +287,8 @@ all_streams = [
     Everything("repeating_invoices", ["RepeatingInvoiceID"]),
     Everything("tax_rates", ["TaxType"]),
     Everything("tracking_categories", ["TrackingCategoryID"]),
-    Everything("budgets", ["BudgetID"]),
-    Everything("reports", ["ReportId"]),
+    Everything("budgets", ["BudgetID"]),  # TODO: Perform nested querying to fill the budget lines attribute
+    # Everything("reports", ["ReportId"]),  # TODO: Perform nested querying to fill the report report details.
 
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
