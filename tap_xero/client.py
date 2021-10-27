@@ -238,8 +238,9 @@ class XeroClient():
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def filter(self, tap_stream_id, legacy=False, since=None, api_name="accounting", **params):
-        xero_resource_name = tap_stream_id.title().replace("_", "")
+    def filter(self, tap_stream_id, api_name, since=None, **params):
+        valid_tap_stream_id = _get_valid_tap_stream_id(tap_stream_id, api_name)
+        xero_resource_name = valid_tap_stream_id.title().replace("_", "")
         base_url = _XERO_API_URL_MAP.get(api_name)
         url = join(base_url, xero_resource_name)
         headers = {"Accept": "application/json",
@@ -258,10 +259,18 @@ class XeroClient():
             return None
         else:
             response_meta = json.loads(response.text,
-                                    object_hook=_json_load_object_hook,
-                                    parse_float=decimal.Decimal)
-            response_body = response_meta.pop(xero_resource_name if not legacy else "items")
+                                       object_hook=_json_load_object_hook,
+                                       parse_float=decimal.Decimal)
+            _xero_resource_name = xero_resource_name.split("/")[0]
+            response_body = response_meta.pop(_xero_resource_name if api_name != "assets" else "items")
             return response_body
+
+
+def _get_valid_tap_stream_id(tap_stream_id, api_name):
+    """Valid tap stream ID for similar resource names but different APIs. ie. Accounting.Employees and Payroll.Employees"""
+    if api_name == "payroll" and tap_stream_id.startswith("payroll_employees"):
+        return tap_stream_id.replace("payroll_", "")
+    return tap_stream_id
 
 
 def raise_for_error(resp):
