@@ -264,7 +264,7 @@ all_streams = [
     # ASSETS STREAM
     # This endpoint supports pagination and sorting, but has additional filter_option
     Assets("assets", ["assetId"], bookmark_key="assetNumber", statuses=["DRAFT", "DISPOSED", "REGISTERED"]),
-    Reports("reports", ["ReportID"], report_types=["BalanceSheet", "ProfitAndLoss"]),
+    Reports("reports", ["ReportID"], report_types=["balance_sheet", "profit_and_loss"]),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
