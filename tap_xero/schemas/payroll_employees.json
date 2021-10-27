@@ -40,13 +40,63 @@
         "string"
       ]
     },
-    "Phone": {
+    "Gender": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "HomeAddress": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "AddressLine1": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "City": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "Region": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "PostalCode": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "Country": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      }
+    },
+    "Mobile": {
       "type": [
         "null",
         "string"
       ]
     },
     "StartDate": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Classification": {
       "type": [
         "null",
         "string"
@@ -70,23 +120,403 @@
         "string"
       ]
     },
-    "MiddleNames": {
+    "EmployeeGroupName": {
       "type": [
         "null",
         "string"
       ]
     },
-    "Gender": {
+    "IsAuthorisedToApproveLeave": {
       "type": [
         "null",
-        "string"
+        "boolean"
       ]
     },
-    "Mobile": {
+    "IsAuthorisedToApproveTimesheets": {
       "type": [
         "null",
-        "string"
+        "boolean"
       ]
+    },
+    "TaxDeclaration": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "TaxFileNumber": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "EmploymentBasis": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "AustralianResidentForTaxPurposes": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "TaxFreeThresholdClaimed": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "HasHELPDebt": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "HasSFSSDebt": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "EligibleToReceiveLeaveLoading": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "UpdatedDateUTC": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "HasTradeSupportLoanDebt": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "HasStudentStartupLoan": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "ResidencyStatus": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "IncludeLeaveLoadingInSGC": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        },
+        "HasLoanOrStudentDebt": {
+          "type": [
+            "null",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "BankAccounts": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "StatementText": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "AccountName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "BSB": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "AccountNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Remainder": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      }
+    },
+    "OpeningBalances": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "OpeningBalanceDate": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "LeaveLines": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "properties": {
+              "LeaveTypeID": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "NumberOfUnits": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "PayTemplate": {
+      "type": [
+        "null",
+        "object"
+      ],
+      "properties": {
+        "EarningsLines": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "properties": {
+              "EarningsRateID": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "CalculationType": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "AnnualSalary": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "NumberOfUnitsPerWeek": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              }
+            }
+          }
+        },
+        "SuperLines": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "properties": {
+              "SuperMembershipID": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "ContributionType": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "CalculationType": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "MinimumMonthlyEarnings": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "ExpenseAccountCode": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "LiabilityAccountCode": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        "LeaveLines": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "properties": {
+              "LeaveTypeID": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "CalculationType": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "AnnualNumberOfUnits": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "FullTimeNumberOfUnitsPerPeriod": {
+                "type": [
+                  "null",
+                  "number"
+                ]
+              },
+              "EntitlementFinalPayPayoutType": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "SuperMemberships": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "SuperMembershipID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "SuperFundID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "EmployeeNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
+    },
+    "LeaveBalances": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "LeaveName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "LeaveTypeID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "NumberOfUnits": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "TypeOfUnits": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
     }
   }
 }
