@@ -48,13 +48,14 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
 
 
 class Stream():
-    def __init__(self, tap_stream_id, pk_fields, bookmark_key="UpdatedDateUTC", format_fn=None):
+    def __init__(self, tap_stream_id, pk_fields, bookmark_key="UpdatedDateUTC", api_name="accounting", format_fn=None):
         self.tap_stream_id = tap_stream_id
         self.pk_fields = pk_fields
         self.format_fn = format_fn or (lambda x: x)
         self.bookmark_key = bookmark_key
         self.replication_method = "INCREMENTAL"
         self.filter_options = {}
+        self.api_name = api_name
 
     def metrics(self, records):
         with metrics.record_counter(self.tap_stream_id) as counter:
@@ -152,10 +153,10 @@ class Reports(Stream):
         super().__init__(*args, **kwargs)
 
     def sync(self, ctx):
-        filter_options = ctx.config.get("date_range", {})
+        self.filter_options.update(ctx.config.get("date_range", {}))
         for report_type in self.report_types:
             tap_stream_id_with_type = join(self.tap_stream_id, report_type)
-            records = _make_request(ctx, tap_stream_id_with_type, filter_options)
+            records = _make_request(ctx, tap_stream_id_with_type, self.filter_options)
             self.format_fn(records)
             self.write_records(records, ctx)
 
@@ -196,6 +197,50 @@ class Assets(Stream):
             self.filter_options["status"] = status
             records.extend(_make_request(ctx, self.tap_stream_id, self.filter_options))
         return records
+
+
+class PayrollEmployees(Stream):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_individual_employee(self, ctx, individual_employee_id):
+        return _make_request(ctx, individual_employee_id, self.filter_options)
+
+    def get_employees(self, ctx, tap_stream_id):
+        records = _make_request(ctx, self.tap_stream_id, self.filter_options)
+
+        for record in records:
+            employee_id = record["EmployeeID"]
+            individual_employee_id = join(tap_stream_id, employee_id)
+            yield self.get_individual_employee(ctx, individual_employee_id)
+
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, self.bookmark_key]
+        offset = [self.tap_stream_id, "page"]
+        start = ctx.update_start_date_bookmark(bookmark)
+        curr_page_num = ctx.get_offset(offset) or 1
+
+        self.filter_options.update(dict(since=start, order="UpdatedDateUTC ASC"))
+
+        max_updated = start
+        while True:
+            ctx.set_offset(offset, curr_page_num)
+            ctx.write_state()
+            self.filter_options["page"] = curr_page_num
+
+            records = list(self.get_employees(ctx=ctx, tap_stream_id="employees"))
+
+            if records:
+                self.format_fn(records)
+                self.write_records(records, ctx)
+                max_updated = records[-1][self.bookmark_key]
+            if not records or len(records) < FULL_PAGE_SIZE:
+                break
+            curr_page_num += 1
+
+        ctx.clear_offsets(self.tap_stream_id)
+        ctx.set_bookmark(bookmark, max_updated)
+        ctx.write_state()
 
 
 class LinkedTransactions(Stream):
@@ -255,7 +300,6 @@ all_streams = [
     PaginatedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
     PaginatedStream("prepayments", ["PrepaymentID"], format_fn=transform.format_over_pre_payments),
     PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
-    PaginatedStream("payroll_employees", ["EmployeeID"]),
 
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
@@ -263,8 +307,9 @@ all_streams = [
 
     # ASSETS STREAM
     # This endpoint supports pagination and sorting, but has additional filter_option
-    Assets("assets", ["assetId"], bookmark_key="assetNumber", statuses=["DRAFT", "DISPOSED", "REGISTERED"]),
+    Assets("assets", ["assetId"], bookmark_key="assetNumber", statuses=["DRAFT", "DISPOSED", "REGISTERED"], api_name="assets"),
     Reports("reports", ["ReportID"], report_types=["balance_sheet", "profit_and_loss"]),
+    PayrollEmployees("payroll_employees", ["EmployeeID"], api_name="payroll"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
