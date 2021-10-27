@@ -1,0 +1,92 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "EmployeeID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "FirstName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "LastName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Status": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Email": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "DateOfBirth": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Phone": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "StartDate": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "OrdinaryEarningsRateID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PayrollCalendarID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "MiddleNames": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Gender": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Mobile": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  }
+}
