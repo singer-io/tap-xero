@@ -29,7 +29,7 @@ class RateLimitException(Exception):
                       RateLimitException,
                       max_tries=10,
                       factor=2)
-def _make_request(ctx, tap_stream_id, api_name, filter_options=None, attempts=0):
+def _make_request(ctx, tap_stream_id, api_name="accounting", filter_options=None, attempts=0):
     filter_options = filter_options or {}
     try:
         return _request_with_timer(tap_stream_id, ctx.client, api_name, filter_options)
@@ -76,7 +76,7 @@ class BookmarkedStream(Stream):
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         start = ctx.update_start_date_bookmark(bookmark)
-        records = _make_request(ctx, self.tap_stream_id, dict(since=start))
+        records = _make_request(ctx, self.tap_stream_id, self.api_name, dict(since=start))
         if records:
             self.format_fn(records)
             self.write_records(records, ctx)
@@ -102,7 +102,7 @@ class PaginatedStream(Stream):
             ctx.set_offset(offset, curr_page_num)
             ctx.write_state()
             self.filter_options["page"] = curr_page_num
-            records = _make_request(ctx, self.tap_stream_id, self.filter_options)
+            records = _make_request(ctx, self.tap_stream_id, self.api_name, self.filter_options)
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
@@ -136,7 +136,7 @@ class Journals(Stream):
         journal_number = ctx.get_bookmark(bookmark) or 0
         while True:
             filter_options = {"offset": journal_number}
-            records = _make_request(ctx, self.tap_stream_id, filter_options)
+            records = _make_request(ctx, self.tap_stream_id, self.api_name, filter_options)
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
@@ -156,7 +156,7 @@ class Reports(Stream):
         self.filter_options.update(ctx.config.get("date_range", {}))
         for report_type in self.report_types:
             tap_stream_id_with_type = join(self.tap_stream_id, report_type)
-            records = _make_request(ctx, tap_stream_id_with_type, self.filter_options)
+            records = _make_request(ctx, tap_stream_id_with_type, self.api_name, self.filter_options)
             self.format_fn(records)
             self.write_records(records, ctx)
 
@@ -208,7 +208,6 @@ class PayrollEmployees(Stream):
 
     def get_employees(self, ctx, tap_stream_id):
         records = _make_request(ctx, tap_stream_id, self.api_name, self.filter_options)
-
         for record in records:
             employee_id = record["EmployeeID"]
             individual_employee_id = join(tap_stream_id, employee_id)
@@ -228,7 +227,7 @@ class PayrollEmployees(Stream):
             ctx.write_state()
             self.filter_options["page"] = curr_page_num
 
-            records = list(self.get_employees(ctx=ctx, tap_stream_id="employees"))
+            records = list(self.get_employees(ctx=ctx, tap_stream_id=self.tap_stream_id))
 
             if records:
                 self.format_fn(records)
@@ -259,7 +258,7 @@ class LinkedTransactions(Stream):
             ctx.set_offset(offset, curr_page_num)
             ctx.write_state()
             filter_options = {"page": curr_page_num}
-            raw_records = _make_request(ctx, self.tap_stream_id, filter_options)
+            raw_records = _make_request(ctx, self.tap_stream_id, self.api_name, filter_options)
             records = [x for x in raw_records
                        if strptime_with_tz(x[self.bookmark_key]) >= strptime_with_tz(start)]
             if records:
