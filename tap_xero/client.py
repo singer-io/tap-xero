@@ -15,8 +15,11 @@ import singer
 
 LOGGER = singer.get_logger()
 
-XERO_API_BASE_URL = "https://api.xero.com/api.xro/2.0"
-
+_XERO_API_URL_MAP = {
+    "assets": "https://api.xero.com/assets.xro/1.0",
+    "payroll": "https://api.xero.com/payroll.xro/1.0",
+    "accounting": "https://api.xero.com/api.xro/2.0"
+}
 
 class XeroError(Exception):
     def __init__(self, message=None, response=None):
@@ -181,7 +184,6 @@ class XeroClient():
     def __init__(self, config):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
-        self.default_api_base_url = config.get("api_base_url", XERO_API_BASE_URL)
         self.tenant_id = None
         self.access_token = None
 
@@ -226,7 +228,7 @@ class XeroClient():
         }
 
         # Validating the authorization of the provided configuration
-        contacts_url = join(XERO_API_BASE_URL, "Budgets")
+        contacts_url = join(_XERO_API_URL_MAP["accounting"], "Budgets")
         request = requests.Request("GET", contacts_url, headers=headers)
         response = self.session.send(request.prepare())
 
@@ -236,9 +238,10 @@ class XeroClient():
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def filter(self, tap_stream_id, legacy=False, since=None, **params):
+    def filter(self, tap_stream_id, legacy=False, since=None, api_name="accounting", **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
-        url = join(self.default_api_base_url, xero_resource_name)
+        base_url = _XERO_API_URL_MAP.get(api_name)
+        url = join(base_url, xero_resource_name)
         headers = {"Accept": "application/json",
                    "Authorization": "Bearer " + self.access_token,
                    "Xero-tenant-id": self.tenant_id}
