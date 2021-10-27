@@ -22,6 +22,18 @@
         "string"
       ]
     },
+    "ReportTitles": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "string"
+        ]
+      }
+    },
     "ReportDate": {
       "type": [
         "null",
@@ -33,6 +45,118 @@
         "null",
         "string"
       ]
+    },
+    "Rows": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "RowType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Cells": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "Value": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                }
+              }
+            }
+          },
+          "Title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Rows": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "RowType": {
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                "Cells": {
+                  "type": [
+                    "null",
+                    "array"
+                  ],
+                  "items": {
+                    "type": [
+                      "null",
+                      "object"
+                    ],
+                    "properties": {
+                      "Value": {
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      "Attributes": {
+                        "type": [
+                          "null",
+                          "array"
+                        ],
+                        "items": {
+                          "type": [
+                            "null",
+                            "object"
+                          ],
+                          "properties": {
+                            "Value": {
+                              "type": [
+                                "null",
+                                "string"
+                              ]
+                            },
+                            "Id": {
+                              "type": [
+                                "null",
+                                "string"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
