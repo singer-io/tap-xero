@@ -240,6 +240,7 @@ all_streams = [
     PaginatedStream("payments", ["PaymentID"], format_fn=transform.format_payments),
     PaginatedStream("prepayments", ["PrepaymentID"], format_fn=transform.format_over_pre_payments),
     PaginatedStream("purchase_orders", ["PurchaseOrderID"]),
+    PaginatedStream("payroll_employees", ["EmployeeID"]),
 
     # JOURNALS STREAM
     # This endpoint is paginated, but in its own special snowflake way.
