@@ -271,6 +271,35 @@ class Budgets(Stream):
         ctx.write_state()
 
 
+class BASReports(Stream):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_individual_report(self, ctx, individual_report_id):
+        return _make_request(ctx=ctx, tap_stream_id=individual_report_id, api_name="accounting", filter_options=self.filter_options)
+
+    def get_detailed_reports(self, ctx, tap_stream_id):
+        records = _make_request(ctx=ctx, tap_stream_id=tap_stream_id, api_name="accounting", filter_options=self.filter_options)
+        for record in records:
+            individual_report_id = record.get("ReportID")
+            individual_report_id = join(tap_stream_id, individual_report_id)
+            yield self.get_individual_report(ctx, individual_report_id=individual_report_id)
+
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, self.bookmark_key]
+        start = ctx.update_start_date_bookmark(bookmark)
+
+        self.filter_options.update(dict(since=start))
+
+        records = list(self.get_detailed_reports(ctx, self.tap_stream_id))
+        self.format_fn(records)
+        self.write_records(records, ctx)
+
+        max_updated = records[-1][self.bookmark_key]
+        ctx.set_bookmark(bookmark, max_updated)
+        ctx.write_state()
+
+
 class LinkedTransactions(Stream):
     """The Linked Transactions endpoint is a special case. It supports
     pagination, but not the Modified At header, but the objects returned have
@@ -339,6 +368,7 @@ all_streams = [
     Reports("reports", ["ReportID"], report_types=["balance_sheet", "profit_and_loss"]),
     PayrollEmployees("payroll_employees", ["EmployeeID"], api_name="payroll"),
     Budgets("budgets", ["BudgetID"], api_name="accounting"),
+    BASReports("bas_reports", ["ReportID"], api_name="accounting"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
