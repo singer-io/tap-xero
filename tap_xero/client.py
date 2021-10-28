@@ -270,7 +270,12 @@ def _get_valid_tap_stream_id(tap_stream_id, api_name):
     """Valid tap stream ID for similar resource names but different APIs. ie. Accounting.Employees and Payroll.Employees"""
     if api_name == "payroll" and tap_stream_id.startswith("payroll_employees"):
         return tap_stream_id.replace("payroll_", "")
-    return tap_stream_id
+
+    elif api_name == "accounting" and tap_stream_id.startswith("bas_reports"):
+        return tap_stream_id.replace("bas_", "")
+
+    else:
+        return tap_stream_id
 
 
 def raise_for_error(resp):
