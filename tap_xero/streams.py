@@ -247,7 +247,7 @@ class Budgets(Stream):
         super().__init__(*args, **kwargs)
 
     def get_individual_budget(self, ctx, individual_budget_id):
-        return _make_request(ctx=ctx, tap_stream_id=individual_budget_id, api_name="accounting", filter_options=self.filter_options)
+        return _make_request(ctx=ctx, tap_stream_id=individual_budget_id, api_name="accounting", filter_options=self.filter_options)[0]
 
     def get_detailed_budgets(self, ctx, tap_stream_id):
         records = _make_request(ctx=ctx, tap_stream_id=tap_stream_id, api_name="accounting", filter_options=self.filter_options)
@@ -276,7 +276,7 @@ class BASReports(Stream):
         super().__init__(*args, **kwargs)
 
     def get_individual_report(self, ctx, individual_report_id):
-        return _make_request(ctx=ctx, tap_stream_id=individual_report_id, api_name="accounting", filter_options=self.filter_options)
+        return _make_request(ctx=ctx, tap_stream_id=individual_report_id, api_name="accounting", filter_options=self.filter_options)[0]
 
     def get_detailed_reports(self, ctx, tap_stream_id):
         records = _make_request(ctx=ctx, tap_stream_id=tap_stream_id, api_name="accounting", filter_options=self.filter_options)
