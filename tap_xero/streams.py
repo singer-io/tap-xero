@@ -242,6 +242,35 @@ class PayrollEmployees(Stream):
         ctx.write_state()
 
 
+class Budgets(Stream):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_individual_budget(self, ctx, individual_budget_id):
+        return _make_request(ctx=ctx, tap_stream_id=individual_budget_id, api_name="accounting", filter_options=self.filter_options)
+
+    def get_detailed_budgets(self, ctx, tap_stream_id):
+        records = _make_request(ctx=ctx, tap_stream_id=tap_stream_id, api_name="accounting", filter_options=self.filter_options)
+        for record in records:
+            budget_id = record.get("BudgetID")
+            individual_budget_id = join(tap_stream_id, budget_id)
+            yield self.get_individual_budget(ctx, individual_budget_id=individual_budget_id)
+
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, self.bookmark_key]
+        start = ctx.update_start_date_bookmark(bookmark)
+
+        self.filter_options.update(dict(since=start, DateFrom=ctx.config.get("budget_date_from"), DateTo=ctx.config.get("budget_date_to")))
+
+        records = list(self.get_detailed_budgets(ctx, self.tap_stream_id))
+        self.format_fn(records)
+        self.write_records(records, ctx)
+
+        max_updated = records[-1][self.bookmark_key]
+        ctx.set_bookmark(bookmark, max_updated)
+        ctx.write_state()
+
+
 class LinkedTransactions(Stream):
     """The Linked Transactions endpoint is a special case. It supports
     pagination, but not the Modified At header, but the objects returned have
@@ -309,6 +338,7 @@ all_streams = [
     Assets("assets", ["assetId"], bookmark_key="assetNumber", statuses=["DRAFT", "DISPOSED", "REGISTERED"], api_name="assets"),
     Reports("reports", ["ReportID"], report_types=["balance_sheet", "profit_and_loss"]),
     PayrollEmployees("payroll_employees", ["EmployeeID"], api_name="payroll"),
+    Budgets("budgets", ["BudgetID"], api_name="accounting"),
 
     # NON-PAGINATED STREAMS
     # These endpoints do not support pagination, but do support the Modified At
@@ -332,7 +362,6 @@ all_streams = [
     Everything("tax_rates", ["TaxType"]),
     Everything("tracking_categories", ["TrackingCategoryID"]),
     Everything("budgets", ["BudgetID"]),  # TODO: Perform nested querying to fill the budget lines attribute
-    # Everything("reports", ["ReportId"]),  # TODO: Perform nested querying to fill the report report details.
 
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
