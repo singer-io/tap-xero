@@ -15,8 +15,11 @@ import singer
 
 LOGGER = singer.get_logger()
 
-BASE_URL = "https://api.xero.com/api.xro/2.0"
-
+_XERO_API_URL_MAP = {
+    "assets": "https://api.xero.com/assets.xro/1.0",
+    "payroll": "https://api.xero.com/payroll.xro/1.0",
+    "accounting": "https://api.xero.com/api.xro/2.0"
+}
 
 class XeroError(Exception):
     def __init__(self, message=None, response=None):
@@ -225,7 +228,7 @@ class XeroClient():
         }
 
         # Validating the authorization of the provided configuration
-        contacts_url = join(BASE_URL, "Contacts")
+        contacts_url = join(_XERO_API_URL_MAP["accounting"], "Budgets")
         request = requests.Request("GET", contacts_url, headers=headers)
         response = self.session.send(request.prepare())
 
@@ -235,9 +238,11 @@ class XeroClient():
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def filter(self, tap_stream_id, since=None, **params):
-        xero_resource_name = tap_stream_id.title().replace("_", "")
-        url = join(BASE_URL, xero_resource_name)
+    def filter(self, tap_stream_id, api_name, since=None, **params):
+        valid_tap_stream_id = _get_valid_tap_stream_id(tap_stream_id, api_name)
+        xero_resource_name = valid_tap_stream_id.title().replace("_", "")
+        base_url = _XERO_API_URL_MAP.get(api_name)
+        url = join(base_url, xero_resource_name)
         headers = {"Accept": "application/json",
                    "Authorization": "Bearer " + self.access_token,
                    "Xero-tenant-id": self.tenant_id}
@@ -254,10 +259,23 @@ class XeroClient():
             return None
         else:
             response_meta = json.loads(response.text,
-                                    object_hook=_json_load_object_hook,
-                                    parse_float=decimal.Decimal)
-            response_body = response_meta.pop(xero_resource_name)
+                                       object_hook=_json_load_object_hook,
+                                       parse_float=decimal.Decimal)
+            _xero_resource_name = xero_resource_name.split("/")[0]
+            response_body = response_meta.pop(_xero_resource_name if api_name != "assets" else "items")
             return response_body
+
+
+def _get_valid_tap_stream_id(tap_stream_id, api_name):
+    """Valid tap stream ID for similar resource names but different APIs. ie. Accounting.Employees and Payroll.Employees"""
+    if api_name == "payroll" and tap_stream_id.startswith("payroll_employees"):
+        return tap_stream_id.replace("payroll_", "")
+
+    elif api_name == "accounting" and tap_stream_id.startswith("bas_reports"):
+        return tap_stream_id.replace("bas_", "")
+
+    else:
+        return tap_stream_id
 
 
 def raise_for_error(resp):

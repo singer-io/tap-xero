@@ -92,6 +92,9 @@ ENV/
 ._*
 .DS_Store
 
+# Pycharm stuff
+.idea/
+
 # Custom stuff
 env.sh
 config.json

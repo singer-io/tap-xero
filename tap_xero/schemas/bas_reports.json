@@ -1,0 +1,102 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "ReportID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportName": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "ReportDate": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Attributes": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "Name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Value": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
+    },
+    "Fields": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": [
+          "null",
+          "object"
+        ],
+        "properties": {
+          "FieldID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Value": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

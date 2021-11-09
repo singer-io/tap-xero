@@ -1,0 +1,25 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "AccountID": {
+      "type": [
+        "string"
+      ]
+    },
+    "AccountCode": {
+      "type": [
+        "string"
+      ]
+    },
+    "BudgetBalances": {
+      "$ref": "balances"
+    }
+  },
+  "tap_schema_dependencies": [
+    "balances"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,53 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "BudgetID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Description": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "UpdatedDateUTC": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "Tracking": {
+      "items": {
+        "$ref": "tracking_categories"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "BudgetLines": {
+      "items": {
+        "$ref": "budget_lines"
+      },
+      "type": ["null", "array"]
+    }
+  },
+  "tap_schema_dependencies": [
+    "budget_lines",
+    "tracking_categories"
+  ],
+  "additionalProperties": false
+}
