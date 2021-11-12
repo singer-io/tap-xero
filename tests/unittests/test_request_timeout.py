@@ -4,7 +4,6 @@ from unittest import mock
 from unittest.case import TestCase
 from requests.exceptions import Timeout, ConnectTimeout
 import datetime
-from tap_xero import LOGGER
 
 class TestBackoffError(unittest.TestCase):
     '''
