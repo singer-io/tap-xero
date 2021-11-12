@@ -82,12 +82,15 @@ class TestBackoffError(unittest.TestCase):
         Check whether the request backoffs properly for 5 times in case of Timeout error.
         """
         mock_send.side_effect = Timeout
+        before_time = datetime.datetime.now()
         with self.assertRaises(Timeout):
             config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
             client = XeroClient(config)
             client.access_token = "dummy_token"
             client.filter(tap_stream_id='dummy_stream')
-        self.assertGreaterEqual(mock_send.call_count, 5)
+        after_time = datetime.datetime.now()
+        time_difference = (after_time - before_time).total_seconds()
+        self.assertGreaterEqual(time_difference, 60)
 
 class MockResponse():
     '''
