@@ -193,7 +193,7 @@ class XeroClient():
             request_timeout = REQUEST_TIMEOUT
         self.request_timeout = request_timeout
 
-    # backoff for 1 minute when the Timeout error occurs as the request will again backoff 
+    # backoff for 1 minute when the Timeout error occurs as the request will again backoff
     # when timeout occurs in `check_platform_access()`, hence instead of setting max_tries as 5
     # setting the max_time of 60 seconds
     @backoff.on_exception(backoff.expo, (Timeout, ConnectTimeout), max_time=60, factor=2)
@@ -223,7 +223,7 @@ class XeroClient():
             self.access_token = resp["access_token"]
             self.tenant_id = config['tenant_id']
 
-    # backoff for 1 minute when the Timeout error occurs as the request will again backoff 
+    # backoff for 1 minute when the Timeout error occurs as the request will again backoff
     # when timeout occurs in `refresh_credentials()`, hence instead of setting max_tries as 5
     # setting the max_time of 60 seconds
     @backoff.on_exception(backoff.expo, Timeout, max_time=60, factor=2)
