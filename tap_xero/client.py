@@ -12,11 +12,13 @@ import six
 import pytz
 import backoff
 import singer
+from requests.exceptions import Timeout, ConnectTimeout
 
 LOGGER = singer.get_logger()
 
 BASE_URL = "https://api.xero.com/api.xro/2.0"
 
+REQUEST_TIMEOUT = 300
 
 class XeroError(Exception):
     def __init__(self, message=None, response=None):
@@ -183,7 +185,18 @@ class XeroClient():
         self.user_agent = config.get("user_agent")
         self.tenant_id = None
         self.access_token = None
+        request_timeout = config.get('request_timeout')
+        # if request_timeout is other than 0,"0" or "" then use request_timeout
+        if request_timeout and float(request_timeout):
+            request_timeout = float(request_timeout)
+        else: # If value is 0,"0" or "" then set default to 300 seconds.
+            request_timeout = REQUEST_TIMEOUT
+        self.request_timeout = request_timeout
 
+    # backoff for 1 minute when the Timeout error occurs as the request will again backoff 
+    # when timeout occurs in `check_platform_access()`, hence instead of setting max_tries as 5
+    # setting the max_time of 60 seconds
+    @backoff.on_exception(backoff.expo, (Timeout, ConnectTimeout), max_time=60, factor=2)
     def refresh_credentials(self, config, config_path):
 
         header_token = b64encode((config["client_id"] + ":" + config["client_secret"]).encode('utf-8'))
@@ -197,7 +210,7 @@ class XeroClient():
             "grant_type": "refresh_token",
             "refresh_token": config["refresh_token"],
         }
-        resp = self.session.post("https://identity.xero.com/connect/token", headers=headers, data=post_body)
+        resp = self.session.post("https://identity.xero.com/connect/token", headers=headers, data=post_body, timeout=self.request_timeout)
 
         if resp.status_code != 200:
             raise_for_error(resp)
@@ -210,7 +223,10 @@ class XeroClient():
             self.access_token = resp["access_token"]
             self.tenant_id = config['tenant_id']
 
-
+    # backoff for 1 minute when the Timeout error occurs as the request will again backoff 
+    # when timeout occurs in `refresh_credentials()`, hence instead of setting max_tries as 5
+    # setting the max_time of 60 seconds
+    @backoff.on_exception(backoff.expo, Timeout, max_time=60, factor=2)
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def check_platform_access(self, config, config_path):
@@ -227,12 +243,14 @@ class XeroClient():
         # Validating the authorization of the provided configuration
         contacts_url = join(BASE_URL, "Contacts")
         request = requests.Request("GET", contacts_url, headers=headers)
-        response = self.session.send(request.prepare())
+        response = self.session.send(request.prepare(), timeout=self.request_timeout)
 
         if response.status_code != 200:
             raise_for_error(response)
 
 
+    # backoff for 5 times in case of Timeout error
+    @backoff.on_exception(backoff.expo, Timeout, max_tries=5)
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
@@ -247,7 +265,7 @@ class XeroClient():
             headers["If-Modified-Since"] = since
 
         request = requests.Request("GET", url, headers=headers, params=params)
-        response = self.session.send(request.prepare())
+        response = self.session.send(request.prepare(), timeout=self.request_timeout)
 
         if response.status_code != 200:
             raise_for_error(response)
