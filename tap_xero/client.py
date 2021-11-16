@@ -196,7 +196,7 @@ class XeroClient():
     # Backoff for 1 minute when the Timeout error occurs as the request will again backoff
     # when timeout occurs in `check_platform_access()`, hence instead of setting max_tries as 5
     # setting the max_time of 60 seconds
-    @backoff.on_exception(backoff.constant, Timeout, max_time=60, interval=10)
+    @backoff.on_exception(backoff.constant, Timeout, max_time=60, interval=10, jitter=None) # Interval value not consistent if jitter not None
     def refresh_credentials(self, config, config_path):
 
         header_token = b64encode((config["client_id"] + ":" + config["client_secret"]).encode('utf-8'))
@@ -226,7 +226,7 @@ class XeroClient():
     # Backoff for 1 minute when the Timeout error occurs as the request will again backoff
     # when timeout occurs in `refresh_credentials()`, hence instead of setting max_tries as 5
     # setting the max_time of 60 seconds
-    @backoff.on_exception(backoff.constant, Timeout, max_time=60, interval=10)
+    @backoff.on_exception(backoff.constant, Timeout, max_time=60, interval=10, jitter=None) # Interval value not consistent if jitter not None
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def check_platform_access(self, config, config_path):
@@ -250,7 +250,7 @@ class XeroClient():
 
 
     # Backoff till 60 seconds in case of Timeout error to keep it consistent with other backoffs
-    @backoff.on_exception(backoff.constant, Timeout, max_time=60, interval=10)
+    @backoff.on_exception(backoff.constant, Timeout, max_time=60, interval=10, jitter=None) # Interval value not consistent if jitter not None
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
