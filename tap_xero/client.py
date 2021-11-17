@@ -12,7 +12,7 @@ import six
 import pytz
 import backoff
 import singer
-from requests.exceptions import Timeout, ConnectTimeout
+from requests.exceptions import Timeout
 
 LOGGER = singer.get_logger()
 
