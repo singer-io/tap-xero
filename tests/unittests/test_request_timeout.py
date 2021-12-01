@@ -1,7 +1,6 @@
 from tap_xero.client import XeroClient
 import unittest
 from unittest import mock
-from unittest.case import TestCase
 from requests.exceptions import Timeout, ConnectTimeout
 import datetime
 
@@ -14,14 +13,15 @@ class TestBackoffError(unittest.TestCase):
     @mock.patch('tap_xero.client.requests.Session.post')
     def test_backoff_check_platform_access_timeout_error(self, mock_post, mock_send, mock_request):
         """
-        Check whether the request backoffs properly  for 60 seconds in case of Timeout error.
+        Check whether the request backoffs properly for 120 seconds in case of Timeout error.
         """
         mock_send.side_effect = Timeout
         mock_post.side_effect = Timeout
         before_time = datetime.datetime.now()
+        config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
+        client = XeroClient(config)
+        client.access_token = "dummy_token"
         with self.assertRaises(Timeout):
-            config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
-            client = XeroClient(config)   
             client.check_platform_access(config, "dummy_path")
         after_time = datetime.datetime.now()
         time_difference = (after_time - before_time).total_seconds()
@@ -32,14 +32,15 @@ class TestBackoffError(unittest.TestCase):
     @mock.patch('tap_xero.client.requests.Session.post')
     def test_backoff_check_platform_access_connect_timeout_error(self, mock_post, mock_send, mock_request):
         """
-        Check whether the request backoffs properly for 60 seconds in case of ConnectTimeout error.
+        Check whether the request backoffs properly for 120 seconds in case of ConnectTimeout error.
         """
         mock_send.side_effect = ConnectTimeout
         mock_post.side_effect = ConnectTimeout
         before_time = datetime.datetime.now()
+        config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
+        client = XeroClient(config)
+        client.access_token = "dummy_token"
         with self.assertRaises(Timeout):
-            config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
-            client = XeroClient(config)   
             client.check_platform_access(config, "dummy_path")
         after_time = datetime.datetime.now()
         time_difference = (after_time - before_time).total_seconds()
@@ -52,9 +53,9 @@ class TestBackoffError(unittest.TestCase):
         """
         mock_post.side_effect = Timeout
         before_time = datetime.datetime.now()
+        config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
+        client = XeroClient(config)   
         with self.assertRaises(Timeout):
-            config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
-            client = XeroClient(config)   
             client.refresh_credentials(config, "dummy_path")
         after_time = datetime.datetime.now()
         time_difference = (after_time - before_time).total_seconds()
@@ -67,9 +68,9 @@ class TestBackoffError(unittest.TestCase):
         """
         mock_post.side_effect = ConnectTimeout
         before_time = datetime.datetime.now()
+        config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
+        client = XeroClient(config)
         with self.assertRaises(Timeout):
-            config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
-            client = XeroClient(config)   
             client.refresh_credentials(config, "dummy_path")
         after_time = datetime.datetime.now()
         time_difference = (after_time - before_time).total_seconds()
@@ -83,10 +84,10 @@ class TestBackoffError(unittest.TestCase):
         """
         mock_send.side_effect = Timeout
         before_time = datetime.datetime.now()
+        config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
+        client = XeroClient(config)
+        client.access_token = "dummy_token"
         with self.assertRaises(Timeout):
-            config = {"start_date": "dummy_st", "client_id": "dummy_ci", "client_secret": "dummy_cs", "tenant_id": "dummy_ti", "refresh_token": "dummy_rt"}
-            client = XeroClient(config)
-            client.access_token = "dummy_token"
             client.filter(tap_stream_id='dummy_stream')
         after_time = datetime.datetime.now()
         time_difference = (after_time - before_time).total_seconds()
