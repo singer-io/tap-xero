@@ -223,10 +223,13 @@ class XeroClient():
             "Xero-Tenant-Id": self.tenant_id,
             "Content-Type": "application/json"
         }
-
+        # Request for first page which returns first 100 contacts only
+        params = {
+            "page": 1
+        }
         # Validating the authorization of the provided configuration
         contacts_url = join(BASE_URL, "Contacts")
-        request = requests.Request("GET", contacts_url, headers=headers)
+        request = requests.Request("GET", contacts_url, headers=headers, params=params)
         response = self.session.send(request.prepare())
 
         if response.status_code != 200:
