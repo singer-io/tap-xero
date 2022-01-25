@@ -271,7 +271,7 @@ def raise_for_error(resp):
             if error_code == 429:
                 resp_headers = resp.headers
                 api_rate_limit_message = ERROR_CODE_EXCEPTION_MAPPING[429]["message"]
-                message = "HTTP-error-code: 429, Error: {}. Please retry after {} seconds".format(api_rate_limit_message, resp_headers.get("Retry-After"))
+                message = f"HTTP-error-code: 429, Error: {api_rate_limit_message}. Please retry after {resp_headers.get("Retry-After")} seconds"
 
                 #Raise XeroTooManyInMinuteError exception if minute limit is reached
                 if resp_headers.get("X-Rate-Limit-Problem") == 'minute':
@@ -279,7 +279,7 @@ def raise_for_error(resp):
             # Handling status code 403 specially since response of API does not contain enough information
             elif error_code in (403, 401):
                 api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
-                message = "HTTP-error-code: {}, Error: {}".format(error_code, api_message)
+                message = f"HTTP-error-code: {error_code}, Error: {api_message}"
             else:
                 # Forming a response message for raising custom exception
                 try:
@@ -287,14 +287,12 @@ def raise_for_error(resp):
                 except Exception:
                     response_json = {}
 
-                message = "HTTP-error-code: {}, Error: {}".format(
-                    error_code,
-                    response_json.get(
+                message = f"HTTP-error-code: {error_code}, Error: {response_json.get(
                         "error", response_json.get(
                             "Title", response_json.get(
                                 "Detail", ERROR_CODE_EXCEPTION_MAPPING.get(
                                     error_code, {}).get("message", "Unknown Error")
-                                ))))
+                                ))))}"
 
             exc = ERROR_CODE_EXCEPTION_MAPPING.get(error_code, {}).get("raise_exception", XeroError)
             raise exc(message, resp) from None
