@@ -39,7 +39,7 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
             ctx.refresh_credentials()
             return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
 
-        if e.response.status_code == 503:
+        if e.response.status_code in [429, 503]:
             raise RateLimitException() from e
 
         raise
