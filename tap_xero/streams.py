@@ -1,5 +1,6 @@
 from requests.exceptions import HTTPError
 import singer
+import logging
 from singer import metadata, metrics, Transformer
 from singer.utils import strptime_with_tz
 import backoff
@@ -7,6 +8,8 @@ from . import transform
 
 LOGGER = singer.get_logger()
 FULL_PAGE_SIZE = 100
+
+logging.getLogger('backoff').setLevel(logging.CRITICAL)
 
 
 def _request_with_timer(tap_stream_id, xero, filter_options):
