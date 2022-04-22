@@ -241,8 +241,8 @@ class XeroClient():
         }
 
         # Validating the authorization of the provided configuration
-        contacts_url = join(BASE_URL, "Contacts")
-        request = requests.Request("GET", contacts_url, headers=headers)
+        currencies_url = join(BASE_URL, "Currencies")
+        request = requests.Request("GET", currencies_url, headers=headers)
         response = self.session.send(request.prepare(), timeout=self.request_timeout)
 
         if response.status_code != 200:
