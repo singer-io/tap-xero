@@ -111,6 +111,12 @@
         "null",
         "boolean"
       ]
+    },
+    "AddToWatchlist": {
+      "type": [
+        "null",
+        "boolean"
+      ]
     }
   },
   "additionalProperties": false

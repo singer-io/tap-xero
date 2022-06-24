@@ -99,6 +99,7 @@
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
+    "CISDeduction": {},
     "UpdatedDateUTC": {
       "format": "date-time",
       "type": [

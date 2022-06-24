@@ -63,6 +63,24 @@
         "string"
       ]
     },
+    "FromIsReconciled ": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "ToIsReconciled ": {
+      "type": [
+        "null",
+        "boolean"
+      ]
+    },
+    "Reference": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "HasAttachments": {
       "type": [
         "null",
