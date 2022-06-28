@@ -74,6 +74,7 @@ class XeroScenarioBase(unittest.TestCase):
             "tax_rates": ["TaxType"],
             "tracking_categories": ["TrackingCategoryID"],
             "linked_transactions": ["LinkedTransactionID"],
+            "quotes": ["QuoteID"],
         }
 
     @property
@@ -101,6 +102,7 @@ class XeroScenarioBase(unittest.TestCase):
             "receipts": ["UpdatedDateUTC"],
             "users": ["UpdatedDateUTC"],
             "linked_transactions": ["UpdatedDateUTC"],
+            "quotes": ["UpdatedDateUTC"]
         }
 
     @property
@@ -169,6 +171,23 @@ class XeroScenarioBase(unittest.TestCase):
                 self.conn_id, catalog, schema, additional_md=additional_md,
                 non_selected_fields=non_selected_properties
             )
+
+
+    def select_specific_catalog(self, found_catalogs, catalog_to_select):
+        for catalog in found_catalogs:
+            if catalog['tap_stream_id'] != catalog_to_select:
+                continue
+
+            schema = menagerie.get_annotated_schema(self.conn_id, catalog['stream_id'])
+            non_selected_properties = []
+            additional_md = []
+
+            connections.select_catalog_and_fields_via_metadata(
+                self.conn_id, catalog, schema, additional_md=additional_md,
+                non_selected_fields=non_selected_properties
+            )
+            break
+
 
     def look_for_unexpected_bookmarks(self, bookmarks):
         diff = set(bookmarks).difference(self.expected_bookmarks)

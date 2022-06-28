@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.2.2
+  * Changes the endpoint used for check_platform_access from `Contacts` to `Currencies` [#98](https://github.com/singer-io/tap-xero/pull/98)
+
+## 2.2.1
+  * Make the TotalDiscount schema on the Quotes stream the same as the schema on the other streams [#93](https://github.com/singer-io/tap-xero/pull/93)
+
+## 2.2.0
+  * Additional handling for HTTP 429 responses from Xero [#90](https://github.com/singer-io/tap-xero/pull/90)
+  * Adding a feature to allow the syncing of Archived Contacts via `include_archived_contacts` config [#84](https://github.com/singer-io/tap-xero/pull/84)
+
+## 2.1.0
+  * Add retry to JSON decode error [#83](https://github.com/singer-io/tap-xero/pull/83)
+  * Add backoff mechanism for 429 errors. Validate authorization during discovery [#85](https://github.com/singer-io/tap-xero/pull/85)
+  * Add Quotes stream support [#86](https://github.com/singer-io/tap-xero/pull/86)
+  * Increase the allowable precision in the CurrencyRate schema from `1e-06` to `1e-10` [#87](https://github.com/singer-io/tap-xero/pull/87)
+
 ## 2.0.4
   * In json parsing hook, explicitly check for `date` type values to add 0 hh:mm:ss to so that the parser avoids truncating `datetime` objects [#79](https://github.com/singer-io/tap-xero/pull/79)
 

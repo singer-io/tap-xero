@@ -35,6 +35,7 @@ class XeroFutureDatesNoData(XeroScenarioBase):
                 "receipts": {"UpdatedDateUTC": future_date},
                 "users": {"UpdatedDateUTC": future_date},
                 "linked_transactions": {"UpdatedDateUTC": future_date},
+                "quotes": {"UpdatedDateUTC": future_date}
             }
         }
 
