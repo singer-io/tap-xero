@@ -27,6 +27,30 @@
         "string"
       ]
     },
+    "CompanyNumber":{
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "MergedToContactID ": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "SalesDefaultLineAmountType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PurchasesDefaultLineAmountType": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "Name": {
       "type": [
         "null",

@@ -27,6 +27,17 @@
       "type": [
         "string"
       ]
+    },
+    "LogoUrl": {
+      "type": [
+        "string"
+      ]
+    },
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
     }
   },
   "additionalProperties": false

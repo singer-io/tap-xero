@@ -21,6 +21,33 @@
         "string"
       ]
     },
+    "Contacts": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "properties": {
+          "ContactID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "type": [
+          "null",
+          "object"
+        ],
+        "additionalProperties": false
+      }
+    },
     "HasValidationErrors": {
       "type": [
         "null",

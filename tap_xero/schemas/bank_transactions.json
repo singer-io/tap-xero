@@ -25,6 +25,9 @@
     "BankAccount": {
       "$ref": "accounts"
     },
+    "BatchPayment": {
+      "$ref": "batch_payment"
+    },
     "IsReconciled": {
       "type": [
         "null",
@@ -159,7 +162,8 @@
   "tap_schema_dependencies": [
     "accounts",
     "contacts",
-    "line_items"
+    "line_items",
+    "batch_payment"
   ],
   "additionalProperties": false
 }

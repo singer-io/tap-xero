@@ -70,6 +70,12 @@
         "string"
       ]
     },
+    "EmployerIdentificationNumber": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "TaxNumber": {
       "type": [
         "null",
@@ -153,6 +159,18 @@
     },
     "OrganisationID": {
       "type": [
+        "string"
+      ]
+    },
+    "Edition": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Class": {
+      "type": [
+        "null",
         "string"
       ]
     },

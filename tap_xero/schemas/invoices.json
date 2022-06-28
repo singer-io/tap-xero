@@ -185,6 +185,13 @@
         "boolean"
       ]
     },
+    "RepeatingInvoiceID": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "CISDeduction": {},
     "Payments": {
       "type": [
         "null",

@@ -146,6 +146,9 @@
         "string"
       ]
     },
+    "BatchPayment": {
+      "$ref": "batch_payment"
+    },
     "HasAccount": {
       "type": [
         "null",
@@ -161,7 +164,8 @@
   },
   "tap_schema_dependencies": [
     "accounts",
-    "nested_invoice"
+    "nested_invoice",
+    "batch_payment"
   ],
   "additionalProperties": false
 }
