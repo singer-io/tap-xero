@@ -27,6 +27,11 @@ jobs:
           command: |
             source /usr/local/share/virtualenvs/tap-xero/bin/activate
             nosetests tests/unittests/
+            coverage html
+      - store_test_results:
+          path: test_output/report.xml
+      - store_artifacts:
+          path: htmlcov
       - run:
           name: 'Integration Tests'
           command: |

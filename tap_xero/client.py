@@ -211,7 +211,7 @@ class XeroClient():
             self.tenant_id = config['tenant_id']
 
 
-    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
+    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError, XeroNotImplementedError, XeroNotAvailableError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def check_platform_access(self, config, config_path):
 
@@ -233,7 +233,7 @@ class XeroClient():
             raise_for_error(response)
 
 
-    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
+    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError, XeroNotImplementedError, XeroNotAvailableError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
@@ -266,7 +266,11 @@ def raise_for_error(resp):
     except (requests.HTTPError, requests.ConnectionError) as error:
         try:
             error_code = resp.status_code
-
+            # Forming a response message for raising custom exception
+            try:
+                response_json = resp.json()
+            except Exception:
+                response_json = {}
             # Handling status code 429 specially since the required information is present in the headers
             if error_code == 429:
                 resp_headers = resp.headers
@@ -276,17 +280,13 @@ def raise_for_error(resp):
                 #Raise XeroTooManyInMinuteError exception if minute limit is reached
                 if resp_headers.get("X-Rate-Limit-Problem") == 'minute':
                     raise XeroTooManyInMinuteError(message, resp) from None
-            # Handling status code 403 specially since response of API does not contain enough information
-            elif error_code in (403, 401):
-                api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
-                message = "HTTP-error-code: {}, Error: {}".format(error_code, api_message)
+            elif response_json.get("Title"):
+                # If `Title` field is available in error response, populate it in the message
+                message = "HTTP-error-code: {}, Error: {}".format(
+                            error_code,
+                            response_json.get("error", "{} - {}".format(
+                                response_json.get("Title"), response_json.get("Detail"))))
             else:
-                # Forming a response message for raising custom exception
-                try:
-                    response_json = resp.json()
-                except Exception:
-                    response_json = {}
-
                 message = "HTTP-error-code: {}, Error: {}".format(
                     error_code,
                     response_json.get(
