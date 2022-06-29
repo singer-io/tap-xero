@@ -78,7 +78,7 @@ class BookmarkedStream(Stream):
         if records:
             self.format_fn(records)
             self.write_records(records, ctx)
-            max_bookmark_value = max([record[self.bookmark_key] for record in records])
+            max_bookmark_value = max(record[self.bookmark_key] for record in records)
             ctx.set_bookmark(bookmark, max_bookmark_value)
             ctx.write_state()
 
