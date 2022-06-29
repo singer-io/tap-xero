@@ -53,6 +53,9 @@ class Mockresponse:
 
         raise requests.HTTPError("sample message")
 
+    def json(self):
+        return self.json_data
+
 
 def mocked_forbidden_403_exception(*args, **kwargs):
     """Returns 403 error mock response."""
@@ -247,7 +250,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         try:
             xero_client.filter(tap_stream_id)
         except client_.XeroUnauthorizedError as e:
-            expected_error_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
+            expected_error_message = "HTTP-error-code: 401, Error: Unauthorized - AuthenticationUnsuccessful"
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)
@@ -269,7 +272,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         try:
             xero_client.filter(tap_stream_id)
         except client_.XeroForbiddenError as e:
-            expected_error_message = "HTTP-error-code: 403, Error: User doesn't have permission to access the resource."
+            expected_error_message = "HTTP-error-code: 403, Error: Forbidden - AuthenticationUnsuccessful"
 
             # Verifying the message formed for the custom exception
             self.assertEquals(str(e), expected_error_message)
@@ -551,7 +554,7 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         try:
             xero_client.check_platform_access(config, config_path)
         except client_.XeroUnauthorizedError as e:
-            expected_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
+            expected_message = "HTTP-error-code: 401, Error: Unauthorized - AuthenticationUnsuccessful"
             self.assertEqual(str(e) ,expected_message)
 
 
@@ -572,7 +575,7 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         try:
             xero_client.check_platform_access(config, config_path)
         except client_.XeroForbiddenError as e:
-            expected_message = "HTTP-error-code: 403, Error: User doesn't have permission to access the resource."
+            expected_message = "HTTP-error-code: 403, Error: Forbidden - AuthenticationUnsuccessful"
             self.assertEqual(str(e) ,expected_message)
 
 

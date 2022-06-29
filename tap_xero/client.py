@@ -266,7 +266,11 @@ def raise_for_error(resp):
     except (requests.HTTPError, requests.ConnectionError) as error:
         try:
             error_code = resp.status_code
-
+            # Forming a response message for raising custom exception
+            try:
+                response_json = resp.json()
+            except Exception:
+                response_json = {}
             # Handling status code 429 specially since the required information is present in the headers
             if error_code == 429:
                 resp_headers = resp.headers
@@ -276,17 +280,13 @@ def raise_for_error(resp):
                 #Raise XeroTooManyInMinuteError exception if minute limit is reached
                 if resp_headers.get("X-Rate-Limit-Problem") == 'minute':
                     raise XeroTooManyInMinuteError(message, resp) from None
-            # Handling status code 403 specially since response of API does not contain enough information
-            elif error_code in (403, 401):
-                api_message = ERROR_CODE_EXCEPTION_MAPPING[error_code]["message"]
-                message = "HTTP-error-code: {}, Error: {}".format(error_code, api_message)
+            elif response_json.get("Title"):
+                # If `Title` field is available in error response, populate it in the message
+                message = "HTTP-error-code: {}, Error: {}".format(
+                            error_code,
+                            response_json.get("error", "{} - {}".format(
+                                response_json.get("Title"), response_json.get("Detail"))))
             else:
-                # Forming a response message for raising custom exception
-                try:
-                    response_json = resp.json()
-                except Exception:
-                    response_json = {}
-
                 message = "HTTP-error-code: {}, Error: {}".format(
                     error_code,
                     response_json.get(
