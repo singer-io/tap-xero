@@ -1,0 +1,35 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "from_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "to_date": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "account": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "value": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
