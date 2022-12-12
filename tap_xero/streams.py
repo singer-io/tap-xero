@@ -1,6 +1,7 @@
 from requests.exceptions import HTTPError
 import singer
 import logging
+from datetime import datetime
 from singer import metadata, metrics, Transformer
 from singer.utils import strptime_with_tz
 import backoff
@@ -84,6 +85,42 @@ class BookmarkedStream(Stream):
             max_bookmark_value = max([record[self.bookmark_key] for record in records])
             ctx.set_bookmark(bookmark, max_bookmark_value)
             ctx.write_state()
+
+
+class ReportStream(Stream):
+    def sync(self, ctx):
+        bookmark = [self.tap_stream_id, self.bookmark_key]
+        start = ctx.update_start_date_bookmark(bookmark)
+
+        year = int(start[:4])
+        while True:
+            ctx.write_state()
+            from_date = f"{year}-01-01"
+            to_date = f"{year}-12-31"
+            self.filter_options.update(dict(fromDate=from_date, toDate=to_date))
+            records = _make_request(ctx, self.tap_stream_id, self.filter_options)
+
+            records = records["Reports"]
+
+            report_rows = []
+            for row in records[0]["Rows"]:
+                if row["RowType"]=="Section":
+                    for r in row["Rows"]:
+                        if r["RowType"]=="Row":
+                            record = {}
+                            record["from_date"] = from_date
+                            record["to_date"] = to_date
+                            record["account"] = r["Cells"][0]["Value"]
+                            record["value"] = r["Cells"][1]["Value"]
+                            report_rows.append(record)
+            if report_rows:
+                self.format_fn(report_rows)
+                self.write_records(report_rows, ctx)
+            if year == datetime.utcnow().year:
+                break
+            year += 1
+        ctx.set_bookmark(bookmark, from_date)
+        ctx.write_state()
 
 
 class PaginatedStream(Stream):
@@ -235,5 +272,8 @@ all_streams = [
     # LINKED TRANSACTIONS STREAM
     # This endpoint is not paginated, but can do some manual filtering
     LinkedTransactions("linked_transactions", ["LinkedTransactionID"], bookmark_key="UpdatedDateUTC"),
+
+    # REPORTS STREAM
+    ReportStream("reports_profit_and_loss", ["from_date"], bookmark_key="to_date")
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]

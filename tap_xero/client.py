@@ -237,6 +237,10 @@ class XeroClient():
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
+        is_report = False
+        if xero_resource_name.startswith("Reports"):
+            is_report = True
+            xero_resource_name = xero_resource_name.replace("Reports", "Reports/")
         url = join(BASE_URL, xero_resource_name)
         headers = {"Accept": "application/json",
                    "Authorization": "Bearer " + self.access_token,
@@ -253,10 +257,11 @@ class XeroClient():
             raise_for_error(response)
             return None
         else:
-            response_meta = json.loads(response.text,
+            response_body = json.loads(response.text,
                                     object_hook=_json_load_object_hook,
                                     parse_float=decimal.Decimal)
-            response_body = response_meta.pop(xero_resource_name)
+            if not is_report:
+                response_body = response_body.pop(xero_resource_name)
             return response_body
 
 
