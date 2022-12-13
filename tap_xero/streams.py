@@ -1,11 +1,14 @@
 from requests.exceptions import HTTPError
 import singer
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from singer import metadata, metrics, Transformer
 from singer.utils import strptime_with_tz
 import backoff
 from . import transform
+from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
+
 
 LOGGER = singer.get_logger()
 FULL_PAGE_SIZE = 100
@@ -92,11 +95,12 @@ class ReportStream(Stream):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         start = ctx.update_start_date_bookmark(bookmark)
 
-        year = int(start[:4])
+        start_dt = parse(start)
+        start_dt = datetime(start_dt.year, start_dt.month, 1)
         while True:
-            ctx.write_state()
-            from_date = f"{year}-01-01"
-            to_date = f"{year}-12-31"
+            from_date = start_dt.strftime("%Y-%m-01")
+            to_date = start_dt + relativedelta(months=1) - timedelta(1)
+            to_date = to_date.strftime("%Y-%m-%d")
             self.filter_options.update(dict(fromDate=from_date, toDate=to_date))
             records = _make_request(ctx, self.tap_stream_id, self.filter_options)
 
@@ -116,10 +120,10 @@ class ReportStream(Stream):
             if report_rows:
                 self.format_fn(report_rows)
                 self.write_records(report_rows, ctx)
-            if year == datetime.utcnow().year:
+            start_dt = start_dt + relativedelta(months=1)
+            if start_dt >= datetime.utcnow():
                 break
-            year += 1
-        ctx.set_bookmark(bookmark, from_date)
+        ctx.set_bookmark(bookmark, (start_dt - relativedelta(months=1)).isoformat())
         ctx.write_state()
 
 
