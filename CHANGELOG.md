@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.3
+  * Adds a workaround for a Xero bug to allow pagination to function properly in the `manual_journals` stream [#104](https://github.com/singer-io/tap-xero/pull/104)
+
 ## 2.2.2
   * Changes the endpoint used for check_platform_access from `Contacts` to `Currencies` [#98](https://github.com/singer-io/tap-xero/pull/98)
 
