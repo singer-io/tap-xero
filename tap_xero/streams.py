@@ -78,7 +78,7 @@ class BookmarkedStream(Stream):
         if records:
             self.format_fn(records)
             self.write_records(records, ctx)
-            max_bookmark_value = max([record[self.bookmark_key] for record in records])
+            max_bookmark_value = max([record[self.bookmark_key] for record in records]) # pylint: disable=consider-using-generator
             ctx.set_bookmark(bookmark, max_bookmark_value)
             ctx.write_state()
 
@@ -93,7 +93,13 @@ class PaginatedStream(Stream):
         start = ctx.update_start_date_bookmark(bookmark)
         curr_page_num = ctx.get_offset(offset) or 1
 
-        self.filter_options.update(dict(since=start, order="UpdatedDateUTC ASC"))
+        self.filter_options.update({"since": start})
+
+        # Xero bug causes all manual_journal records to be returned instead of
+        # 100 per page when `order` is specified. `UpdatedDateUTC ASC` is the
+        # default so we can safely exclude it until the bug is fixed.
+        if self.tap_stream_id != "manual_journals":
+            self.filter_options.update({"order": "UpdatedDateUTC ASC"})
 
         max_updated = start
         while True:
