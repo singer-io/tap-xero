@@ -13,7 +13,7 @@ REQUIRED_CONFIG_KEYS = [
     "client_id",
     "client_secret",
     "tenant_id",
-    "refresh_token",
+    "access_token",
 
 ]
 
