@@ -94,7 +94,6 @@ def load_and_write_schema(stream):
 
 
 def sync(ctx):
-    ctx.refresh_credentials()
     currently_syncing = ctx.state.get("currently_syncing")
     start_idx = streams_.all_stream_ids.index(currently_syncing) \
         if currently_syncing else 0

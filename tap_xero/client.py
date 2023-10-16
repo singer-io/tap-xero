@@ -180,7 +180,7 @@ class XeroClient():
     def __init__(self, config):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
-        self.tenant_id = None
+        self.tenant_id = config.get("tenant_id")
         self.access_token = config.get("access_token")
         
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
