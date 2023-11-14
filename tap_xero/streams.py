@@ -278,6 +278,7 @@ all_streams = [
     LinkedTransactions("linked_transactions", ["LinkedTransactionID"], bookmark_key="UpdatedDateUTC"),
 
     # REPORTS STREAM
-    ReportStream("reports_profit_and_loss", ["from_date"], bookmark_key="to_date")
+    ReportStream("reports_profit_and_loss", ["from_date"], bookmark_key="to_date"),
+    ReportStream("reports_balance_sheet", ["from_date"], bookmark_key="to_date")
 ]
 all_stream_ids = [s.tap_stream_id for s in all_streams]
