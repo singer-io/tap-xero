@@ -1,8 +1,5 @@
 # Changelog
 
-## 2.2.4
-  * Dependabot update [#105](https://github.com/singer-io/tap-xero/pull/105)
-
 ## 2.2.3
   * Adds a workaround for a Xero bug to allow pagination to function properly in the `manual_journals` stream [#104](https://github.com/singer-io/tap-xero/pull/104)
 
