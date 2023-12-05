@@ -185,21 +185,10 @@ class XeroClient():
         
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
+    
     def check_platform_access(self, config, config_path):
-        headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "Xero-Tenant-Id": self.tenant_id,
-            "Content-Type": "application/json"
-        }
-
-        # Validating the authorization of the provided configuration
-        currencies_url = join(BASE_URL, "Currencies")
-        request = requests.Request("GET", currencies_url, headers=headers)
-        response = self.session.send(request.prepare())
-
-        if response.status_code != 200:
-            raise_for_error(response)
-
+        # the token is good as it's returned from nango
+        None
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
