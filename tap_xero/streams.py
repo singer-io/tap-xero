@@ -179,6 +179,9 @@ class Journals(Stream):
         while True:
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
+            logging.info("Got {} records: {}".format(
+                len(records), records
+            ))
             if records:
                 self.format_fn(records)
                 self.write_records(records, ctx)
