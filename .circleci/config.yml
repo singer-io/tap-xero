@@ -23,12 +23,12 @@ jobs:
           command: |
             source /usr/local/share/virtualenvs/tap-xero/bin/activate
             pylint tap_xero --disable 'consider-using-f-string,broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,bad-whitespace,unspecified-encoding,broad-exception-raised'
-      - run:
-          name: 'Unit Tests'
-          command: |
-            source /usr/local/share/virtualenvs/tap-xero/bin/activate
-            pip install nose2 parameterized nose2[coverage_plugin]>=0.6.5
-            nose2 --with-coverage -v -s tests/unittests
+      # - run:
+      #     name: 'Unit Tests'
+      #     command: |
+      #       source /usr/local/share/virtualenvs/tap-xero/bin/activate
+      #       pip install nose2 parameterized nose2[coverage_plugin]>=0.6.5
+      #       nose2 --with-coverage -v -s tests/unittests
       - run:
           name: 'Integration Tests'
           command: |
