@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: 218546966473.dkr.ecr.us-east-1.amazonaws.com/circle-ci:tap-tester-v4
+      - image: 218546966473.dkr.ecr.us-east-1.amazonaws.com/circle-ci:tap-tester
     steps:
       - checkout
       - run:
@@ -12,6 +12,7 @@ jobs:
             source /usr/local/share/virtualenvs/tap-xero/bin/activate
             pip install -U pip 'setuptools<51.0.0'
             pip install .[dev]
+            pip install coverage
       - run:
           name: 'JSON Validator'
           command: |
