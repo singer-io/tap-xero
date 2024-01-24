@@ -9,14 +9,14 @@ setup(name="tap-xero",
       classifiers=["Programming Language :: Python :: 3 :: Only"],
       py_modules=["tap_xero"],
       install_requires=[
-          "singer-python==5.9.0",
-          "requests==2.20.0",
+          "singer-python==6.0.0",
+          "requests==2.31.0",
       ],
       extras_require={
           'dev': [
               'ipdb',
-              'pylint',
-              'nose'
+              'pylint==3.0.3',
+              'nose2'
           ]
       },
       entry_points="""
