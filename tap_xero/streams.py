@@ -74,7 +74,7 @@ class BookmarkedStream(Stream):
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         start = ctx.update_start_date_bookmark(bookmark)
-        records = _make_request(ctx, self.tap_stream_id, dict(since=start))
+        records = _make_request(ctx, self.tap_stream_id, {"since": start})
         if records:
             self.format_fn(records)
             self.write_records(records, ctx)
