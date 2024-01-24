@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.0
+  * Updates to run on python 3.11.7 [#112](https://github.com/singer-io/tap-xero/pull/112)
+
 ## 2.2.3
   * Adds a workaround for a Xero bug to allow pagination to function properly in the `manual_journals` stream [#104](https://github.com/singer-io/tap-xero/pull/104)
 
