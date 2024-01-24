@@ -156,7 +156,7 @@ def _json_load_object_hook(_dict):
     return _dict
 
 def update_config_file(config, config_path):
-    with open(config_path, 'w') as config_file:
+    with open(config_path, 'w', encoding='UTF-8') as config_file:
         json.dump(config, config_file, indent=2)
 
 def is_not_status_code_fn(status_code):
