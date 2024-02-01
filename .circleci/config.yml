@@ -27,8 +27,8 @@ jobs:
           name: 'Unit Tests'
           command: |
             source /usr/local/share/virtualenvs/tap-xero/bin/activate
-            pip install nose2 parameterized nose2[coverage_plugin]>=0.6.5
-            nose2 --with-coverage -v -s tests/unittests
+            pip install nose2
+            nose2 -v -s /opt/code/tap-xero/tests/unittests
       - run:
           name: 'Integration Tests'
           command: |
