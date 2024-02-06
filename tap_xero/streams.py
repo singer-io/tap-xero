@@ -217,7 +217,7 @@ class Journals(Stream):
             with Transformer() as transformer:
                 rec = transformer.transform(rec, schema, metadata.to_map(mdata))
                 singer.write_record(self.tap_stream_id, rec)
-            if "JournalLines" in rec and len(line_mdata) > 0:
+            if "JournalLines" in rec and len(line_mdata) > 0 and ctx.config.get("journal_lines_stream") in ["true", True]:
                 for line in rec["JournalLines"]:
                     with Transformer() as transformer:
                         line = transformer.transform(line, lines_schema, metadata.to_map(line_mdata))
