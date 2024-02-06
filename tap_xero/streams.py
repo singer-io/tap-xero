@@ -210,6 +210,9 @@ class Journals(Stream):
                 ["JournalLineID"]
             )
 
+        if line_mdata is None:
+            line_mdata = []
+
         for rec in records:
             with Transformer() as transformer:
                 rec = transformer.transform(rec, schema, metadata.to_map(mdata))
