@@ -191,6 +191,36 @@ class Journals(Stream):
             if not records or len(records) < FULL_PAGE_SIZE:
                 break
 
+    def write_records(self, records, ctx):
+        """"Custom implementation from the write records method available in Stream class"""
+        stream = ctx.catalog.get_stream(self.tap_stream_id)
+        schema = stream.schema.to_dict()
+        lines_schema = schema["properties"].get("JournalLines", {}).get("items")
+        lines_stream_id = "{}_lines".format(self.tap_stream_id)
+        mdata = stream.metadata
+        try:
+            line_mdata = [i for i in mdata if "JournalLines" in i.get("breadcrumb", [])]
+        except IndexError:
+            line_mdata = None
+
+        if line_mdata:
+            singer.write_schema(
+                lines_stream_id,
+                lines_schema,
+                ["JournalLineID"]
+            )
+
+        for rec in records:
+            with Transformer() as transformer:
+                rec = transformer.transform(rec, schema, metadata.to_map(mdata))
+                singer.write_record(self.tap_stream_id, rec)
+            if "JournalLines" in rec and len(line_mdata) > 0:
+                for line in rec["JournalLines"]:
+                    with Transformer() as transformer:
+                        line = transformer.transform(line, lines_schema, metadata.to_map(line_mdata))
+                        singer.write_record(lines_stream_id, line)
+        self.metrics(records)
+
 
 class LinkedTransactions(Stream):
     """The Linked Transactions endpoint is a special case. It supports
