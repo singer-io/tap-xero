@@ -196,6 +196,7 @@ class Journals(Stream):
         stream = ctx.catalog.get_stream(self.tap_stream_id)
         schema = stream.schema.to_dict()
         lines_schema = schema["properties"].get("JournalLines", {}).get("items")
+        lines_schema["JournalID"] = schema["properties"]["JournalID"]
         lines_stream_id = "{}_lines".format(self.tap_stream_id)
         mdata = stream.metadata
         try:
@@ -220,6 +221,7 @@ class Journals(Stream):
             if "JournalLines" in rec and len(line_mdata) > 0 and ctx.config.get("journal_lines_stream") in ["true", True]:
                 for line in rec["JournalLines"]:
                     with Transformer() as transformer:
+                        line["JournalID"] = rec["JournalID"]
                         line = transformer.transform(line, lines_schema, metadata.to_map(line_mdata))
                         singer.write_record(lines_stream_id, line)
         self.metrics(records)
