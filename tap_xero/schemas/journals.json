@@ -50,6 +50,11 @@
     "JournalLines": {
       "items": {
         "properties": {
+          "JournalID": {
+            "type": [
+              "string"
+            ]
+          },
           "JournalLineID": {
             "type": [
               "null",
