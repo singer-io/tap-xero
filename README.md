@@ -38,7 +38,30 @@ This tap:
 
 ## Limitations
 
- - Only designed to work with Xero [Partner Applications](https://developer.xero.com/documentation/auth-and-limits/partner-applications), not Private Applications.
+- Only designed to work with Xero [Partner Applications](https://developer.xero.com/documentation/auth-and-limits/partner-applications), not Private Applications.
+
+## Authentication
+
+This tap requires a client id, client secret, tenant id, and refresh token in order to authenticate (and thus receive an
+access token).
+
+See [the Xero documentation](https://developer.xero.com/documentation/guides/oauth2/auth-flow) for more info.
+
+### Refresh token
+
+The tap is able to use the refresh token to refresh the access token. Doing so also generates a new refresh token, which
+the tap is able to write back to you.
+
+There are two ways to pass in a refresh token, and two ways to have an updated refresh token written back to you.  
+
+To pass in a refresh token, either use the `refresh_token` arg or the `refresh_token_path` arg.  
+If `refresh_token` is not set, the refresh token will be read as the entire contents of the file at
+`refresh_token_path`.  
+If `refresh_token_path` is set, a new refresh token will override the entire contents of the file **as well as** being
+written to the config JSON (which is the default behavior if `refresh_token_path` is not set).
+
+This is important for the use of this tap via Meltano. Since Meltano generates an ephemeral config JSON, writing the
+new refresh token to it is not very helpful.
 
 ---
 

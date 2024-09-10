@@ -5,6 +5,7 @@ import decimal
 import sys
 import math
 from os.path import join
+from os import environ
 from datetime import datetime, date, time, timedelta
 import requests
 from singer.utils import strftime, strptime_to_utc
@@ -204,12 +205,14 @@ class XeroClient():
         else:
             resp = resp.json()
 
-            # Write to config file
-            config['refresh_token'] = resp["refresh_token"]
+            refresh_token = resp["refresh_token"]
+            config['refresh_token'] = refresh_token
             update_config_file(config, config_path)
+            if "refresh_token_path" in config:
+                with open(config["refresh_token_path"], "w") as f:
+                    f.write(refresh_token)
             self.access_token = resp["access_token"]
             self.tenant_id = config['tenant_id']
-
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
