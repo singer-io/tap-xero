@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import os
-import json
 import singer
-from singer import metadata, metrics, utils
+from singer import metadata, utils
 from singer.catalog import Catalog, CatalogEntry, Schema
 from . import streams as streams_
 from .client import XeroClient
@@ -13,8 +12,8 @@ REQUIRED_CONFIG_KEYS = [
     "client_id",
     "client_secret",
     "tenant_id",
-    "refresh_token",
-
+    # no longer required. can use "refresh_token_path" instead.
+    # "refresh_token",
 ]
 
 LOGGER = singer.get_logger()
@@ -115,6 +114,16 @@ def sync(ctx):
 
 def main_impl():
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
+
+    if "refresh_token" not in args.config and "refresh_token_path" not in args.config:
+        raise Exception(
+            "Config requires either refresh_token or refresh_token_path to be set."
+        )
+
+    if "refresh_token" not in args.config:
+        with open(args.config["refresh_token_path"], "r") as f:
+            args.config["refresh_token"] = f.read()
+
     if args.discover:
         discover(Context(args.config, {}, {}, args.config_path)).dump()
         print()
