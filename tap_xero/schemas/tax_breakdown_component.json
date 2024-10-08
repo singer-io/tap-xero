@@ -1,0 +1,69 @@
+{
+  "type": [
+    "null",
+    "object"
+  ],
+  "properties": {
+    "TaxComponentId": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "Name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TaxPercentage": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TaxAmount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "TaxableAmount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "NonTaxableAmount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "ExemptAmount": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
+    "StateAssignedNo": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "JurisdictionRegion": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },  
+  "additionalProperties": false
+}

@@ -55,6 +55,15 @@
         "array"
       ]
     },
+    "InvoiceAddresses": {
+      "items": {
+        "$ref": "invoice_address"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
     "SubTotal": {
       "type": [
         "null",
@@ -202,6 +211,7 @@
   "tap_schema_dependencies": [
     "contacts",
     "line_items",
+    "invoice_address",
     "allocations"
   ],
   "additionalProperties": false
