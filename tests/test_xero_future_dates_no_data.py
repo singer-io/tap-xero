@@ -7,8 +7,6 @@ import tap_tester.runner as runner
 from base import XeroScenarioBase
 
 class XeroFutureDatesNoData(XeroScenarioBase):
-    def name(self):
-        return "tap_tester_xero_common_connection"
 
     @property
     def state(self):
