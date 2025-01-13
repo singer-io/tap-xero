@@ -129,8 +129,6 @@ class XeroScenarioBase(unittest.TestCase):
     def tap_name(self):
         return "tap-xero"
 
-    def name(self):
-        return "tap_tester_xero_connection"
 
     def get_properties(self):
         return {

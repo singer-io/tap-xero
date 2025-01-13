@@ -10,6 +10,9 @@ class TestArchivedContacts(XeroScenarioBase):
         self.include_archived_contacts = None
         super().setUp()
 
+    def name(self):
+        return "tap_tester_xero_common_connection"
+
     def get_properties(self):
         properties = super().get_properties()
 
