@@ -129,7 +129,6 @@ class XeroScenarioBase(unittest.TestCase):
     def tap_name(self):
         return "tap-xero"
 
-
     def get_properties(self):
         return {
             "start_date" : self.start_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
