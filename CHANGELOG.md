@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.1
+  * Add new fields into the schema of credit_notes stream [#117](https://github.com/singer-io/tap-xero/pull/117)
+
 ## 2.3.0
   * Updates to run on python 3.9.6 [#113](https://github.com/singer-io/tap-xero/pull/113)
 

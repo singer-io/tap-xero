@@ -66,6 +66,27 @@
       "exclusiveMinimum": true,
       "exclusiveMaximum": true
     },
+    "Taxability": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TaxBreakdown": {
+      "items": {
+        "$ref": "tax_breakdown_component"
+      },
+      "type": [
+        "null",
+        "array"
+      ]
+    },
+    "SalesTaxCodeId": {
+      "type": [
+        "null",
+        "number"
+      ]
+    },
     "TaxAmount": {
       "type": [
         "null",
@@ -99,7 +120,8 @@
     }
   },
   "tap_schema_dependencies": [
-    "tracking_categories"
+    "tracking_categories",
+    "tax_breakdown_component"
   ],
   "additionalProperties": false
 }
