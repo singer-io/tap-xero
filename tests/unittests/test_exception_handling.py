@@ -196,7 +196,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
 
 
     @mock.patch('requests.Request', side_effect=mocked_unauthorized_401_error)
-    def test_unauthorized_401_error(self, mocked_session, mocked_unauthorized_401_error):
+    @mock.patch('tap_xero.XeroClient.refresh_credentials',)
+    def test_unauthorized_401_error(self, mocked_session,  mocked_refresh_credentials, mocked_unauthorized_401_error):
         config = {}
         tap_stream_id = "contacts"
 
@@ -210,6 +211,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
 
             # Verifying the message formed for the custom exception
+            self.assertEqual(mocked_refresh_credentials.call_count, 3)
             self.assertEquals(str(e), expected_error_message)
             pass
 

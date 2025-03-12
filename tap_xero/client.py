@@ -28,8 +28,6 @@ class XeroError(Exception):
 class XeroBadRequestError(XeroError):
     pass
 
-class XeroTokenExpiredError(XeroError):
-    pass
 
 class XeroUnauthorizedError(XeroError):
     pass
@@ -183,6 +181,7 @@ class XeroClient():
     def __init__(self, config, config_path=None):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
+        self.config = config
         self.config_path = config_path
         self.tenant_id = None
         self.access_token = None
@@ -239,7 +238,7 @@ class XeroClient():
             raise_for_error(response)
 
 
-    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError, XeroTokenExpiredError), max_tries=3)
+    @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError, XeroUnauthorizedError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
         xero_resource_name = tap_stream_id.title().replace("_", "")
@@ -257,7 +256,7 @@ class XeroClient():
 
         if response.status_code == 401:
             self.refresh_credentials(self.config, self.config_path)
-            raise XeroTokenExpiredError
+            raise_for_error(response)
 
         if response.status_code != 200:
             raise_for_error(response)
