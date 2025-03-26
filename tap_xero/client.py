@@ -178,7 +178,7 @@ def retry_after_wait_gen():
         yield math.floor(float(sleep_time_str))
 
 class XeroClient():
-    def __init__(self, config, config_path=None):
+    def __init__(self, config, config_path):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
         self.config = config
@@ -186,7 +186,10 @@ class XeroClient():
         self.tenant_id = None
         self.access_token = None
 
-    def refresh_credentials(self, config, config_path):
+    def refresh_credentials(self):
+
+        config = self.config
+        config_path = self.config_path
 
         header_token = b64encode((config["client_id"] + ":" + config["client_secret"]).encode('utf-8'))
 
@@ -207,21 +210,22 @@ class XeroClient():
             resp = resp.json()
 
             # Write to config file
-            config['refresh_token'] = resp["refresh_token"]
-            config['access_token'] = resp["access_token"]
-            update_config_file(config, config_path)
             self.access_token = resp["access_token"]
             self.tenant_id = config['tenant_id']
+            config['refresh_token'] = resp["refresh_token"]
+            config['access_token'] = resp["access_token"]
             self.config = config
+            update_config_file(config, config_path)
+            self.tenant_id = config['tenant_id']
             LOGGER.info("access_token refreshed")
 
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def check_platform_access(self, config, config_path):
+    def check_platform_access(self):
 
         # Validating the authentication of the provided configuration
-        self.refresh_credentials(config, config_path)
+        self.refresh_credentials()
 
         headers = {
             "Authorization": "Bearer " + self.access_token,
@@ -255,7 +259,7 @@ class XeroClient():
         response = self.session.send(request.prepare())
 
         if response.status_code == 401:
-            self.refresh_credentials(self.config, self.config_path)
+            self.refresh_credentials()
             raise_for_error(response)
 
         if response.status_code != 200:
