@@ -9,41 +9,17 @@ LOGGER = singer.get_logger()
 FULL_PAGE_SIZE = 100
 
 
-def _request_with_timer(tap_stream_id, xero, filter_options):
+
+def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
+    filter_options = filter_options or {}
     with metrics.http_request_timer(tap_stream_id) as timer:
         try:
-            resp = xero.filter(tap_stream_id, **filter_options)
+            resp = ctx.client.filter(tap_stream_id, **filter_options)
             timer.tags[metrics.Tag.http_status_code] = 200
             return resp
         except HTTPError as e:
             timer.tags[metrics.Tag.http_status_code] = e.response.status_code
             raise
-
-
-class RateLimitException(Exception):
-    pass
-
-
-@backoff.on_exception(backoff.expo,
-                      RateLimitException,
-                      max_tries=10,
-                      factor=2)
-def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
-    filter_options = filter_options or {}
-    try:
-        return _request_with_timer(tap_stream_id, ctx.client, filter_options)
-    except HTTPError as e:
-        if e.response.status_code == 401:
-            if attempts == 1:
-                raise Exception("Received Not Authorized response after credential refresh.") from e
-            ctx.refresh_credentials()
-            return _make_request(ctx, tap_stream_id, filter_options, attempts + 1)
-
-        if e.response.status_code == 503:
-            raise RateLimitException() from e
-
-        raise
-    assert False
 
 
 class Stream():
