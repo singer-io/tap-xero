@@ -183,15 +183,13 @@ class XeroClient():
         self.user_agent = config.get("user_agent")
         self.config = config
         self.config_path = config_path
-        self.tenant_id = None
+        self.tenant_id = config['tenant_id']
         self.access_token = None
 
     def refresh_credentials(self):
 
-        config = self.config
-        config_path = self.config_path
 
-        header_token = b64encode((config["client_id"] + ":" + config["client_secret"]).encode('utf-8'))
+        header_token = b64encode((self.config["client_id"] + ":" + self.config["client_secret"]).encode('utf-8'))
 
         headers = {
             "Authorization": "Basic " + header_token.decode('utf-8'),
@@ -200,24 +198,20 @@ class XeroClient():
 
         post_body = {
             "grant_type": "refresh_token",
-            "refresh_token": config["refresh_token"],
+            "refresh_token": self.config["refresh_token"],
         }
         resp = self.session.post("https://identity.xero.com/connect/token", headers=headers, data=post_body)
 
         if resp.status_code != 200:
             raise_for_error(resp)
         else:
-            resp = resp.json()
+            resp = resp.json()            
+            self.access_token = resp["access_token"]
 
             # Write to config file
-            self.access_token = resp["access_token"]
-            self.tenant_id = config['tenant_id']
-            config['refresh_token'] = resp["refresh_token"]
-            config['access_token'] = resp["access_token"]
-            self.config = config
+            self.config['refresh_token'] = resp["refresh_token"] 
+            self.config['access_token'] = resp["access_token"]
             update_config_file(config, config_path)
-            self.tenant_id = config['tenant_id']
-            LOGGER.info("access_token refreshed")
 
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
