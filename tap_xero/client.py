@@ -183,7 +183,6 @@ class XeroClient():
         self.user_agent = config.get("user_agent")
         self.config = config
         self.config_path = config_path
-        self.tenant_id = config['tenant_id']
         self.access_token = None
 
     def refresh_credentials(self):
@@ -205,12 +204,13 @@ class XeroClient():
             raise_for_error(resp)
         else:
             resp = resp.json()
-            self.access_token = resp["access_token"]
 
             # Write to config file
             self.config['refresh_token'] = resp["refresh_token"]
             self.config['access_token'] = resp["access_token"]
             update_config_file(self.config, self.config_path)
+            self.access_token = resp["access_token"]
+            self.tenant_id = config['tenant_id']
 
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
