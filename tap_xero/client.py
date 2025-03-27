@@ -204,13 +204,13 @@ class XeroClient():
         if resp.status_code != 200:
             raise_for_error(resp)
         else:
-            resp = resp.json()            
+            resp = resp.json()
             self.access_token = resp["access_token"]
 
             # Write to config file
-            self.config['refresh_token'] = resp["refresh_token"] 
+            self.config['refresh_token'] = resp["refresh_token"]
             self.config['access_token'] = resp["access_token"]
-            update_config_file(config, config_path)
+            update_config_file(self.config, self.config_path)
 
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
