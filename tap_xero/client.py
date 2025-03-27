@@ -188,7 +188,6 @@ class XeroClient():
 
     def refresh_credentials(self):
 
-
         header_token = b64encode((self.config["client_id"] + ":" + self.config["client_secret"]).encode('utf-8'))
 
         headers = {

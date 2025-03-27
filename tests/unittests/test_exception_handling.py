@@ -148,7 +148,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -166,7 +166,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -184,7 +184,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -205,7 +205,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         
         tap_stream_id = "contacts"
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -226,7 +226,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -246,7 +246,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -265,7 +265,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -284,7 +284,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -304,7 +304,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -323,7 +323,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -343,7 +343,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -364,7 +364,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -385,7 +385,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -404,7 +404,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -421,7 +421,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        config_path = io.StringIO()
+        config_path = ""
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -447,8 +447,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
             "tenant_id": "123"
         }
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
 
         try:
@@ -465,8 +463,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -485,8 +481,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -505,8 +499,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -525,8 +517,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -545,8 +535,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -565,8 +553,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -585,8 +571,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -605,8 +589,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -625,8 +607,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -645,8 +625,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -668,8 +646,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -690,8 +666,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
@@ -719,8 +693,6 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
             "tenant_id": "123"
         }
         config_path = ""
-
-        config_path = io.StringIO()
         xero_client = client_.XeroClient(config, config_path)
         expected_access_token = "123"
         expected_refresh_token = "345"
