@@ -2,7 +2,6 @@ from requests.exceptions import HTTPError
 import singer
 from singer import metadata, metrics, Transformer
 from singer.utils import strptime_with_tz
-import backoff
 from . import transform
 
 LOGGER = singer.get_logger()
@@ -10,7 +9,7 @@ FULL_PAGE_SIZE = 100
 
 
 
-def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
+def _make_request(ctx, tap_stream_id, filter_options=None):
     filter_options = filter_options or {}
     with metrics.http_request_timer(tap_stream_id) as timer:
         try:
