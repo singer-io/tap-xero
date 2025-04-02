@@ -178,15 +178,17 @@ def retry_after_wait_gen():
         yield math.floor(float(sleep_time_str))
 
 class XeroClient():
-    def __init__(self, config):
+    def __init__(self, config, config_path):
         self.session = requests.Session()
         self.user_agent = config.get("user_agent")
         self.tenant_id = None
+        self.config = config
+        self.config_path = config_path
         self.access_token = None
 
-    def refresh_credentials(self, config, config_path):
+    def refresh_credentials(self):
 
-        header_token = b64encode((config["client_id"] + ":" + config["client_secret"]).encode('utf-8'))
+        header_token = b64encode((self.config["client_id"] + ":" + self.config["client_secret"]).encode('utf-8'))
 
         headers = {
             "Authorization": "Basic " + header_token.decode('utf-8'),
@@ -195,7 +197,7 @@ class XeroClient():
 
         post_body = {
             "grant_type": "refresh_token",
-            "refresh_token": config["refresh_token"],
+            "refresh_token": self.config["refresh_token"],
         }
         resp = self.session.post("https://identity.xero.com/connect/token", headers=headers, data=post_body)
 
@@ -205,18 +207,19 @@ class XeroClient():
             resp = resp.json()
 
             # Write to config file
-            config['refresh_token'] = resp["refresh_token"]
-            update_config_file(config, config_path)
+            self.config['refresh_token'] = resp["refresh_token"]
+            self.config['access_token'] = resp["access_token"]
+            update_config_file(self.config, self.config_path)
             self.access_token = resp["access_token"]
-            self.tenant_id = config['tenant_id']
+            self.tenant_id = self.config['tenant_id']
 
 
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
-    def check_platform_access(self, config, config_path):
+    def check_platform_access(self):
 
         # Validating the authentication of the provided configuration
-        self.refresh_credentials(config, config_path)
+        self.refresh_credentials()
 
         headers = {
             "Authorization": "Bearer " + self.access_token,
@@ -232,7 +235,7 @@ class XeroClient():
         if response.status_code != 200:
             raise_for_error(response)
 
-
+    @backoff.on_exception(backoff.expo, XeroUnauthorizedError, max_tries=1)
     @backoff.on_exception(backoff.expo, (json.decoder.JSONDecodeError, XeroInternalError), max_tries=3)
     @backoff.on_exception(retry_after_wait_gen, XeroTooManyInMinuteError, giveup=is_not_status_code_fn([429]), jitter=None, max_tries=3)
     def filter(self, tap_stream_id, since=None, **params):
@@ -248,6 +251,10 @@ class XeroClient():
 
         request = requests.Request("GET", url, headers=headers, params=params)
         response = self.session.send(request.prepare())
+
+        if response.status_code == 401:
+            self.refresh_credentials()
+            raise_for_error(response)
 
         if response.status_code != 200:
             raise_for_error(response)

@@ -4,6 +4,7 @@ import requests
 from unittest import mock
 import decimal
 import json
+import io
 
 
 def mocked_session(*args, **kwargs):
@@ -147,7 +148,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
         try:
@@ -164,7 +166,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
         try:
@@ -181,7 +184,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -196,11 +200,13 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
 
 
     @mock.patch('requests.Request', side_effect=mocked_unauthorized_401_error)
-    def test_unauthorized_401_error(self, mocked_session, mocked_unauthorized_401_error):
+    @mock.patch('tap_xero.XeroClient.refresh_credentials',)
+    def test_unauthorized_401_error(self, mocked_session,  mocked_refresh_credentials, mocked_unauthorized_401_error):
         config = {}
+        
         tap_stream_id = "contacts"
-
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -210,6 +216,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
 
             # Verifying the message formed for the custom exception
+            self.assertEqual(mocked_refresh_credentials.call_count, 3)
             self.assertEquals(str(e), expected_error_message)
             pass
 
@@ -219,7 +226,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -238,7 +246,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -256,7 +265,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -274,7 +284,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -293,7 +304,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -311,7 +323,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -330,7 +343,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -350,7 +364,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
@@ -370,7 +385,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
         try:
@@ -388,7 +404,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
         try:
@@ -404,7 +421,8 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
         config = {}
         tap_stream_id = "contacts"
 
-        xero_client = client_.XeroClient(config)
+        config_path = ""
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
         try:
@@ -429,11 +447,10 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
             "tenant_id": "123"
         }
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroUnauthorizedError as e:
             expected_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
             self.assertEqual(str(e) ,expected_message)
@@ -446,13 +463,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroForbiddenError as e:
             expected_message = "HTTP-error-code: 403, Error: User doesn't have permission to access the resource."
             self.assertEqual(str(e) ,expected_message)
@@ -465,13 +481,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroBadRequestError as e:
             expected_message = "HTTP-error-code: 400, Error: A validation exception has occurred."
             self.assertEqual(str(e), expected_message)
@@ -484,13 +499,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroNotFoundError as e:
             expected_message = "HTTP-error-code: 404, Error: The resource you have specified cannot be found."
             self.assertEqual(str(e), expected_message)
@@ -503,13 +517,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroPreConditionFailedError as e:
             expected_message = "HTTP-error-code: 412, Error: One or more conditions given in the request header fields were invalid."
             self.assertEqual(str(e), expected_message)
@@ -522,13 +535,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroInternalError as e:
             expected_message = "HTTP-error-code: 500, Error: An unhandled error with the Xero API. Contact the Xero API team if problems persist."
             self.assertEqual(str(e), expected_message)
@@ -541,13 +553,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroNotImplementedError as e:
             expected_message = "HTTP-error-code: 501, Error: The method you have called has not been implemented."
             self.assertEqual(str(e), expected_message)
@@ -560,13 +571,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroNotAvailableError as e:
             expected_message = "HTTP-error-code: 503, Error: API service is currently unavailable."
             self.assertEqual(str(e), expected_message)
@@ -579,13 +589,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroTooManyError as e:
             expected_message = "HTTP-error-code: 429, Error: The API rate limit for your organisation/application pairing has been exceeded. Please retry after 1000 seconds"
             self.assertEqual(str(e), expected_message)
@@ -598,13 +607,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except client_.XeroTooManyInMinuteError as e:
             expected_message = "HTTP-error-code: 429, Error: The API rate limit for your organisation/application pairing has been exceeded. Please retry after 5 seconds"
             self.assertEqual(str(e), expected_message)
@@ -617,13 +625,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except (requests.HTTPError, client_.XeroTooManyError) as e:
             pass
 
@@ -639,13 +646,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except (requests.HTTPError, client_.XeroTooManyInMinuteError) as e:
             pass
 
@@ -660,13 +666,12 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
         mocked_refresh_credentials.return_value = ""
         config = {}
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         xero_client.access_token = "123"
         xero_client.tenant_id = "123"
 
         try:
-            xero_client.check_platform_access(config, config_path)
+            xero_client.check_platform_access()
         except (requests.HTTPError, client_.XeroInternalError) as e:
             pass
 
@@ -688,12 +693,11 @@ class TestCheckPlatformAccessBehavior(unittest.TestCase):
             "tenant_id": "123"
         }
         config_path = ""
-
-        xero_client = client_.XeroClient(config)
+        xero_client = client_.XeroClient(config, config_path)
         expected_access_token = "123"
         expected_refresh_token = "345"
 
-        xero_client.check_platform_access(config, config_path)
+        xero_client.check_platform_access()
 
         self.assertEqual(xero_client.access_token, expected_access_token)
         self.assertEqual(config["refresh_token"], expected_refresh_token)
