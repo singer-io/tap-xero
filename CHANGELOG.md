@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.4.0
-  * Added Retry and exception handling for 401 errors
+  * Add backoff and error handling for 401 errors [#121](https://github.com/singer-io/tap-xero/pull/121)
 
 ## 2.3.1
   * Add new fields into the schema of credit_notes stream [#117](https://github.com/singer-io/tap-xero/pull/117)
