@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.2
+  * Bump dependency versions for twistlock compliance [#122](https://github.com/singer-io/tap-xero/pull/122)
+
 ## 2.3.1
   * Add new fields into the schema of credit_notes stream [#117](https://github.com/singer-io/tap-xero/pull/117)
 
