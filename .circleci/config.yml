@@ -26,7 +26,7 @@ jobs:
           name: 'Unit Tests'
           command: |
             source /usr/local/share/virtualenvs/tap-xero/bin/activate
-            uv pip instal pytest coverage parameterized
+            uv pip install pytest coverage parameterized
             coverage run -m pytest tests/unittests/
       - run:
           name: 'Integration Tests'
