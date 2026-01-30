@@ -138,6 +138,7 @@ class Journals(Stream):
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         journal_number = ctx.get_bookmark(bookmark) or 0
+        ctx.set_bookmark(bookmark, journal_number)
         while True:
             filter_options = {"offset": journal_number}
             records = _make_request(ctx, self.tap_stream_id, filter_options)
