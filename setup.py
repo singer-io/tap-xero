@@ -10,7 +10,7 @@ setup(name="tap-xero",
       py_modules=["tap_xero"],
       install_requires=[
           "singer-python==5.18.0",
-          "requests==2.32.4",
+          "requests==2.32.5",
       ],
       extras_require={
           'dev': [
