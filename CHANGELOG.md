@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.0
+  * Bump singer-python version [#127](https://github.com/singer-io/tap-xero/pull/127)
+
 ## 2.3.2
   * Bump dependency versions for twistlock compliance [#122](https://github.com/singer-io/tap-xero/pull/122)
 
