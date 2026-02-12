@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.0
+  * Add backoff and error handling for 401 errors [#121](https://github.com/singer-io/tap-xero/pull/121)
+
 ## 2.3.2
   * Bump dependency versions for twistlock compliance [#122](https://github.com/singer-io/tap-xero/pull/122)
 

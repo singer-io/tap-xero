@@ -9,13 +9,13 @@ class Context():
         self.config_path = config_path
         self.state = state
         self.catalog = catalog
-        self.client = XeroClient(config)
+        self.client = XeroClient(config, config_path=config_path)
 
     def refresh_credentials(self):
-        self.client.refresh_credentials(self.config, self.config_path)
+        self.client.refresh_credentials()
 
     def check_platform_access(self):
-        self.client.check_platform_access(self.config, self.config_path)
+        self.client.check_platform_access()
 
     def get_bookmark(self, path):
         return bks_.get_bookmark(self.state, *path)
