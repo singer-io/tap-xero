@@ -11,7 +11,6 @@ setup(name="tap-xero",
       install_requires=[
           "singer-python==5.18.0",
           "requests==2.32.5",
-          "urllib3==2.6.3",
       ],
       extras_require={
           'dev': [
