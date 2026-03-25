@@ -191,7 +191,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 400, Error: A validation exception has occurred."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
@@ -210,7 +210,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 401, Error: Invalid authorization credentials."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
@@ -229,7 +229,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 403, Error: User doesn't have permission to access the resource."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
@@ -248,7 +248,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 404, Error: The resource you have specified cannot be found."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
     @mock.patch('requests.Request', side_effect=mocked_precondition_failed_412_error)
@@ -266,7 +266,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 412, Error: One or more conditions given in the request header fields were invalid."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
     @mock.patch('requests.Request', side_effect=mocked_internalservererror_500_error)
@@ -284,7 +284,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 500, Error: An unhandled error with the Xero API. Contact the Xero API team if problems persist."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
@@ -303,7 +303,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 501, Error: The method you have called has not been implemented."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
     @mock.patch('requests.Request', side_effect=mocked_not_available_503_error)
@@ -321,7 +321,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 503, Error: API service is currently unavailable."
 
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
@@ -341,7 +341,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 429, Error: The API rate limit for your organisation/application pairing has been exceeded. Please retry after 1000 seconds"
             
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
@@ -361,7 +361,7 @@ class TestFilterFunExceptionHandling(unittest.TestCase):
             expected_error_message = "HTTP-error-code: 429, Error: The API rate limit for your organisation/application pairing has been exceeded. Please retry after 5 seconds"
             
             # Verifying the message formed for the custom exception
-            self.assertEquals(str(e), expected_error_message)
+            self.assertEqual(str(e), expected_error_message)
             pass
 
 
