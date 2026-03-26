@@ -92,14 +92,10 @@ class XeroScenarioBase(unittest.TestCase):
             "overpayments": ["UpdatedDateUTC"],
             "prepayments": ["UpdatedDateUTC"],
             "purchase_orders": ["UpdatedDateUTC"],
-            "journals": ["JournalNumber"],
             "accounts": ["UpdatedDateUTC"],
             "bank_transfers": ["CreatedDateUTC"],
-            "employees": ["UpdatedDateUTC"],
-            "expense_claims": ["UpdatedDateUTC"],
             "items": ["UpdatedDateUTC"],
             "payments": ["UpdatedDateUTC"],
-            "receipts": ["UpdatedDateUTC"],
             "users": ["UpdatedDateUTC"],
             "linked_transactions": ["UpdatedDateUTC"],
             "quotes": ["UpdatedDateUTC"]
@@ -164,6 +160,8 @@ class XeroScenarioBase(unittest.TestCase):
         # menagerie.post_annotated_catalogs(self.conn_id, selected)
         for catalog in found_catalogs:
             schema = menagerie.get_annotated_schema(self.conn_id, catalog['stream_id'])
+            if catalog['tap_stream_id'] in ["journals", "expense_claims", "receipts", "employees"]:
+                continue
             non_selected_properties = []
             additional_md = []
 

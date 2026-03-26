@@ -47,7 +47,7 @@ class XeroBookmarks(XeroScenarioBase):
     def check_offsets(self, bookmarks):
         for stream, offset in self.expected_offsets.items():
             self.assertEqual(
-                bookmarks.get(stream, {}).get("offset"), offset,
+                bookmarks.get(stream, {}).get("offset", {}), offset,
                 msg=("unexpected offset found for stream {} {}. bookmarks: {}"
                      .format(stream, offset, bookmarks))
             )

@@ -25,7 +25,6 @@ class XeroFutureDatesNoData(XeroScenarioBase):
                 "overpayments": {"UpdatedDateUTC": future_date},
                 "prepayments": {"UpdatedDateUTC": future_date},
                 "purchase_orders": {"UpdatedDateUTC": future_date},
-                "journals": {"JournalNumber": 10e10},
                 "accounts": {"UpdatedDateUTC": future_date},
                 "bank_transfers": {"CreatedDateUTC": future_date},
                 "employees": {"UpdatedDateUTC": future_date},

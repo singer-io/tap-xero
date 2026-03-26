@@ -19,6 +19,12 @@ REQUIRED_CONFIG_KEYS = [
 
 LOGGER = singer.get_logger()
 
+DEPRECATED_STREAM_IDS = [
+    "expense_claims",
+    "employees",
+    "receipts",
+]
+
 BAD_CREDS_MESSAGE = (
     "Failed to refresh OAuth token using the credentials from both the config and S3. "
     "The token might need to be reauthorized from the integration's properties "
@@ -110,7 +116,16 @@ def sync(ctx):
         stream.sync(ctx)
     ctx.state["currently_syncing"] = None
     ctx.write_state()
-
+    selected_deprecated = [s for s in stream_ids_to_sync if s in DEPRECATED_STREAM_IDS]
+    if selected_deprecated:
+        LOGGER.warning(
+            "WARNING: The following selected streams are deprecated by Xero and will be removed "
+            "after 28th April 2026: %s. These streams may stop returning data or cause sync "
+            "failures at any time. Please deselect them and consider using the Invoices stream "
+            "as a replacement for Expense Claims and Receipts. "
+            "See: https://developer.xero.com/documentation/api/accounting/overview for details.",
+            ", ".join(selected_deprecated)
+        )
 
 
 def main_impl():
