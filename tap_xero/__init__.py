@@ -116,16 +116,17 @@ def sync(ctx):
         stream.sync(ctx)
     ctx.state["currently_syncing"] = None
     ctx.write_state()
-    selected_deprecated = [s for s in stream_ids_to_sync if s in DEPRECATED_STREAM_IDS]
-    if selected_deprecated:
-        LOGGER.warning(
-            "WARNING: The following selected streams are deprecated by Xero and will be removed "
-            "after 28th April 2026: %s. These streams may stop returning data or cause sync "
-            "failures at any time. Please deselect them and consider using the Invoices stream "
-            "as a replacement for Expense Claims and Receipts. "
-            "See: https://developer.xero.com/documentation/api/accounting/overview for details.",
-            ", ".join(selected_deprecated)
-        )
+    for stream_id in stream_ids_to_sync:
+        if stream_id in DEPRECATED_STREAM_IDS:
+            raise Exception(
+                "The following streams are deprecated and will be removed on 28th April 2026: "
+                "Employees, Expense Claims, and Receipts. Please deselect these streams to avoid sync errors. "
+                "Consider using the Invoices stream as a replacement for Expense Claims and Receipts. "
+                "For more details, see the Xero API documentation: "
+                "https://developer.xero.com/documentation/api/accounting/receipts, "
+                "https://developer.xero.com/documentation/api/accounting/employees, "
+                "https://developer.xero.com/documentation/api/accounting/expenseclaims"
+            )
 
 
 def main_impl():
