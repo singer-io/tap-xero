@@ -34,7 +34,7 @@ class XeroScenarioBase(unittest.TestCase):
             missing_envs = missing_creds + missing_props
             raise Exception("set " + ", ".join(missing_envs))
         self._credentials = {k: os.getenv(v) for k, v in required_creds.items()}
-        self.conn_id = connections.ensure_connection(self)
+        self.conn_id = connections.ensure_connection(self, payload_hook=preserve_refresh_token)
 
     def get_type(self):
         return "platform.xero"
