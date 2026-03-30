@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.0
+  * Fail connection for deprecated streams [#128](https://github.com/singer-io/tap-xero/pull/128)
+
 ## 2.4.0
   * Bump singer-python version [#127](https://github.com/singer-io/tap-xero/pull/127)
 

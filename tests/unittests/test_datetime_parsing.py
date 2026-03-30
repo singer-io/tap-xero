@@ -20,7 +20,7 @@ class TestDatetimeParsing(unittest.TestCase):
             strptime_to_utc('2020-01-01T12:30:00+0'),
         ]
 
-        self.assertEquals(parsed_dates, expected_dates)
+        self.assertEqual(parsed_dates, expected_dates)
 
     def test_epoch_datetimes(self):
         dates = [
@@ -39,7 +39,7 @@ class TestDatetimeParsing(unittest.TestCase):
             datetime.datetime(1920, 5, 23, 00, 00, 00),
         ]
 
-        self.assertEquals(parsed_dates, expected_dates)
+        self.assertEqual(parsed_dates, expected_dates)
 
     def test_not_datetimes(self):
         dates = [
@@ -53,4 +53,4 @@ class TestDatetimeParsing(unittest.TestCase):
 
         expected_dates = [None, None, None, None]
 
-        self.assertEquals(parsed_dates, expected_dates)
+        self.assertEqual(parsed_dates, expected_dates)
