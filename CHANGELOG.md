@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.0
+  * Remove deprecated streams - Employees, Expense Claims, Receipts [#129](https://github.com/singer-io/tap-xero/pull/129)
+
 ## 2.5.0
   * Fail connection for deprecated streams [#128](https://github.com/singer-io/tap-xero/pull/128)
 

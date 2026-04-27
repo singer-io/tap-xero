@@ -60,11 +60,8 @@ class XeroScenarioBase(unittest.TestCase):
             "journals": ["JournalID"],
             "accounts": ["AccountID"],
             "bank_transfers": ["BankTransferID"],
-            "employees": ["EmployeeID"],
-            "expense_claims": ["ExpenseClaimID"],
             "items": ["ItemID"],
             "payments": ["PaymentID"],
-            "receipts": ["ReceiptID"],
             "users": ["UserID"],
             "branding_themes": ["BrandingThemeID"],
             "contact_groups": ["ContactGroupID"],
@@ -160,7 +157,7 @@ class XeroScenarioBase(unittest.TestCase):
         # menagerie.post_annotated_catalogs(self.conn_id, selected)
         for catalog in found_catalogs:
             schema = menagerie.get_annotated_schema(self.conn_id, catalog['stream_id'])
-            if catalog['tap_stream_id'] in ["journals", "expense_claims", "receipts", "employees"]:
+            if catalog['tap_stream_id'] in ["journals"]:
                 continue
             non_selected_properties = []
             additional_md = []

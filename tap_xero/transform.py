@@ -40,13 +40,6 @@ def strip_warnings(records):
 format_users = strip_warnings
 
 
-def format_receipts(receipts):
-    strip_warnings(receipts)
-    for receipt in receipts:
-        receipt.get("User", {}).pop("Warnings", None)
-        receipt.get("Contact", {}).pop("Warnings", None)
-
-
 def format_contacts(contacts):
     strip_warnings(contacts)
     for contact in contacts:
