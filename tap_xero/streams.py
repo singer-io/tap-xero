@@ -219,10 +219,7 @@ all_streams = [
     # header.
     BookmarkedStream("accounts", ["AccountID"]),
     BookmarkedStream("bank_transfers", ["BankTransferID"], bookmark_key="CreatedDateUTC"),
-    BookmarkedStream("employees", ["EmployeeID"]),
-    BookmarkedStream("expense_claims", ["ExpenseClaimID"]),
     BookmarkedStream("items", ["ItemID"]),
-    BookmarkedStream("receipts", ["ReceiptID"], format_fn=transform.format_receipts),
     BookmarkedStream("users", ["UserID"], format_fn=transform.format_users),
 
     # PULL EVERYTHING STREAMS

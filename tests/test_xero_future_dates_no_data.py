@@ -27,11 +27,8 @@ class XeroFutureDatesNoData(XeroScenarioBase):
                 "purchase_orders": {"UpdatedDateUTC": future_date},
                 "accounts": {"UpdatedDateUTC": future_date},
                 "bank_transfers": {"CreatedDateUTC": future_date},
-                "employees": {"UpdatedDateUTC": future_date},
-                "expense_claims": {"UpdatedDateUTC": future_date},
                 "items": {"UpdatedDateUTC": future_date},
                 "payments": {"UpdatedDateUTC": future_date},
-                "receipts": {"UpdatedDateUTC": future_date},
                 "users": {"UpdatedDateUTC": future_date},
                 "linked_transactions": {"UpdatedDateUTC": future_date},
                 "quotes": {"UpdatedDateUTC": future_date}
