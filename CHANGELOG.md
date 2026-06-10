@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.0
+  * Exclude un-authorised streams from catalog during discovery[#131](https://github.com/singer-io/tap-xero/pull/131).
+
 ## 2.6.0
   * Remove deprecated streams - Employees, Expense Claims, Receipts [#129](https://github.com/singer-io/tap-xero/pull/129)
   * Bump requests from 2.32.5 to 2.33.0 [#130](https://github.com/singer-io/tap-xero/pull/130)
