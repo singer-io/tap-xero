@@ -5,7 +5,7 @@ import singer
 from singer import metadata, metrics, utils
 from singer.catalog import Catalog, CatalogEntry, Schema
 from . import streams as streams_
-from .client import XeroClient
+from .client import XeroClient, XeroForbiddenError
 from .context import Context
 
 REQUIRED_CONFIG_KEYS = [
@@ -67,10 +67,15 @@ def load_metadata(stream, schema):
 def ensure_credentials_are_valid(config):
     XeroClient(config).filter("currencies")
 
+
 def discover(ctx):
+    LOGGER.info("Starting discover")
     ctx.check_platform_access()
     catalog = Catalog([])
     for stream in streams_.all_streams:
+        if not stream.check_access(ctx):
+            continue
+
         schema_dict = load_schema(stream.tap_stream_id)
         mdata = load_metadata(stream, schema_dict)
 
@@ -82,6 +87,13 @@ def discover(ctx):
             schema=schema,
             metadata=mdata
         ))
+
+    if not catalog.streams:
+        error_msg = "The provided credentials doesn't have access to any streams. Please recheck configuration"
+        LOGGER.error(error_msg)
+        raise XeroForbiddenError(error_msg)
+
+    LOGGER.info("Finished discover")
     return catalog
 
 
@@ -126,6 +138,8 @@ def main_impl():
 
         sync(Context(args.config, args.state, catalog, args.config_path))
 
+
+@singer.utils.handle_top_exception(LOGGER)
 def main():
     try:
         main_impl()
