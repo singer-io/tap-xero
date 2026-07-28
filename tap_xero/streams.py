@@ -69,7 +69,7 @@ class Stream():
 
         try:
             LOGGER.info("Checking access for stream %s...", self.tap_stream_id)
-            ctx.client.filter(self.tap_stream_id, self.probe_filter_options)
+            ctx.client.filter(self.tap_stream_id, **self.probe_filter_options)
             LOGGER.info("Stream %s is accessible with the provided credentials.", self.tap_stream_id)
 
             return True
