@@ -1,9 +1,13 @@
-from requests.exceptions import HTTPError
-import singer
-from singer import metadata, metrics, Transformer
-from singer.utils import strptime_with_tz
 import backoff
+import singer
+from requests.exceptions import HTTPError
+from singer import Transformer, metadata, metrics
+from singer.utils import strptime_with_tz
+
+from tap_xero.context import Context
+
 from . import transform
+from .client import XeroForbiddenError, XeroUnauthorizedError
 
 LOGGER = singer.get_logger()
 FULL_PAGE_SIZE = 100
@@ -47,6 +51,8 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
 
 
 class Stream():
+    probe_filter_options = {}
+
     def __init__(self, tap_stream_id, pk_fields, bookmark_key="UpdatedDateUTC", format_fn=None):
         self.tap_stream_id = tap_stream_id
         self.pk_fields = pk_fields
@@ -54,6 +60,27 @@ class Stream():
         self.bookmark_key = bookmark_key
         self.replication_method = "INCREMENTAL"
         self.filter_options = {}
+
+    def check_access(self, ctx: Context):
+        """
+        Verify that the API credentials have read access to this stream.
+        Returns True if accessible, False if a 403 Forbidden or 401 Unauthorized error is raised.
+        """
+        ctx.refresh_credentials()
+
+        try:
+            LOGGER.info("Checking access for stream %s...", self.tap_stream_id)
+            ctx.client.filter(self.tap_stream_id, **self.probe_filter_options)
+            LOGGER.info("Stream %s is accessible with the provided credentials.", self.tap_stream_id)
+
+            return True
+        except (XeroUnauthorizedError, XeroForbiddenError):
+            LOGGER.warning(
+                "Stream '%s' does not have read permission, "
+                "excluding from catalog.",
+                self.tap_stream_id,
+            )
+            return False
 
     def metrics(self, records):
         with metrics.record_counter(self.tap_stream_id) as counter:
@@ -135,6 +162,8 @@ class Journals(Stream):
     """The Journals endpoint is a special case. It has its own way of ordering
     and paging the data. See
     https://developer.xero.com/documentation/api/journals"""
+    probe_filter_options = {"offset": 0}
+
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         journal_number = ctx.get_bookmark(bookmark) or 0
@@ -158,6 +187,8 @@ class LinkedTransactions(Stream):
     the UpdatedDateUTC timestamp in them. Therefore we must always iterate over
     all of the data, but we can manually omit records based on the
     UpdatedDateUTC property."""
+    probe_filter_options = {"page": 1}
+
     def sync(self, ctx):
         bookmark = [self.tap_stream_id, self.bookmark_key]
         offset = [self.tap_stream_id, "page"]
