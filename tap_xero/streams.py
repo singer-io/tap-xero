@@ -51,6 +51,8 @@ def _make_request(ctx, tap_stream_id, filter_options=None, attempts=0):
 
 
 class Stream():
+    probe_filter_options = {}
+
     def __init__(self, tap_stream_id, pk_fields, bookmark_key="UpdatedDateUTC", format_fn=None):
         self.tap_stream_id = tap_stream_id
         self.pk_fields = pk_fields
@@ -58,7 +60,6 @@ class Stream():
         self.bookmark_key = bookmark_key
         self.replication_method = "INCREMENTAL"
         self.filter_options = {}
-        self.probe_filter_options = {}
 
     def check_access(self, ctx: Context):
         """

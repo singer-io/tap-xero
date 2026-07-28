@@ -98,25 +98,25 @@ class TestCheckAccess(unittest.TestCase):
         self.assertEqual(call_order, ["refresh", "filter"])
 
     def test_filter_receives_stream_id_and_empty_probe_options(self):
-        """Default Stream.check_access passes tap_stream_id and {} as probe options."""
+        """Default Stream.check_access passes tap_stream_id with no extra args."""
         with mock.patch.object(self.ctx.client, "filter", return_value=[]) as mock_filter:
             stream = streams_.BookmarkedStream("accounts", ["AccountID"])
             stream.check_access(self.ctx)
-            mock_filter.assert_called_once_with("accounts", {})
+            mock_filter.assert_called_once_with("accounts")
 
     def test_paginated_stream_passes_empty_probe_options(self):
         """PaginatedStream.check_access passes empty probe_filter_options."""
         with mock.patch.object(self.ctx.client, "filter", return_value=[]) as mock_filter:
             stream = streams_.PaginatedStream("invoices", ["InvoiceID"])
             stream.check_access(self.ctx)
-            mock_filter.assert_called_once_with("invoices", {})
+            mock_filter.assert_called_once_with("invoices")
 
     def test_everything_stream_passes_empty_probe_options(self):
         """Everything.check_access passes empty probe_filter_options."""
         with mock.patch.object(self.ctx.client, "filter", return_value=[]) as mock_filter:
             stream = streams_.Everything("currencies", ["Code"])
             stream.check_access(self.ctx)
-            mock_filter.assert_called_once_with("currencies", {})
+            mock_filter.assert_called_once_with("currencies")
 
     # --- stream-specific probe_filter_options tests -----------------------
 
@@ -128,23 +128,23 @@ class TestCheckAccess(unittest.TestCase):
         """LinkedTransactions defines probe_filter_options={'page': 1} at class level."""
         self.assertEqual(streams_.LinkedTransactions.probe_filter_options, {"page": 1})
 
-    def test_journals_instance_check_access_uses_empty_probe_options(self):
-        """Journals instances probe with {} because Stream.__init__ overrides class attr."""
+    def test_journals_instance_check_access_uses_probe_options(self):
+        """Journals instances probe with offset=0 from class-level probe_filter_options."""
         with mock.patch.object(self.ctx.client, "filter", return_value=[]) as mock_filter:
             stream = streams_.Journals(
                 "journals", ["JournalID"], bookmark_key="JournalNumber"
             )
             stream.check_access(self.ctx)
-            mock_filter.assert_called_once_with("journals", {})
+            mock_filter.assert_called_once_with("journals", offset=0)
 
-    def test_linked_transactions_instance_check_access_uses_empty_probe_options(self):
-        """LinkedTransactions instances probe with {} because Stream.__init__ overrides class attr."""
+    def test_linked_transactions_instance_check_access_uses_probe_options(self):
+        """LinkedTransactions instances probe with page=1 from class-level probe_filter_options."""
         with mock.patch.object(self.ctx.client, "filter", return_value=[]) as mock_filter:
             stream = streams_.LinkedTransactions(
                 "linked_transactions", ["LinkedTransactionID"]
             )
             stream.check_access(self.ctx)
-            mock_filter.assert_called_once_with("linked_transactions", {})
+            mock_filter.assert_called_once_with("linked_transactions", page=1)
 
     # --- Contacts (subclass) tests ----------------------------------------
 
